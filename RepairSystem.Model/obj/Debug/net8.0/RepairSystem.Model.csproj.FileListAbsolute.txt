@@ -1,0 +1,14 @@
+D:\code\API\project1\RepairSystem\RepairSystem.Model\bin\Debug\net8.0\RepairSystem.Model.deps.json
+D:\code\API\project1\RepairSystem\RepairSystem.Model\bin\Debug\net8.0\RepairSystem.Model.runtimeconfig.json
+D:\code\API\project1\RepairSystem\RepairSystem.Model\bin\Debug\net8.0\RepairSystem.Model.dll
+D:\code\API\project1\RepairSystem\RepairSystem.Model\bin\Debug\net8.0\RepairSystem.Model.pdb
+D:\code\API\project1\RepairSystem\RepairSystem.Model\obj\Debug\net8.0\RepairSystem.Model.csproj.AssemblyReference.cache
+D:\code\API\project1\RepairSystem\RepairSystem.Model\obj\Debug\net8.0\RepairSystem.Model.GeneratedMSBuildEditorConfig.editorconfig
+D:\code\API\project1\RepairSystem\RepairSystem.Model\obj\Debug\net8.0\RepairSystem.Model.AssemblyInfoInputs.cache
+D:\code\API\project1\RepairSystem\RepairSystem.Model\obj\Debug\net8.0\RepairSystem.Model.AssemblyInfo.cs
+D:\code\API\project1\RepairSystem\RepairSystem.Model\obj\Debug\net8.0\RepairSystem.Model.csproj.CoreCompileInputs.cache
+D:\code\API\project1\RepairSystem\RepairSystem.Model\obj\Debug\net8.0\RepairSystem.Model.dll
+D:\code\API\project1\RepairSystem\RepairSystem.Model\obj\Debug\net8.0\refint\RepairSystem.Model.dll
+D:\code\API\project1\RepairSystem\RepairSystem.Model\obj\Debug\net8.0\RepairSystem.Model.pdb
+D:\code\API\project1\RepairSystem\RepairSystem.Model\obj\Debug\net8.0\RepairSystem.Model.genruntimeconfig.cache
+D:\code\API\project1\RepairSystem\RepairSystem.Model\obj\Debug\net8.0\ref\RepairSystem.Model.dll

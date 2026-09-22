@@ -1,0 +1,36 @@
+﻿using RepairSystem.Data.Repository.IRepository;
+
+namespace RepairSystem.Data.Repository.UnitOfWork;
+
+public class UnitOfWork : IUnitOfWork
+{
+    private readonly AppDbContext _context;
+    private readonly Dictionary<string, object> _repositories;
+
+    public UnitOfWork(AppDbContext context)
+    {
+        _context = context;
+        _repositories = new Dictionary<string, object>();
+    }
+
+    public IGenericRepository<T> Repository<T>() where T : class
+    {
+        var key = typeof(T).Name;
+        if (!_repositories.ContainsKey(key))
+        {
+            _repositories.Add(key, new GenericRepository<T>(_context));
+        }
+        return (IGenericRepository<T>)_repositories[key];
+    }
+
+    public async Task SaveAsync()
+    {
+        await _context.SaveChangesAsync();
+    }
+
+    public void Dispose()
+    {
+        _context?.Dispose();
+        GC.SuppressFinalize(this);
+    }
+}

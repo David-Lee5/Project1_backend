@@ -1,0 +1,17 @@
+D:\code\API\project1\RepairSystem\RepairSystem.Data\bin\Debug\net8.0\RepairSystem.Data.deps.json
+D:\code\API\project1\RepairSystem\RepairSystem.Data\bin\Debug\net8.0\RepairSystem.Data.runtimeconfig.json
+D:\code\API\project1\RepairSystem\RepairSystem.Data\bin\Debug\net8.0\RepairSystem.Data.dll
+D:\code\API\project1\RepairSystem\RepairSystem.Data\bin\Debug\net8.0\RepairSystem.Data.pdb
+D:\code\API\project1\RepairSystem\RepairSystem.Data\obj\Debug\net8.0\RepairSystem.Data.csproj.AssemblyReference.cache
+D:\code\API\project1\RepairSystem\RepairSystem.Data\obj\Debug\net8.0\RepairSystem.Data.GeneratedMSBuildEditorConfig.editorconfig
+D:\code\API\project1\RepairSystem\RepairSystem.Data\obj\Debug\net8.0\RepairSystem.Data.AssemblyInfoInputs.cache
+D:\code\API\project1\RepairSystem\RepairSystem.Data\obj\Debug\net8.0\RepairSystem.Data.AssemblyInfo.cs
+D:\code\API\project1\RepairSystem\RepairSystem.Data\obj\Debug\net8.0\RepairSystem.Data.csproj.CoreCompileInputs.cache
+D:\code\API\project1\RepairSystem\RepairSystem.Data\obj\Debug\net8.0\RepairSystem.Data.dll
+D:\code\API\project1\RepairSystem\RepairSystem.Data\obj\Debug\net8.0\refint\RepairSystem.Data.dll
+D:\code\API\project1\RepairSystem\RepairSystem.Data\obj\Debug\net8.0\RepairSystem.Data.pdb
+D:\code\API\project1\RepairSystem\RepairSystem.Data\obj\Debug\net8.0\RepairSystem.Data.genruntimeconfig.cache
+D:\code\API\project1\RepairSystem\RepairSystem.Data\obj\Debug\net8.0\ref\RepairSystem.Data.dll
+D:\code\API\project1\RepairSystem\RepairSystem.Data\bin\Debug\net8.0\RepairSystem.Model.dll
+D:\code\API\project1\RepairSystem\RepairSystem.Data\bin\Debug\net8.0\RepairSystem.Model.pdb
+D:\code\API\project1\RepairSystem\RepairSystem.Data\obj\Debug\net8.0\RepairSy.6303C390.Up2Date

@@ -1,0 +1,21 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace RepairSystem.Model;
+
+public partial class TaiKhoan
+{
+    public int TaiKhoanId { get; set; }
+
+    public string Username { get; set; } = null!;
+
+    public string PasswordHash { get; set; } = null!;
+
+    public string Role { get; set; } = null!;
+
+    public bool? TrangThaiHoatDong { get; set; }
+
+    public virtual KhachHang? KhachHang { get; set; }
+
+    public virtual KyThuatVien? KyThuatVien { get; set; }
+}

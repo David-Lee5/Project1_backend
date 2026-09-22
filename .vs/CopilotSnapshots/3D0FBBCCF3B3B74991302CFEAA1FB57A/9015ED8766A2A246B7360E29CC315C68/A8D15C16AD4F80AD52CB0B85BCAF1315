@@ -1,0 +1,120 @@
+﻿using RepairSystem.Data;
+using RepairSystem.Data;
+using RepairSystem.Model;
+using Microsoft.EntityFrameworkCore;
+
+namespace RepairSystem.Service.Helpers;
+
+public static class SeedData
+{
+    public static async Task InitializeAsync(AppDbContext context)
+    {
+        try
+        {
+            // Try to migrate database
+            await context.Database.MigrateAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Database migration skipped or error: {ex.Message}");
+        }
+
+        // Check if roles already exist
+        if (await context.Set<Role>().AnyAsync())
+            return;
+
+        // Create permissions
+        var permissions = new List<Permission>
+        {
+            // User Management
+            new Permission { Name = "ViewUsers", Description = "View all users", Module = "Users", IsActive = true },
+            new Permission { Name = "CreateUser", Description = "Create new user", Module = "Users", IsActive = true },
+            new Permission { Name = "EditUser", Description = "Edit user information", Module = "Users", IsActive = true },
+            new Permission { Name = "DeleteUser", Description = "Delete user", Module = "Users", IsActive = true },
+
+            // Role Management
+            new Permission { Name = "ViewRoles", Description = "View all roles", Module = "Roles", IsActive = true },
+            new Permission { Name = "CreateRole", Description = "Create new role", Module = "Roles", IsActive = true },
+            new Permission { Name = "EditRole", Description = "Edit role information", Module = "Roles", IsActive = true },
+            new Permission { Name = "DeleteRole", Description = "Delete role", Module = "Roles", IsActive = true },
+
+            // Permission Management
+            new Permission { Name = "ViewPermissions", Description = "View all permissions", Module = "Permissions", IsActive = true },
+            new Permission { Name = "CreatePermission", Description = "Create new permission", Module = "Permissions", IsActive = true },
+            new Permission { Name = "EditPermission", Description = "Edit permission information", Module = "Permissions", IsActive = true },
+            new Permission { Name = "DeletePermission", Description = "Delete permission", Module = "Permissions", IsActive = true },
+
+            // Inventory Management
+            new Permission { Name = "ViewInventory", Description = "View inventory", Module = "Inventory", IsActive = true },
+            new Permission { Name = "ManageInventory", Description = "Manage inventory", Module = "Inventory", IsActive = true },
+
+            // Repair Service
+            new Permission { Name = "ViewRepairs", Description = "View repair requests", Module = "Repair", IsActive = true },
+            new Permission { Name = "CreateRepair", Description = "Create repair request", Module = "Repair", IsActive = true },
+            new Permission { Name = "EditRepair", Description = "Edit repair request", Module = "Repair", IsActive = true },
+            new Permission { Name = "ApproveRepair", Description = "Approve repair request", Module = "Repair", IsActive = true },
+
+            // Customer Management
+            new Permission { Name = "ViewCustomers", Description = "View customers", Module = "Customer", IsActive = true },
+            new Permission { Name = "ManageCustomers", Description = "Manage customers", Module = "Customer", IsActive = true }
+        };
+
+        await context.Set<Permission>().AddRangeAsync(permissions);
+        await context.SaveChangesAsync();
+
+        // Create roles
+        var adminPermissions = permissions.ToList();
+        var technicianPermissions = permissions
+            .Where(p => p.Module == "Repair" || p.Module == "Inventory" || p.Module == "Customer")
+            .ToList();
+        var customerPermissions = permissions
+            .Where(p => p.Module == "Repair" && (p.Name == "ViewRepairs" || p.Name == "CreateRepair"))
+            .ToList();
+
+        var roles = new List<Role>
+        {
+            new Role
+            {
+                Name = "Admin",
+                Description = "Administrator with full access",
+                IsActive = true,
+                Permissions = adminPermissions
+            },
+            new Role
+            {
+                Name = "Technician",
+                Description = "Technician user",
+                IsActive = true,
+                Permissions = technicianPermissions
+            },
+            new Role
+            {
+                Name = "Customer",
+                Description = "Customer user",
+                IsActive = true,
+                Permissions = customerPermissions
+            }
+        };
+
+        await context.Set<Role>().AddRangeAsync(roles);
+        await context.SaveChangesAsync();
+
+        // Create admin user
+        var adminRole = await context.Set<Role>().FirstAsync(r => r.Name == "Admin");
+
+        if (!await context.TaiKhoans.AnyAsync(u => u.Username == "admin"))
+        {
+            var adminUser = new TaiKhoan
+            {
+                Username = "admin",
+                Email = "admin@repairsystem.com",
+                PasswordHash = PasswordHelper.HashPassword("Admin@123"),
+                RoleId = adminRole.Id,
+                TrangThaiHoatDong = true
+            };
+
+            context.TaiKhoans.Add(adminUser);
+            await context.SaveChangesAsync();
+        }
+    }
+}

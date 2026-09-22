@@ -1,0 +1,100 @@
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
+using RepairSystem.Service.IServices;
+
+namespace RepairSystem.Service.Helpers;
+
+public class TokenHelper : ITokenService
+{
+    private readonly IConfiguration _configuration;
+
+    public TokenHelper(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
+
+    public string GenerateAccessToken(int userId, string username, string? roleName, List<string>? permissions = null)
+    {
+        var jwtSettings = _configuration.GetSection("JwtSettings");
+        var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!));
+        var credentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
+
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
+            new Claim(ClaimTypes.Name, username),
+            new Claim("UserId", userId.ToString())
+        };
+
+        if (!string.IsNullOrEmpty(roleName))
+        {
+            claims.Add(new Claim(ClaimTypes.Role, roleName));
+        }
+
+        if (permissions != null && permissions.Count > 0)
+        {
+            foreach (var permission in permissions)
+            {
+                claims.Add(new Claim("Permission", permission));
+            }
+        }
+
+        var token = new JwtSecurityToken(
+            issuer: jwtSettings["Issuer"],
+            audience: jwtSettings["Audience"],
+            claims: claims,
+            expires: DateTime.UtcNow.AddMinutes(int.Parse(jwtSettings["ExpirationMinutes"]!)),
+            signingCredentials: credentials
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    public string GenerateRefreshToken()
+    {
+        var randomNumber = new byte[32];
+        using (var rng = System.Security.Cryptography.RandomNumberGenerator.Create())
+        {
+            rng.GetBytes(randomNumber);
+            return Convert.ToBase64String(randomNumber);
+        }
+    }
+
+    public async Task<(bool isValid, int? userId)> ValidateTokenAsync(string token)
+    {
+        try
+        {
+            var jwtSettings = _configuration.GetSection("JwtSettings");
+            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!));
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            tokenHandler.ValidateToken(token, new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = secretKey,
+                ValidateIssuer = true,
+                ValidIssuer = jwtSettings["Issuer"],
+                ValidateAudience = true,
+                ValidAudience = jwtSettings["Audience"],
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero
+            }, out SecurityToken validatedToken);
+
+            var jwtToken = (JwtSecurityToken)validatedToken;
+            var userIdClaim = jwtToken.Claims.FirstOrDefault(x => x.Type == "UserId");
+
+            if (userIdClaim != null && int.TryParse(userIdClaim.Value, out var userId))
+            {
+                return (true, userId);
+            }
+
+            return (false, null);
+        }
+        catch
+        {
+            return (false, null);
+        }
+    }
+}

@@ -1,0 +1,6 @@
+@RepairSystem_HostAddress = http://localhost:5107
+
+GET {{RepairSystem_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,1068 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\code\\API\\project1\\RepairSystem\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\code\\API\\project1\\RepairSystem\\QUICK_FIX.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:QUICK_FIX.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{968F6891-C2FC-41F8-96FA-0EC6A0B134E5}|RepairSystem\\RepairSystem.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{968F6891-C2FC-41F8-96FA-0EC6A0B134E5}|RepairSystem\\RepairSystem.csproj|solutionrelative:repairsystem\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{968F6891-C2FC-41F8-96FA-0EC6A0B134E5}|RepairSystem\\RepairSystem.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{968F6891-C2FC-41F8-96FA-0EC6A0B134E5}|RepairSystem\\RepairSystem.csproj|solutionrelative:repairsystem\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B5A4CDB-D7D5-4F8A-8B91-8CADA78F57C7}|RepairSystem.Data\\RepairSystem.Data.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B5A4CDB-D7D5-4F8A-8B91-8CADA78F57C7}|RepairSystem.Data\\RepairSystem.Data.csproj|solutionrelative:repairsystem.data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.service\\helpers\\seeddata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|solutionrelative:repairsystem.service\\helpers\\seeddata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{968F6891-C2FC-41F8-96FA-0EC6A0B134E5}|RepairSystem\\RepairSystem.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem\\controllers\\weatherforecastcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{968F6891-C2FC-41F8-96FA-0EC6A0B134E5}|RepairSystem\\RepairSystem.csproj|solutionrelative:repairsystem\\controllers\\weatherforecastcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{968F6891-C2FC-41F8-96FA-0EC6A0B134E5}|RepairSystem\\RepairSystem.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem\\controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{968F6891-C2FC-41F8-96FA-0EC6A0B134E5}|RepairSystem\\RepairSystem.csproj|solutionrelative:repairsystem\\controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{968F6891-C2FC-41F8-96FA-0EC6A0B134E5}|RepairSystem\\RepairSystem.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem\\controllers\\rolescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{968F6891-C2FC-41F8-96FA-0EC6A0B134E5}|RepairSystem\\RepairSystem.csproj|solutionrelative:repairsystem\\controllers\\rolescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\code\\API\\project1\\RepairSystem\\TROUBLESHOOTING.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:TROUBLESHOOTING.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B7CB9713-3698-4C65-8258-8CEF754A21AD}|RepairSystem.Model\\RepairSystem.Model.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.model\\role.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B7CB9713-3698-4C65-8258-8CEF754A21AD}|RepairSystem.Model\\RepairSystem.Model.csproj|solutionrelative:repairsystem.model\\role.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B7CB9713-3698-4C65-8258-8CEF754A21AD}|RepairSystem.Model\\RepairSystem.Model.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.model\\permission.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B7CB9713-3698-4C65-8258-8CEF754A21AD}|RepairSystem.Model\\RepairSystem.Model.csproj|solutionrelative:repairsystem.model\\permission.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B7CB9713-3698-4C65-8258-8CEF754A21AD}|RepairSystem.Model\\RepairSystem.Model.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.model\\taikhoan.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B7CB9713-3698-4C65-8258-8CEF754A21AD}|RepairSystem.Model\\RepairSystem.Model.csproj|solutionrelative:repairsystem.model\\taikhoan.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.service\\dtos\\auth\\loginrequestdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|solutionrelative:repairsystem.service\\dtos\\auth\\loginrequestdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.service\\dtos\\auth\\loginresponsedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|solutionrelative:repairsystem.service\\dtos\\auth\\loginresponsedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.service\\dtos\\auth\\tokendto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|solutionrelative:repairsystem.service\\dtos\\auth\\tokendto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.service\\dtos\\userdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|solutionrelative:repairsystem.service\\dtos\\userdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.service\\dtos\\roledto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|solutionrelative:repairsystem.service\\dtos\\roledto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.service\\dtos\\permissiondto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|solutionrelative:repairsystem.service\\dtos\\permissiondto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.service\\dtos\\apiresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|solutionrelative:repairsystem.service\\dtos\\apiresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.service\\iservices\\iauthservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|solutionrelative:repairsystem.service\\iservices\\iauthservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.service\\iservices\\iroleservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|solutionrelative:repairsystem.service\\iservices\\iroleservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.service\\iservices\\ipermissionservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|solutionrelative:repairsystem.service\\iservices\\ipermissionservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.service\\iservices\\itokenservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|solutionrelative:repairsystem.service\\iservices\\itokenservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.service\\iservices\\iuserservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|solutionrelative:repairsystem.service\\iservices\\iuserservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.service\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|solutionrelative:repairsystem.service\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.service\\services\\roleservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|solutionrelative:repairsystem.service\\services\\roleservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.service\\services\\permissionservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|solutionrelative:repairsystem.service\\services\\permissionservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.service\\services\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|solutionrelative:repairsystem.service\\services\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.service\\helpers\\requirepermissionattribute.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|solutionrelative:repairsystem.service\\helpers\\requirepermissionattribute.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.service\\dtos\\auth\\registerrequestdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|solutionrelative:repairsystem.service\\dtos\\auth\\registerrequestdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.service\\dtos\\auth\\refreshtokenrequestdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|solutionrelative:repairsystem.service\\dtos\\auth\\refreshtokenrequestdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.service\\dtos\\auth\\changepasswordrequestdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|solutionrelative:repairsystem.service\\dtos\\auth\\changepasswordrequestdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{968F6891-C2FC-41F8-96FA-0EC6A0B134E5}|RepairSystem\\RepairSystem.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem\\controllers\\permissionscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{968F6891-C2FC-41F8-96FA-0EC6A0B134E5}|RepairSystem\\RepairSystem.csproj|solutionrelative:repairsystem\\controllers\\permissionscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.service\\dtos\\createuserrequestdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|solutionrelative:repairsystem.service\\dtos\\createuserrequestdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.service\\dtos\\updateuserstatusrequestdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|solutionrelative:repairsystem.service\\dtos\\updateuserstatusrequestdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{968F6891-C2FC-41F8-96FA-0EC6A0B134E5}|RepairSystem\\RepairSystem.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{968F6891-C2FC-41F8-96FA-0EC6A0B134E5}|RepairSystem\\RepairSystem.csproj|solutionrelative:repairsystem\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B5A4CDB-D7D5-4F8A-8B91-8CADA78F57C7}|RepairSystem.Data\\RepairSystem.Data.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.data\\repairsystem.data.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{8B5A4CDB-D7D5-4F8A-8B91-8CADA78F57C7}|RepairSystem.Data\\RepairSystem.Data.csproj|solutionrelative:repairsystem.data\\repairsystem.data.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\DELL\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\869150594\\RepairSystem.Service.csproj||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{968F6891-C2FC-41F8-96FA-0EC6A0B134E5}|RepairSystem\\RepairSystem.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem\\repairsystem.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{968F6891-C2FC-41F8-96FA-0EC6A0B134E5}|RepairSystem\\RepairSystem.csproj|solutionrelative:repairsystem\\repairsystem.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\DELL\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\-951632106\\AppDbContext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.service\\helpers\\tokenhelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|solutionrelative:repairsystem.service\\helpers\\tokenhelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.service\\dtos\\model\\thietbidto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|solutionrelative:repairsystem.service\\dtos\\model\\thietbidto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.service\\dtos\\model\\phieusuachuadto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|solutionrelative:repairsystem.service\\dtos\\model\\phieusuachuadto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.service\\dtos\\model\\linhkiendto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|solutionrelative:repairsystem.service\\dtos\\model\\linhkiendto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.service\\dtos\\model\\khachhangdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|solutionrelative:repairsystem.service\\dtos\\model\\khachhangdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.service\\dtos\\model\\hoadondto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|solutionrelative:repairsystem.service\\dtos\\model\\hoadondto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.service\\dtos\\model\\tonkhodto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|solutionrelative:repairsystem.service\\dtos\\model\\tonkhodto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\code\\API\\project1\\RepairSystem\\README.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:README.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\code\\API\\project1\\RepairSystem\\SETUP.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:SETUP.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\code\\API\\project1\\RepairSystem\\API_ROUTES.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:API_ROUTES.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\code\\API\\project1\\RepairSystem\\.env.example||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:.env.example||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\code\\API\\project1\\RepairSystem\\QUICK_START.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:QUICK_START.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\code\\API\\project1\\RepairSystem\\PROJECT_COMPLETION.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:PROJECT_COMPLETION.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\code\\API\\project1\\RepairSystem\\DOCUMENTATION_INDEX.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:DOCUMENTATION_INDEX.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\code\\API\\project1\\RepairSystem\\DELIVERY_SUMMARY.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:DELIVERY_SUMMARY.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\code\\API\\project1\\RepairSystem\\FINAL_CHECKLIST.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:FINAL_CHECKLIST.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\code\\API\\project1\\RepairSystem\\INDEX.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:INDEX.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.service\\iservices\\igenericservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|solutionrelative:repairsystem.service\\iservices\\igenericservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.service\\services\\genericservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|solutionrelative:repairsystem.service\\services\\genericservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B5A4CDB-D7D5-4F8A-8B91-8CADA78F57C7}|RepairSystem.Data\\RepairSystem.Data.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.data\\repository\\unitofwork\\iunitofwork.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B5A4CDB-D7D5-4F8A-8B91-8CADA78F57C7}|RepairSystem.Data\\RepairSystem.Data.csproj|solutionrelative:repairsystem.data\\repository\\unitofwork\\iunitofwork.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B5A4CDB-D7D5-4F8A-8B91-8CADA78F57C7}|RepairSystem.Data\\RepairSystem.Data.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.data\\repository\\unitofwork\\unitofwork.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B5A4CDB-D7D5-4F8A-8B91-8CADA78F57C7}|RepairSystem.Data\\RepairSystem.Data.csproj|solutionrelative:repairsystem.data\\repository\\unitofwork\\unitofwork.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.service\\profiles\\mappingprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}|RepairSystem.Service\\RepairSystem.Service.csproj|solutionrelative:repairsystem.service\\profiles\\mappingprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 53,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 61,
+              "Title": "MappingProfile.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\Profiles\\MappingProfile.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Service\\Profiles\\MappingProfile.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\Profiles\\MappingProfile.cs",
+              "RelativeToolTip": "RepairSystem.Service\\Profiles\\MappingProfile.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:59.556Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 60,
+              "Title": "UnitOfWork.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Data\\Repository\\UnitOfWork\\UnitOfWork.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Data\\Repository\\UnitOfWork\\UnitOfWork.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Data\\Repository\\UnitOfWork\\UnitOfWork.cs",
+              "RelativeToolTip": "RepairSystem.Data\\Repository\\UnitOfWork\\UnitOfWork.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:59.497Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 59,
+              "Title": "IUnitOfWork.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Data\\Repository\\UnitOfWork\\IUnitOfWork.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Data\\Repository\\UnitOfWork\\IUnitOfWork.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Data\\Repository\\UnitOfWork\\IUnitOfWork.cs",
+              "RelativeToolTip": "RepairSystem.Data\\Repository\\UnitOfWork\\IUnitOfWork.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:59.439Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 58,
+              "Title": "GenericService.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\Services\\GenericService.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Service\\Services\\GenericService.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\Services\\GenericService.cs",
+              "RelativeToolTip": "RepairSystem.Service\\Services\\GenericService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:59.379Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 57,
+              "Title": "IGenericService.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\IServices\\IGenericService.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Service\\IServices\\IGenericService.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\IServices\\IGenericService.cs",
+              "RelativeToolTip": "RepairSystem.Service\\IServices\\IGenericService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:59.314Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 56,
+              "Title": "INDEX.md",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\INDEX.md",
+              "RelativeDocumentMoniker": "INDEX.md",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\INDEX.md",
+              "RelativeToolTip": "INDEX.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2026-09-22T15:33:59.265Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 55,
+              "Title": "FINAL_CHECKLIST.md",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\FINAL_CHECKLIST.md",
+              "RelativeDocumentMoniker": "FINAL_CHECKLIST.md",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\FINAL_CHECKLIST.md",
+              "RelativeToolTip": "FINAL_CHECKLIST.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2026-09-22T15:33:59.223Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 54,
+              "Title": "DELIVERY_SUMMARY.md",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\DELIVERY_SUMMARY.md",
+              "RelativeDocumentMoniker": "DELIVERY_SUMMARY.md",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\DELIVERY_SUMMARY.md",
+              "RelativeToolTip": "DELIVERY_SUMMARY.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2026-09-22T15:33:59.18Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 53,
+              "Title": "DOCUMENTATION_INDEX.md",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\DOCUMENTATION_INDEX.md",
+              "RelativeDocumentMoniker": "DOCUMENTATION_INDEX.md",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\DOCUMENTATION_INDEX.md",
+              "RelativeToolTip": "DOCUMENTATION_INDEX.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2026-09-22T15:33:59.133Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 52,
+              "Title": "PROJECT_COMPLETION.md",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\PROJECT_COMPLETION.md",
+              "RelativeDocumentMoniker": "PROJECT_COMPLETION.md",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\PROJECT_COMPLETION.md",
+              "RelativeToolTip": "PROJECT_COMPLETION.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2026-09-22T15:33:59.09Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 51,
+              "Title": "QUICK_START.md",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\QUICK_START.md",
+              "RelativeDocumentMoniker": "QUICK_START.md",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\QUICK_START.md",
+              "RelativeToolTip": "QUICK_START.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2026-09-22T15:33:59.047Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 50,
+              "Title": ".env.example",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\.env.example",
+              "RelativeDocumentMoniker": ".env.example",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\.env.example",
+              "RelativeToolTip": ".env.example",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2026-09-22T15:33:59.005Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 49,
+              "Title": "API_ROUTES.md",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\API_ROUTES.md",
+              "RelativeDocumentMoniker": "API_ROUTES.md",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\API_ROUTES.md",
+              "RelativeToolTip": "API_ROUTES.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2026-09-22T15:33:58.954Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 48,
+              "Title": "SETUP.md",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\SETUP.md",
+              "RelativeDocumentMoniker": "SETUP.md",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\SETUP.md",
+              "RelativeToolTip": "SETUP.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2026-09-22T15:33:58.911Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 47,
+              "Title": "README.md",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\README.md",
+              "RelativeDocumentMoniker": "README.md",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\README.md",
+              "RelativeToolTip": "README.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2026-09-22T15:33:58.751Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 46,
+              "Title": "TonKhoDto.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\Model\\TonKhoDto.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Service\\DTOs\\Model\\TonKhoDto.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\Model\\TonKhoDto.cs",
+              "RelativeToolTip": "RepairSystem.Service\\DTOs\\Model\\TonKhoDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:58.691Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 45,
+              "Title": "HoaDonDto.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\Model\\HoaDonDto.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Service\\DTOs\\Model\\HoaDonDto.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\Model\\HoaDonDto.cs",
+              "RelativeToolTip": "RepairSystem.Service\\DTOs\\Model\\HoaDonDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:58.635Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 44,
+              "Title": "KhachHangDto.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\Model\\KhachHangDto.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Service\\DTOs\\Model\\KhachHangDto.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\Model\\KhachHangDto.cs",
+              "RelativeToolTip": "RepairSystem.Service\\DTOs\\Model\\KhachHangDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:58.577Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 43,
+              "Title": "LinhKienDto.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\Model\\LinhKienDto.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Service\\DTOs\\Model\\LinhKienDto.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\Model\\LinhKienDto.cs",
+              "RelativeToolTip": "RepairSystem.Service\\DTOs\\Model\\LinhKienDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:58.505Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 42,
+              "Title": "PhieuSuaChuaDto.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\Model\\PhieuSuaChuaDto.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Service\\DTOs\\Model\\PhieuSuaChuaDto.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\Model\\PhieuSuaChuaDto.cs",
+              "RelativeToolTip": "RepairSystem.Service\\DTOs\\Model\\PhieuSuaChuaDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:58.447Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 41,
+              "Title": "ThietBiDto.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\Model\\ThietBiDto.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Service\\DTOs\\Model\\ThietBiDto.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\Model\\ThietBiDto.cs",
+              "RelativeToolTip": "RepairSystem.Service\\DTOs\\Model\\ThietBiDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:58.382Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 40,
+              "Title": "TokenHelper.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\Helpers\\TokenHelper.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Service\\Helpers\\TokenHelper.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\Helpers\\TokenHelper.cs",
+              "RelativeToolTip": "RepairSystem.Service\\Helpers\\TokenHelper.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:58.325Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 39,
+              "Title": "AppDbContext.cs",
+              "DocumentMoniker": "C:\\Users\\DELL\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\-951632106\\AppDbContext.cs",
+              "ToolTip": "C:\\Users\\DELL\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\-951632106\\AppDbContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:58.268Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 38,
+              "Title": "RepairSystem",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem\\RepairSystem.csproj",
+              "RelativeDocumentMoniker": "RepairSystem\\RepairSystem.csproj",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem\\RepairSystem.csproj",
+              "RelativeToolTip": "RepairSystem\\RepairSystem.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-09-22T15:33:58.218Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 37,
+              "Title": "RepairSystem.Service.csproj",
+              "DocumentMoniker": "C:\\Users\\DELL\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\869150594\\RepairSystem.Service.csproj",
+              "ToolTip": "C:\\Users\\DELL\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\869150594\\RepairSystem.Service.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-09-22T15:33:58.182Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 36,
+              "Title": "RepairSystem.Data",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Data\\RepairSystem.Data.csproj",
+              "RelativeDocumentMoniker": "RepairSystem.Data\\RepairSystem.Data.csproj",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Data\\RepairSystem.Data.csproj",
+              "RelativeToolTip": "RepairSystem.Data\\RepairSystem.Data.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-09-22T15:33:58.12Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 35,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem\\appsettings.json",
+              "RelativeDocumentMoniker": "RepairSystem\\appsettings.json",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem\\appsettings.json",
+              "RelativeToolTip": "RepairSystem\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-09-22T15:33:58.039Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 34,
+              "Title": "UpdateUserStatusRequestDto.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\UpdateUserStatusRequestDto.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Service\\DTOs\\UpdateUserStatusRequestDto.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\UpdateUserStatusRequestDto.cs",
+              "RelativeToolTip": "RepairSystem.Service\\DTOs\\UpdateUserStatusRequestDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:57.976Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 33,
+              "Title": "CreateUserRequestDto.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\CreateUserRequestDto.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Service\\DTOs\\CreateUserRequestDto.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\CreateUserRequestDto.cs",
+              "RelativeToolTip": "RepairSystem.Service\\DTOs\\CreateUserRequestDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:57.918Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 32,
+              "Title": "PermissionsController.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem\\Controllers\\PermissionsController.cs",
+              "RelativeDocumentMoniker": "RepairSystem\\Controllers\\PermissionsController.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem\\Controllers\\PermissionsController.cs",
+              "RelativeToolTip": "RepairSystem\\Controllers\\PermissionsController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:57.857Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 31,
+              "Title": "ChangePasswordRequestDto.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\Auth\\ChangePasswordRequestDto.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Service\\DTOs\\Auth\\ChangePasswordRequestDto.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\Auth\\ChangePasswordRequestDto.cs",
+              "RelativeToolTip": "RepairSystem.Service\\DTOs\\Auth\\ChangePasswordRequestDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:57.8Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 30,
+              "Title": "RefreshTokenRequestDto.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\Auth\\RefreshTokenRequestDto.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Service\\DTOs\\Auth\\RefreshTokenRequestDto.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\Auth\\RefreshTokenRequestDto.cs",
+              "RelativeToolTip": "RepairSystem.Service\\DTOs\\Auth\\RefreshTokenRequestDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:57.743Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 29,
+              "Title": "RegisterRequestDto.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\Auth\\RegisterRequestDto.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Service\\DTOs\\Auth\\RegisterRequestDto.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\Auth\\RegisterRequestDto.cs",
+              "RelativeToolTip": "RepairSystem.Service\\DTOs\\Auth\\RegisterRequestDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:57.686Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 28,
+              "Title": "RequirePermissionAttribute.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\Helpers\\RequirePermissionAttribute.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Service\\Helpers\\RequirePermissionAttribute.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\Helpers\\RequirePermissionAttribute.cs",
+              "RelativeToolTip": "RepairSystem.Service\\Helpers\\RequirePermissionAttribute.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:57.627Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 27,
+              "Title": "UserService.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\Services\\UserService.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Service\\Services\\UserService.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\Services\\UserService.cs",
+              "RelativeToolTip": "RepairSystem.Service\\Services\\UserService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:57.568Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
+              "Title": "PermissionService.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\Services\\PermissionService.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Service\\Services\\PermissionService.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\Services\\PermissionService.cs",
+              "RelativeToolTip": "RepairSystem.Service\\Services\\PermissionService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:57.509Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "RoleService.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\Services\\RoleService.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Service\\Services\\RoleService.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\Services\\RoleService.cs",
+              "RelativeToolTip": "RepairSystem.Service\\Services\\RoleService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:57.446Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "AuthService.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\Services\\AuthService.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Service\\Services\\AuthService.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\Services\\AuthService.cs",
+              "RelativeToolTip": "RepairSystem.Service\\Services\\AuthService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:57.388Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "IUserService.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\IServices\\IUserService.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Service\\IServices\\IUserService.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\IServices\\IUserService.cs",
+              "RelativeToolTip": "RepairSystem.Service\\IServices\\IUserService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:57.217Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "ITokenService.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\IServices\\ITokenService.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Service\\IServices\\ITokenService.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\IServices\\ITokenService.cs",
+              "RelativeToolTip": "RepairSystem.Service\\IServices\\ITokenService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:57.161Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "IPermissionService.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\IServices\\IPermissionService.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Service\\IServices\\IPermissionService.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\IServices\\IPermissionService.cs",
+              "RelativeToolTip": "RepairSystem.Service\\IServices\\IPermissionService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:57.1Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "IRoleService.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\IServices\\IRoleService.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Service\\IServices\\IRoleService.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\IServices\\IRoleService.cs",
+              "RelativeToolTip": "RepairSystem.Service\\IServices\\IRoleService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:57.041Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "IAuthService.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\IServices\\IAuthService.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Service\\IServices\\IAuthService.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\IServices\\IAuthService.cs",
+              "RelativeToolTip": "RepairSystem.Service\\IServices\\IAuthService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:56.978Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "ApiResponse.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\ApiResponse.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Service\\DTOs\\ApiResponse.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\ApiResponse.cs",
+              "RelativeToolTip": "RepairSystem.Service\\DTOs\\ApiResponse.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:56.923Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "PermissionDto.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\PermissionDto.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Service\\DTOs\\PermissionDto.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\PermissionDto.cs",
+              "RelativeToolTip": "RepairSystem.Service\\DTOs\\PermissionDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:56.869Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "RoleDto.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\RoleDto.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Service\\DTOs\\RoleDto.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\RoleDto.cs",
+              "RelativeToolTip": "RepairSystem.Service\\DTOs\\RoleDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:56.814Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "UserDto.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\UserDto.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Service\\DTOs\\UserDto.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\UserDto.cs",
+              "RelativeToolTip": "RepairSystem.Service\\DTOs\\UserDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:56.758Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "TokenDto.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\Auth\\TokenDto.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Service\\DTOs\\Auth\\TokenDto.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\Auth\\TokenDto.cs",
+              "RelativeToolTip": "RepairSystem.Service\\DTOs\\Auth\\TokenDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:56.704Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "LoginResponseDto.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\Auth\\LoginResponseDto.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Service\\DTOs\\Auth\\LoginResponseDto.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\Auth\\LoginResponseDto.cs",
+              "RelativeToolTip": "RepairSystem.Service\\DTOs\\Auth\\LoginResponseDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:56.649Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "LoginRequestDto.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\Auth\\LoginRequestDto.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Service\\DTOs\\Auth\\LoginRequestDto.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\DTOs\\Auth\\LoginRequestDto.cs",
+              "RelativeToolTip": "RepairSystem.Service\\DTOs\\Auth\\LoginRequestDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:56.591Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "TaiKhoan.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Model\\TaiKhoan.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Model\\TaiKhoan.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Model\\TaiKhoan.cs",
+              "RelativeToolTip": "RepairSystem.Model\\TaiKhoan.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:56.537Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "Permission.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Model\\Permission.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Model\\Permission.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Model\\Permission.cs",
+              "RelativeToolTip": "RepairSystem.Model\\Permission.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:56.482Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Role.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Model\\Role.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Model\\Role.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Model\\Role.cs",
+              "RelativeToolTip": "RepairSystem.Model\\Role.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:33:56.41Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "QUICK_FIX.md",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\QUICK_FIX.md",
+              "RelativeDocumentMoniker": "QUICK_FIX.md",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\QUICK_FIX.md",
+              "RelativeToolTip": "QUICK_FIX.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2026-09-22T15:28:38.804Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem\\Program.cs",
+              "RelativeDocumentMoniker": "RepairSystem\\Program.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem\\Program.cs",
+              "RelativeToolTip": "RepairSystem\\Program.cs",
+              "ViewState": "AgIAAEQAAAAAAAAAAADgvwAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:24:30.235Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "TROUBLESHOOTING.md",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\TROUBLESHOOTING.md",
+              "RelativeDocumentMoniker": "TROUBLESHOOTING.md",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\TROUBLESHOOTING.md",
+              "RelativeToolTip": "TROUBLESHOOTING.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEwBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2026-09-22T15:24:21.19Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "AppDbContext.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Data\\AppDbContext.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Data\\AppDbContext.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Data\\AppDbContext.cs",
+              "RelativeToolTip": "RepairSystem.Data\\AppDbContext.cs",
+              "ViewState": "AgIAAL8BAAAAAAAAAADwvwAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:23:23.403Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "SeedData.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\Helpers\\SeedData.cs",
+              "RelativeDocumentMoniker": "RepairSystem.Service\\Helpers\\SeedData.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Service\\Helpers\\SeedData.cs",
+              "RelativeToolTip": "RepairSystem.Service\\Helpers\\SeedData.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:17:07.763Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "RepairSystem\\Controllers\\AuthController.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "RepairSystem\\Controllers\\AuthController.cs",
+              "ViewState": "AgIAACQAAAAAAAAAAAAcwAsAAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:17:00.025Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "WeatherForecastController.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem\\Controllers\\WeatherForecastController.cs",
+              "RelativeDocumentMoniker": "RepairSystem\\Controllers\\WeatherForecastController.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem\\Controllers\\WeatherForecastController.cs",
+              "RelativeToolTip": "RepairSystem\\Controllers\\WeatherForecastController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:16:58.345Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "UsersController.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem\\Controllers\\UsersController.cs",
+              "RelativeDocumentMoniker": "RepairSystem\\Controllers\\UsersController.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem\\Controllers\\UsersController.cs",
+              "RelativeToolTip": "RepairSystem\\Controllers\\UsersController.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:16:54.472Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "RolesController.cs",
+              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem\\Controllers\\RolesController.cs",
+              "RelativeDocumentMoniker": "RepairSystem\\Controllers\\RolesController.cs",
+              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem\\Controllers\\RolesController.cs",
+              "RelativeToolTip": "RepairSystem\\Controllers\\RolesController.cs",
+              "ViewState": "AgIAAFQAAAAAAAAAAAAowAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T15:16:42.655Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
