@@ -1,0 +1,27 @@
+# Thư mục build của .NET (Bắt buộc phải bỏ qua)
+[Bb]in/
+[Oo]bj/
+
+# Cấu hình cá nhân của Visual Studio / Rider
+.vs/
+.idea/
+.vscode/
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+*.userprefs
+
+# Biến môi trường & cấu hình nhạy cảm
+.env
+.env.*
+appsettings.Development.json
+appsettings.Local.json
+
+# File log hoặc debug
+*.log
+*.err
+
+# Tệp hệ điều hành
+.DS_Store
+Thumbs.db

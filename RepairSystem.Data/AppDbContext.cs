@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using RepairSystem.Model;
 
@@ -50,8 +50,12 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<Permission> Permissions { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=DESKTOP-04P8719\\SQLEXPRESS;Database=RepairsSystem;Trusted_Connection=True;TrustServerCertificate=True;");
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder.UseSqlServer("Server=.;Database=RepairsSystem;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=True;");
+        }
+    }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<CtDichVu>(entity =>
@@ -379,7 +383,7 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.PasswordHash)
                 .HasMaxLength(255)
                 .IsUnicode(false);
-            entity.Property(e => e.Role).HasMaxLength(20);
+            //entity.Property(e => e.Role).HasMaxLength(20);
             entity.Property(e => e.TrangThaiHoatDong).HasDefaultValue(true);
             entity.Property(e => e.Username)
                 .HasMaxLength(50)
