@@ -73,6 +73,18 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// Thêm cấu hình CORS (Mở cửa cho Frontend gọi API)
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000", "http://localhost:5173") // Hỗ trợ React/Vite mặc định
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials(); // Nếu dùng token/cookie thì cần dòng này
+    });
+});
+
 var app = builder.Build();
 
 // Initialize database with seed data (wrapped in try-catch)
@@ -97,7 +109,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
+// Kích hoạt CORS (Phải đặt trước UseAuthentication và UseAuthorization)
+app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 app.UseAuthorization();
