@@ -1,5 +1,4 @@
-using RepairSystem.Data;
-using RepairSystem.Data;
+using RepairSystem.Model;
 using RepairSystem.Model;
 using Microsoft.EntityFrameworkCore;
 

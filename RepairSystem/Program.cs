@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using RepairSystem.Data;
+using RepairSystem.Model;
 using RepairSystem.Service.IServices;
 using RepairSystem.Service.Services;
 using RepairSystem.Service.Helpers;

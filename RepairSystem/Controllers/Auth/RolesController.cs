@@ -4,7 +4,7 @@ using RepairSystem.Service.DTOs;
 using RepairSystem.Service.Helpers;
 using RepairSystem.Service.IServices;
 
-namespace RepairSystem.Controllers;
+namespace RepairSystem.Controllers.Auth;
 
 [ApiController]
 [Route("api/[controller]")]

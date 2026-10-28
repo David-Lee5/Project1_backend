@@ -1,4 +1,5 @@
 using RepairSystem.Data.Repository.IRepository;
+using RepairSystem.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace RepairSystem.Data.Repository;

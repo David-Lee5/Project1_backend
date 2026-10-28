@@ -1,4 +1,4 @@
-using RepairSystem.Data;
+using RepairSystem.Model;
 using RepairSystem.Service.IServices;
 using Microsoft.EntityFrameworkCore;
 

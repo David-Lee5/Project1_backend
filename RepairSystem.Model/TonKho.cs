@@ -5,15 +5,21 @@ namespace RepairSystem.Model;
 
 public partial class TonKho
 {
-    public string MaKho { get; set; } = null!;
+    public long KhoId { get; set; }
 
-    public string MaLk { get; set; } = null!;
+    public long LinhKienId { get; set; }
 
     public int SoLuongTon { get; set; }
 
-    public DateTime? NgayCapNhat { get; set; }
+    public int MucTonToiThieu { get; set; }
 
-    public virtual Kho MaKhoNavigation { get; set; } = null!;
+    public DateTime NgayCapNhat { get; set; }
 
-    public virtual LinhKien MaLkNavigation { get; set; } = null!;
+    public virtual ICollection<BienDongKho> BienDongKhos { get; set; } = new List<BienDongKho>();
+
+    public virtual ICollection<ChiTietXuatKho> ChiTietXuatKhos { get; set; } = new List<ChiTietXuatKho>();
+
+    public virtual Kho Kho { get; set; } = null!;
+
+    public virtual LinhKien LinhKien { get; set; } = null!;
 }

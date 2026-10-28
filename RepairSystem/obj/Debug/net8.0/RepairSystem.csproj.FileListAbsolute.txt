@@ -1,3 +1,12 @@
+D:\code\API\project1\RepairSystem\RepairSystem\obj\Debug\net8.0\RepairSystem.csproj.AssemblyReference.cache
+D:\code\API\project1\RepairSystem\RepairSystem\obj\Debug\net8.0\rpswa.dswa.cache.json
+D:\code\API\project1\RepairSystem\RepairSystem\obj\Debug\net8.0\RepairSystem.GeneratedMSBuildEditorConfig.editorconfig
+D:\code\API\project1\RepairSystem\RepairSystem\obj\Debug\net8.0\RepairSystem.AssemblyInfoInputs.cache
+D:\code\API\project1\RepairSystem\RepairSystem\obj\Debug\net8.0\RepairSystem.AssemblyInfo.cs
+D:\code\API\project1\RepairSystem\RepairSystem\obj\Debug\net8.0\RepairSystem.csproj.CoreCompileInputs.cache
+D:\code\API\project1\RepairSystem\RepairSystem\obj\Debug\net8.0\RepairSystem.MvcApplicationPartsAssemblyInfo.cs
+D:\code\API\project1\RepairSystem\RepairSystem\obj\Debug\net8.0\RepairSystem.MvcApplicationPartsAssemblyInfo.cache
+D:\code\API\project1\RepairSystem\RepairSystem\obj\Debug\net8.0\RepairSystem.sourcelink.json
 D:\code\API\project1\RepairSystem\RepairSystem\bin\Debug\net8.0\appsettings.Development.json
 D:\code\API\project1\RepairSystem\RepairSystem\bin\Debug\net8.0\appsettings.json
 D:\code\API\project1\RepairSystem\RepairSystem\bin\Debug\net8.0\RepairSystem.staticwebassets.endpoints.json
@@ -11,6 +20,7 @@ D:\code\API\project1\RepairSystem\RepairSystem\bin\Debug\net8.0\Azure.Core.dll
 D:\code\API\project1\RepairSystem\RepairSystem\bin\Debug\net8.0\Azure.Identity.dll
 D:\code\API\project1\RepairSystem\RepairSystem\bin\Debug\net8.0\CloudinaryDotNet.dll
 D:\code\API\project1\RepairSystem\RepairSystem\bin\Debug\net8.0\Humanizer.dll
+D:\code\API\project1\RepairSystem\RepairSystem\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 D:\code\API\project1\RepairSystem\RepairSystem\bin\Debug\net8.0\Microsoft.Bcl.AsyncInterfaces.dll
 D:\code\API\project1\RepairSystem\RepairSystem\bin\Debug\net8.0\Microsoft.CodeAnalysis.dll
 D:\code\API\project1\RepairSystem\RepairSystem\bin\Debug\net8.0\Microsoft.CodeAnalysis.CSharp.dll
@@ -130,14 +140,6 @@ D:\code\API\project1\RepairSystem\RepairSystem\bin\Debug\net8.0\RepairSystem.Ser
 D:\code\API\project1\RepairSystem\RepairSystem\bin\Debug\net8.0\RepairSystem.Data.pdb
 D:\code\API\project1\RepairSystem\RepairSystem\bin\Debug\net8.0\RepairSystem.Model.pdb
 D:\code\API\project1\RepairSystem\RepairSystem\bin\Debug\net8.0\RepairSystem.Service.pdb
-D:\code\API\project1\RepairSystem\RepairSystem\obj\Debug\net8.0\RepairSystem.csproj.AssemblyReference.cache
-D:\code\API\project1\RepairSystem\RepairSystem\obj\Debug\net8.0\rpswa.dswa.cache.json
-D:\code\API\project1\RepairSystem\RepairSystem\obj\Debug\net8.0\RepairSystem.GeneratedMSBuildEditorConfig.editorconfig
-D:\code\API\project1\RepairSystem\RepairSystem\obj\Debug\net8.0\RepairSystem.AssemblyInfoInputs.cache
-D:\code\API\project1\RepairSystem\RepairSystem\obj\Debug\net8.0\RepairSystem.AssemblyInfo.cs
-D:\code\API\project1\RepairSystem\RepairSystem\obj\Debug\net8.0\RepairSystem.csproj.CoreCompileInputs.cache
-D:\code\API\project1\RepairSystem\RepairSystem\obj\Debug\net8.0\RepairSystem.MvcApplicationPartsAssemblyInfo.cs
-D:\code\API\project1\RepairSystem\RepairSystem\obj\Debug\net8.0\RepairSystem.MvcApplicationPartsAssemblyInfo.cache
 D:\code\API\project1\RepairSystem\RepairSystem\obj\Debug\net8.0\rjimswa.dswa.cache.json
 D:\code\API\project1\RepairSystem\RepairSystem\obj\Debug\net8.0\rjsmrazor.dswa.cache.json
 D:\code\API\project1\RepairSystem\RepairSystem\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json
@@ -152,5 +154,4 @@ D:\code\API\project1\RepairSystem\RepairSystem\obj\Debug\net8.0\refint\RepairSys
 D:\code\API\project1\RepairSystem\RepairSystem\obj\Debug\net8.0\RepairSystem.pdb
 D:\code\API\project1\RepairSystem\RepairSystem\obj\Debug\net8.0\RepairSystem.genruntimeconfig.cache
 D:\code\API\project1\RepairSystem\RepairSystem\obj\Debug\net8.0\ref\RepairSystem.dll
-D:\code\API\project1\RepairSystem\RepairSystem\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 D:\code\API\project1\RepairSystem\RepairSystem\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

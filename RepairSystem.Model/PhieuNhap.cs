@@ -5,19 +5,35 @@ namespace RepairSystem.Model;
 
 public partial class PhieuNhap
 {
+    public long Id { get; set; }
+
     public string MaPn { get; set; } = null!;
 
-    public DateTime? NgayNhap { get; set; }
+    public long NhaCungCapId { get; set; }
 
-    public decimal? TongTienNhap { get; set; }
+    public long KhoId { get; set; }
 
-    public string MaNcc { get; set; } = null!;
+    public long ThuKhoId { get; set; }
 
-    public string MaKho { get; set; } = null!;
+    public string? SoChungTuNcc { get; set; }
 
-    public virtual ICollection<CtNhapKho> CtNhapKhos { get; set; } = new List<CtNhapKho>();
+    public DateTime NgayNhap { get; set; }
 
-    public virtual Kho MaKhoNavigation { get; set; } = null!;
+    public string TrangThai { get; set; } = null!;
 
-    public virtual NhaCungCap MaNccNavigation { get; set; } = null!;
+    public string? GhiChu { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+
+    public DateTime UpdatedAt { get; set; }
+
+    public virtual ICollection<BienDongKho> BienDongKhos { get; set; } = new List<BienDongKho>();
+
+    public virtual ICollection<ChiTietNhapKho> ChiTietNhapKhos { get; set; } = new List<ChiTietNhapKho>();
+
+    public virtual Kho Kho { get; set; } = null!;
+
+    public virtual NhaCungCap NhaCungCap { get; set; } = null!;
+
+    public virtual ThuKho ThuKho { get; set; } = null!;
 }

@@ -1,4 +1,3 @@
-using RepairSystem.Data;
 using RepairSystem.Data.Repository.IRepository;
 using RepairSystem.Model;
 using RepairSystem.Service.DTOs;
