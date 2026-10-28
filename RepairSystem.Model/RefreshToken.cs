@@ -7,7 +7,7 @@ public partial class RefreshToken
 {
     public long Id { get; set; }
 
-    public int TaiKhoanId { get; set; }
+    public long TaiKhoanId { get; set; }
 
     public string TokenHash { get; set; } = null!;
 

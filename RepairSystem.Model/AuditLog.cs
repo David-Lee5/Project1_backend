@@ -17,7 +17,7 @@ public partial class AuditLog
 
     public string? DuLieuMoi { get; set; }
 
-    public int? NguoiThucHienId { get; set; }
+    public long? NguoiThucHienId { get; set; }
 
     public DateTime ThoiGian { get; set; }
 

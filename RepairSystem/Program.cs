@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -19,6 +19,11 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IPermissionService, PermissionService>();
 builder.Services.AddScoped<ITokenService, TokenHelper>();
+
+// Register Catalog Services (Phase 0)
+builder.Services.AddScoped<INhanVienService, NhanVienService>();
+builder.Services.AddScoped<IDichVuService, DichVuService>();
+builder.Services.AddScoped<INhaCungCapService, NhaCungCapService>();
 
 // Configure JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
@@ -105,3 +110,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+

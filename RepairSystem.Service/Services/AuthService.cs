@@ -1,4 +1,3 @@
-using RepairSystem.Data.Repository.IRepository;
 using RepairSystem.Model;
 using RepairSystem.Service.DTOs;
 using RepairSystem.Service.Helpers;
@@ -11,187 +10,178 @@ public class AuthService : IAuthService
 {
     private readonly AppDbContext _context;
     private readonly ITokenService _tokenService;
-    private readonly IUserService _userService;
 
-    public AuthService(AppDbContext context, ITokenService tokenService, IUserService userService)
+    public AuthService(AppDbContext context, ITokenService tokenService)
     {
         _context = context;
         _tokenService = tokenService;
-        _userService = userService;
     }
 
     public async Task<LoginResponseDto> LoginAsync(LoginRequestDto request)
     {
         var user = await _context.TaiKhoans
-            .Include(u => u.Role)
-            .ThenInclude(r => r!.Permissions)
-            .FirstOrDefaultAsync(u => u.Username == request.Username);
+            .FirstOrDefaultAsync(u => u.TenDangNhap == request.Username);
 
-        if (user == null || !PasswordHelper.VerifyPassword(request.Password, user.PasswordHash))
+        if (user == null || !PasswordHelper.VerifyPassword(request.Password, user.MatKhauHash))
         {
             return new LoginResponseDto
             {
                 Success = false,
-                Message = "Invalid username or password"
+                Message = "Tên đăng nhập hoặc mật khẩu không đúng."
             };
         }
 
-        if (!user.TrangThaiHoatDong.HasValue || !user.TrangThaiHoatDong.Value)
+        if (!user.HoatDong)
         {
             return new LoginResponseDto
             {
                 Success = false,
-                Message = "User account is inactive"
+                Message = "Tài khoản đã bị vô hiệu hoá."
             };
         }
 
-        var permissions = user.Role?.Permissions?.Select(p => p.Name).ToList() ?? new List<string>();
+        if (user.KhoaDen.HasValue && user.KhoaDen > DateTime.UtcNow)
+        {
+            return new LoginResponseDto
+            {
+                Success = false,
+                Message = $"Tài khoản bị khoá đến {user.KhoaDen:dd/MM/yyyy HH:mm}."
+            };
+        }
+
+        // Cập nhật thời gian đăng nhập cuối & reset số lần sai
+        user.DangNhapCuoi = DateTime.UtcNow;
+        user.SoLanDangNhapSai = 0;
 
         var accessToken = _tokenService.GenerateAccessToken(
-            user.TaiKhoanId,
-            user.Username,
-            user.Role?.Name,
-            permissions
-        );
+            (int)user.Id, user.TenDangNhap, user.VaiTro, permissions: null);
 
-        var refreshToken = _tokenService.GenerateRefreshToken();
-        user.RefreshToken = refreshToken;
-        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+        // Lưu refresh token mới vào bảng refresh_token
+        var rawRefreshToken = _tokenService.GenerateRefreshToken();
+        var refreshTokenHash = PasswordHelper.HashPassword(rawRefreshToken); // hash để lưu an toàn
+
+        _context.RefreshTokens.Add(new RefreshToken
+        {
+            TaiKhoanId = user.Id,
+            TokenHash = refreshTokenHash,
+            HetHan = DateTime.UtcNow.AddDays(7)
+        });
 
         await _context.SaveChangesAsync();
-
-        var userDto = new UserDto
-        {
-            TaiKhoanId = user.TaiKhoanId,
-            Username = user.Username,
-            Email = user.Email,
-            RoleId = user.RoleId,
-            RoleName = user.Role?.Name,
-            Permissions = permissions,
-            IsActive = user.TrangThaiHoatDong ?? false
-        };
 
         return new LoginResponseDto
         {
             Success = true,
-            Message = "Login successful",
+            Message = "Đăng nhập thành công.",
             Token = new TokenDto
             {
                 AccessToken = accessToken,
-                RefreshToken = refreshToken,
+                RefreshToken = rawRefreshToken,
                 ExpiresIn = DateTime.UtcNow.AddMinutes(15)
             },
-            User = userDto
+            User = new UserDto
+            {
+                TaiKhoanId = user.Id,
+                TenDangNhap = user.TenDangNhap,
+                VaiTro = user.VaiTro,
+                HoatDong = user.HoatDong
+            }
         };
     }
 
     public async Task<bool> RegisterAsync(string username, string email, string password, int? roleId = null)
     {
-        if (await _context.TaiKhoans.AnyAsync(u => u.Username == username))
-        {
+        if (await _context.TaiKhoans.AnyAsync(u => u.TenDangNhap == username))
             return false;
-        }
 
         var user = new TaiKhoan
         {
-            Username = username,
-            Email = email,
-            PasswordHash = PasswordHelper.HashPassword(password),
-            RoleId = roleId,
-            TrangThaiHoatDong = true
+            TenDangNhap = username,
+            MatKhauHash = PasswordHelper.HashPassword(password),
+            VaiTro = Roles.KhachHang,
+            HoatDong = true
         };
 
         _context.TaiKhoans.Add(user);
         await _context.SaveChangesAsync();
-
         return true;
     }
 
-    public async Task<TokenDto> RefreshTokenAsync(string refreshToken)
+    public async Task<TokenDto> RefreshTokenAsync(string rawRefreshToken)
     {
-        var user = await _context.TaiKhoans
-            .Include(u => u.Role)
-            .ThenInclude(r => r!.Permissions)
-            .FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+        var tokenHash = PasswordHelper.HashPassword(rawRefreshToken);
 
-        if (user == null || user.RefreshTokenExpiryTime < DateTime.UtcNow)
+        var storedToken = await _context.RefreshTokens
+            .Include(rt => rt.TaiKhoan)
+            .FirstOrDefaultAsync(rt => rt.TokenHash == tokenHash && rt.ThuHoiLuc == null);
+
+        if (storedToken == null || storedToken.HetHan < DateTime.UtcNow)
+            throw new UnauthorizedAccessException("Refresh token không hợp lệ hoặc đã hết hạn.");
+
+        var user = storedToken.TaiKhoan;
+
+        // Thu hồi token cũ
+        storedToken.ThuHoiLuc = DateTime.UtcNow;
+
+        // Tạo token mới
+        var newAccessToken = _tokenService.GenerateAccessToken(
+            (int)user.Id, user.TenDangNhap, user.VaiTro, permissions: null);
+        var newRawRefresh = _tokenService.GenerateRefreshToken();
+
+        _context.RefreshTokens.Add(new RefreshToken
         {
-            throw new UnauthorizedAccessException("Invalid or expired refresh token");
-        }
-
-        var permissions = user.Role?.Permissions?.Select(p => p.Name).ToList() ?? new List<string>();
-
-        var accessToken = _tokenService.GenerateAccessToken(
-            user.TaiKhoanId,
-            user.Username,
-            user.Role?.Name,
-            permissions
-        );
-
-        var newRefreshToken = _tokenService.GenerateRefreshToken();
-        user.RefreshToken = newRefreshToken;
-        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+            TaiKhoanId = user.Id,
+            TokenHash = PasswordHelper.HashPassword(newRawRefresh),
+            HetHan = DateTime.UtcNow.AddDays(7)
+        });
 
         await _context.SaveChangesAsync();
 
         return new TokenDto
         {
-            AccessToken = accessToken,
-            RefreshToken = newRefreshToken,
+            AccessToken = newAccessToken,
+            RefreshToken = newRawRefresh,
             ExpiresIn = DateTime.UtcNow.AddMinutes(15)
         };
     }
 
     public async Task<bool> LogoutAsync(int userId)
     {
-        var user = await _context.TaiKhoans.FindAsync(userId);
-        if (user != null)
-        {
-            user.RefreshToken = null;
-            user.RefreshTokenExpiryTime = null;
-            await _context.SaveChangesAsync();
-            return true;
-        }
+        // Thu hồi tất cả refresh token còn hiệu lực của user
+        var tokens = await _context.RefreshTokens
+            .Where(rt => rt.TaiKhoanId == userId && rt.ThuHoiLuc == null)
+            .ToListAsync();
 
-        return false;
+        foreach (var t in tokens)
+            t.ThuHoiLuc = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync();
+        return true;
     }
 
     public async Task<UserDto?> GetUserByIdAsync(int userId)
     {
-        var user = await _context.TaiKhoans
-            .Include(u => u.Role)
-            .ThenInclude(r => r!.Permissions)
-            .FirstOrDefaultAsync(u => u.TaiKhoanId == userId);
-
-        if (user == null)
-            return null;
-
-        var permissions = user.Role?.Permissions?.Select(p => p.Name).ToList() ?? new List<string>();
+        var user = await _context.TaiKhoans.FindAsync((long)userId);
+        if (user == null) return null;
 
         return new UserDto
         {
-            TaiKhoanId = user.TaiKhoanId,
-            Username = user.Username,
-            Email = user.Email,
-            RoleId = user.RoleId,
-            RoleName = user.Role?.Name,
-            Permissions = permissions,
-            IsActive = user.TrangThaiHoatDong ?? false
+            TaiKhoanId = user.Id,
+            TenDangNhap = user.TenDangNhap,
+            VaiTro = user.VaiTro,
+            HoatDong = user.HoatDong
         };
     }
 
     public async Task<bool> ChangePasswordAsync(int userId, string oldPassword, string newPassword)
     {
-        var user = await _context.TaiKhoans.FindAsync(userId);
-        if (user == null || !PasswordHelper.VerifyPassword(oldPassword, user.PasswordHash))
-        {
+        var user = await _context.TaiKhoans.FindAsync((long)userId);
+        if (user == null || !PasswordHelper.VerifyPassword(oldPassword, user.MatKhauHash))
             return false;
-        }
 
-        user.PasswordHash = PasswordHelper.HashPassword(newPassword);
-        user.UpdatedDate = DateTime.UtcNow;
+        user.MatKhauHash = PasswordHelper.HashPassword(newPassword);
+        user.UpdatedAt = DateTime.UtcNow;
         await _context.SaveChangesAsync();
-
         return true;
     }
 }
