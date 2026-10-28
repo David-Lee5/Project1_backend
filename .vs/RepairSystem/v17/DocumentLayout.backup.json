@@ -1,10 +1,10 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "D:\\code\\API\\project1\\RepairSystem\\",
+  "WorkspaceRootPath": "E:\\Nam4\\Project1\\BTL\\Project1_backend\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{B7CB9713-3698-4C65-8258-8CEF754A21AD}|RepairSystem.Model\\RepairSystem.Model.csproj|d:\\code\\api\\project1\\repairsystem\\repairsystem.model\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B7CB9713-3698-4C65-8258-8CEF754A21AD}|RepairSystem.Model\\RepairSystem.Model.csproj|solutionrelative:repairsystem.model\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\Nam4\\Project1\\BTL\\Project1_backend\\RepairSystem.Model\\AppDbContext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:RepairSystem.Model\\AppDbContext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -20,11 +20,11 @@
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "AppDbContext.cs",
-              "DocumentMoniker": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Model\\AppDbContext.cs",
+              "DocumentMoniker": "E:\\Nam4\\Project1\\BTL\\Project1_backend\\RepairSystem.Model\\AppDbContext.cs",
               "RelativeDocumentMoniker": "RepairSystem.Model\\AppDbContext.cs",
-              "ToolTip": "D:\\code\\API\\project1\\RepairSystem\\RepairSystem.Model\\AppDbContext.cs",
+              "ToolTip": "E:\\Nam4\\Project1\\BTL\\Project1_backend\\RepairSystem.Model\\AppDbContext.cs",
               "RelativeToolTip": "RepairSystem.Model\\AppDbContext.cs",
-              "ViewState": "AgIAAAgAAAAAAAAAAAAAwBkAAABEAAAAAAAAAA==",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAAABoAAAA8AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-10-27T15:09:26.174Z",
               "EditorCaption": ""
