@@ -1,12 +1,44 @@
+## ===========================
+## 1. Build output (.NET)
+## ===========================
+**/[Bb]in/
+**/[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+build/
+publish/
 
+## ===========================
+## 2. IDE & Editor cache
+## ===========================
 # Visual Studio
 .vs/
 *.user
+*.userosv
 *.suo
+*.userprefs
+*.sln.docstates
 
-# Build output
-bin/
-obj/
-
-# IDE
+# VS Code & JetBrains Rider
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
 .idea/
+*.sln.iml
+
+## ===========================
+## 3. Test & Log files
+## ===========================
+TestResults/
+*.log
+*.sqlite
+
+## ===========================
+## 4. OS temporary files
+## ===========================
+.DS_Store
+Thumbs.db
+desktop.ini

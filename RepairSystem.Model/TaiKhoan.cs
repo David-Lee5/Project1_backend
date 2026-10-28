@@ -1,34 +1,35 @@
 ﻿using System;
-using System;
 using System.Collections.Generic;
 
 namespace RepairSystem.Model;
 
 public partial class TaiKhoan
 {
-    public int TaiKhoanId { get; set; }
+    public long Id { get; set; }
 
-    public string Username { get; set; } = null!;
+    public string TenDangNhap { get; set; } = null!;
 
-    public string Email { get; set; } = null!;
+    public string MatKhauHash { get; set; } = null!;
 
-    public string PasswordHash { get; set; } = null!;
+    public string VaiTro { get; set; } = null!;
 
-    public int? RoleId { get; set; }
+    public bool HoatDong { get; set; }
 
-    public bool? TrangThaiHoatDong { get; set; } = true;
+    public short SoLanDangNhapSai { get; set; }
 
-    public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+    public DateTime? KhoaDen { get; set; }
 
-    public DateTime? UpdatedDate { get; set; }
+    public DateTime? DangNhapCuoi { get; set; }
 
-    public string? RefreshToken { get; set; }
+    public DateTime CreatedAt { get; set; }
 
-    public DateTime? RefreshTokenExpiryTime { get; set; }
+    public DateTime UpdatedAt { get; set; }
 
-    public virtual Role? Role { get; set; }
+    public virtual ICollection<AuditLog> AuditLogs { get; set; } = new List<AuditLog>();
 
-    public virtual KhachHang? KhachHang { get; set; }
+    public virtual ICollection<KhachHang> KhachHangs { get; set; } = new List<KhachHang>();
 
-    public virtual KyThuatVien? KyThuatVien { get; set; }
+    public virtual ICollection<NhanVien> NhanViens { get; set; } = new List<NhanVien>();
+
+    public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 }
