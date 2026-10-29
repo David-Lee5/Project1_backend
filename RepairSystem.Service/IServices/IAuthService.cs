@@ -5,7 +5,10 @@ namespace RepairSystem.Service.IServices;
 public interface IAuthService
 {
     Task<LoginResponseDto> LoginAsync(LoginRequestDto request);
-    Task<bool> RegisterAsync(string username, string email, string password, int? roleId = null);
+
+    /// <summary>Đăng ký khách hàng: tạo tai_khoan (KHACH_HANG) và khach_hang trong một transaction.</summary>
+    Task<(bool Success, string Message)> RegisterAsync(RegisterRequestDto request);
+
     Task<TokenDto> RefreshTokenAsync(string refreshToken);
     Task<bool> LogoutAsync(int userId);
     Task<UserDto?> GetUserByIdAsync(int userId);

@@ -1,48 +1,28 @@
-using System.Security.Cryptography;
-using System.Text;
-
 namespace RepairSystem.Service.Helpers;
 
-public class PasswordHelper
+/// <summary>
+/// Băm và kiểm tra mật khẩu bằng BCrypt (khớp với hash $2a$11$... đang lưu trong cột tai_khoan.mat_khau_hash).
+/// </summary>
+public static class PasswordHelper
 {
-    public static string HashPassword(string password)
-    {
-        using (var sha256 = SHA256.Create())
-        {
-            var salt = new byte[16];
-            using (var rng = RandomNumberGenerator.Create())
-            {
-                rng.GetBytes(salt);
-            }
+    private const int WorkFactor = 11;
 
-            var hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(password + Convert.ToBase64String(salt)));
-            var hashWithSalt = new byte[hash.Length + salt.Length];
-
-            Array.Copy(salt, 0, hashWithSalt, 0, salt.Length);
-            Array.Copy(hash, 0, hashWithSalt, salt.Length, hash.Length);
-
-            return Convert.ToBase64String(hashWithSalt);
-        }
-    }
+    public static string HashPassword(string password) =>
+        BCrypt.Net.BCrypt.HashPassword(password, WorkFactor);
 
     public static bool VerifyPassword(string password, string hash)
     {
-        var hashBytes = Convert.FromBase64String(hash);
-        var salt = new byte[16];
-        Array.Copy(hashBytes, 0, salt, 0, salt.Length);
+        if (string.IsNullOrEmpty(password) || string.IsNullOrEmpty(hash))
+            return false;
 
-        using (var sha256 = SHA256.Create())
+        try
         {
-            var computedHash = sha256.ComputeHash(Encoding.UTF8.GetBytes(password + Convert.ToBase64String(salt)));
-            for (int i = 0; i < computedHash.Length; i++)
-            {
-                if (hashBytes[i + salt.Length] != computedHash[i])
-                {
-                    return false;
-                }
-            }
+            return BCrypt.Net.BCrypt.Verify(password, hash);
         }
-
-        return true;
+        catch (Exception)
+        {
+            // Hash sai định dạng (ví dụ dữ liệu cũ) -> coi như không khớp, không làm sập API.
+            return false;
+        }
     }
 }

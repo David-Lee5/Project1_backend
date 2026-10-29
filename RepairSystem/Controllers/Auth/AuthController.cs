@@ -10,12 +10,10 @@ namespace RepairSystem.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
-    private readonly ITokenService _tokenService;
 
-    public AuthController(IAuthService authService, ITokenService tokenService)
+    public AuthController(IAuthService authService)
     {
         _authService = authService;
-        _tokenService = tokenService;
     }
 
     /// <summary>Đăng nhập, trả về JWT access token + refresh token.</summary>
@@ -34,20 +32,26 @@ public class AuthController : ControllerBase
         return Ok(ApiResponse<LoginResponseDto>.SuccessResponse(result, result.Message));
     }
 
-    /// <summary>Đăng ký tài khoản khách hàng mới.</summary>
+    /// <summary>Đăng ký tài khoản khách hàng mới (vai trò luôn là KHACH_HANG).</summary>
     [HttpPost("register")]
     [AllowAnonymous]
     public async Task<ActionResult<ApiResponse<bool>>> Register([FromBody] RegisterRequestDto request)
     {
         if (!ModelState.IsValid)
-            return BadRequest(ApiResponse<bool>.ErrorResponse("Dữ liệu không hợp lệ."));
+        {
+            var errors = ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage)
+                .ToList();
+            return BadRequest(ApiResponse<bool>.ErrorResponse("Dữ liệu không hợp lệ.", errors));
+        }
 
-        var result = await _authService.RegisterAsync(request.Username, request.Email, request.Password, request.RoleId);
+        var (success, message) = await _authService.RegisterAsync(request);
 
-        if (!result)
-            return BadRequest(ApiResponse<bool>.ErrorResponse("Tên đăng nhập đã tồn tại."));
+        if (!success)
+            return BadRequest(ApiResponse<bool>.ErrorResponse(message));
 
-        return Ok(ApiResponse<bool>.SuccessResponse(true, "Đăng ký thành công."));
+        return Ok(ApiResponse<bool>.SuccessResponse(true, message));
     }
 
     /// <summary>Làm mới access token bằng refresh token.</summary>
@@ -71,8 +75,7 @@ public class AuthController : ControllerBase
     [Authorize]
     public async Task<ActionResult<ApiResponse<bool>>> Logout()
     {
-        var userIdStr = User.FindFirst("UserId")?.Value ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-        if (!int.TryParse(userIdStr, out var userId))
+        if (!TryGetUserId(out var userId))
             return Unauthorized(ApiResponse<bool>.ErrorResponse("Không xác định được người dùng."));
 
         await _authService.LogoutAsync(userId);
@@ -84,8 +87,7 @@ public class AuthController : ControllerBase
     [Authorize]
     public async Task<ActionResult<ApiResponse<UserDto>>> GetCurrentUser()
     {
-        var userIdStr = User.FindFirst("UserId")?.Value ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-        if (!int.TryParse(userIdStr, out var userId))
+        if (!TryGetUserId(out var userId))
             return Unauthorized(ApiResponse<UserDto>.ErrorResponse("Không xác định được người dùng."));
 
         var user = await _authService.GetUserByIdAsync(userId);
@@ -103,8 +105,7 @@ public class AuthController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ApiResponse<bool>.ErrorResponse("Dữ liệu không hợp lệ."));
 
-        var userIdStr = User.FindFirst("UserId")?.Value ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-        if (!int.TryParse(userIdStr, out var userId))
+        if (!TryGetUserId(out var userId))
             return Unauthorized(ApiResponse<bool>.ErrorResponse("Không xác định được người dùng."));
 
         var result = await _authService.ChangePasswordAsync(userId, request.OldPassword, request.NewPassword);
@@ -112,5 +113,12 @@ public class AuthController : ControllerBase
             return BadRequest(ApiResponse<bool>.ErrorResponse("Mật khẩu cũ không đúng."));
 
         return Ok(ApiResponse<bool>.SuccessResponse(true, "Đổi mật khẩu thành công."));
+    }
+
+    private bool TryGetUserId(out int userId)
+    {
+        var value = User.FindFirst("UserId")?.Value
+                    ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        return int.TryParse(value, out userId);
     }
 }
