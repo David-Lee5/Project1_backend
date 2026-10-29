@@ -16,14 +16,15 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Register Services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IRoleService, RoleService>();
-builder.Services.AddScoped<IPermissionService, PermissionService>();
+// (Role/Permission đã bỏ: vai trò lưu ở cột tai_khoan.vai_tro, phân quyền bằng [Authorize(Roles = ...)])
+
 builder.Services.AddScoped<ITokenService, TokenHelper>();
 
 // Register Catalog Services (Phase 0)
 builder.Services.AddScoped<INhanVienService, NhanVienService>();
 builder.Services.AddScoped<IDichVuService, DichVuService>();
 builder.Services.AddScoped<INhaCungCapService, NhaCungCapService>();
+builder.Services.AddScoped<ILinhKienService, LinhKienService>();
 
 // Configure JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");

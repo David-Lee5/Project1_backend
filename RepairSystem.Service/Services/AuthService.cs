@@ -1,13 +1,20 @@
+using System.Security.Cryptography;
+using System.Text;
+using Microsoft.EntityFrameworkCore;
 using RepairSystem.Model;
 using RepairSystem.Service.DTOs;
 using RepairSystem.Service.Helpers;
 using RepairSystem.Service.IServices;
-using Microsoft.EntityFrameworkCore;
 
 namespace RepairSystem.Service.Services;
 
 public class AuthService : IAuthService
 {
+    private const int MaxFailedAttempts = 5;
+    private static readonly TimeSpan LockDuration = TimeSpan.FromMinutes(15);
+    private static readonly TimeSpan RefreshTokenLifetime = TimeSpan.FromDays(7);
+    private const string InvalidCredentials = "Tên đăng nhập hoặc mật khẩu không đúng.";
+
     private readonly AppDbContext _context;
     private readonly ITokenService _tokenService;
 
@@ -17,68 +24,52 @@ public class AuthService : IAuthService
         _tokenService = tokenService;
     }
 
+    // ── Đăng nhập ───────────────────────────────────────────────────
     public async Task<LoginResponseDto> LoginAsync(LoginRequestDto request)
     {
-        var user = await _context.TaiKhoans
-            .FirstOrDefaultAsync(u => u.TenDangNhap == request.Username);
+        var username = request.Username.Trim();
+        var user = await _context.TaiKhoans.FirstOrDefaultAsync(u => u.TenDangNhap == username);
 
-        if (user == null || !PasswordHelper.VerifyPassword(request.Password, user.MatKhauHash))
+        if (user == null)
+            return Fail(InvalidCredentials);
+
+        var now = DateTime.UtcNow;
+
+        if (user.KhoaDen.HasValue && user.KhoaDen.Value > now)
         {
-            return new LoginResponseDto
+            var phut = Math.Ceiling((user.KhoaDen.Value - now).TotalMinutes);
+            return Fail($"Tài khoản tạm thời bị khoá do nhập sai nhiều lần. Vui lòng thử lại sau {phut} phút.");
+        }
+
+        if (!PasswordHelper.VerifyPassword(request.Password, user.MatKhauHash))
+        {
+            user.SoLanDangNhapSai++;
+            if (user.SoLanDangNhapSai >= MaxFailedAttempts)
             {
-                Success = false,
-                Message = "Tên đăng nhập hoặc mật khẩu không đúng."
-            };
+                user.KhoaDen = now.Add(LockDuration);
+                user.SoLanDangNhapSai = 0;
+            }
+            user.UpdatedAt = now;
+            await _context.SaveChangesAsync();
+
+            return Fail(InvalidCredentials);
         }
 
         if (!user.HoatDong)
-        {
-            return new LoginResponseDto
-            {
-                Success = false,
-                Message = "Tài khoản đã bị vô hiệu hoá."
-            };
-        }
+            return Fail("Tài khoản đã bị vô hiệu hoá.");
 
-        if (user.KhoaDen.HasValue && user.KhoaDen > DateTime.UtcNow)
-        {
-            return new LoginResponseDto
-            {
-                Success = false,
-                Message = $"Tài khoản bị khoá đến {user.KhoaDen:dd/MM/yyyy HH:mm}."
-            };
-        }
-
-        // Cập nhật thời gian đăng nhập cuối & reset số lần sai
-        user.DangNhapCuoi = DateTime.UtcNow;
         user.SoLanDangNhapSai = 0;
+        user.KhoaDen = null;
+        user.DangNhapCuoi = now;
+        user.UpdatedAt = now;
 
-        var accessToken = _tokenService.GenerateAccessToken(
-            (int)user.Id, user.TenDangNhap, user.VaiTro, permissions: null);
-
-        // Lưu refresh token mới vào bảng refresh_token
-        var rawRefreshToken = _tokenService.GenerateRefreshToken();
-        var refreshTokenHash = PasswordHelper.HashPassword(rawRefreshToken); // hash để lưu an toàn
-
-        _context.RefreshTokens.Add(new RefreshToken
-        {
-            TaiKhoanId = user.Id,
-            TokenHash = refreshTokenHash,
-            HetHan = DateTime.UtcNow.AddDays(7)
-        });
-
-        await _context.SaveChangesAsync();
+        var token = await IssueTokensAsync(user, now);
 
         return new LoginResponseDto
         {
             Success = true,
             Message = "Đăng nhập thành công.",
-            Token = new TokenDto
-            {
-                AccessToken = accessToken,
-                RefreshToken = rawRefreshToken,
-                ExpiresIn = DateTime.UtcNow.AddMinutes(15)
-            },
+            Token = token,
             User = new UserDto
             {
                 TaiKhoanId = user.Id,
@@ -89,79 +80,93 @@ public class AuthService : IAuthService
         };
     }
 
-    public async Task<bool> RegisterAsync(string username, string email, string password, int? roleId = null)
+    // ── Đăng ký khách hàng ──────────────────────────────────────────
+    public async Task<(bool Success, string Message)> RegisterAsync(RegisterRequestDto request)
     {
+        var username = request.Username.Trim();
+        var email = string.IsNullOrWhiteSpace(request.Email) ? null : request.Email.Trim();
+
         if (await _context.TaiKhoans.AnyAsync(u => u.TenDangNhap == username))
-            return false;
+            return (false, "Tên đăng nhập đã tồn tại.");
 
-        var user = new TaiKhoan
+        if (email != null && await _context.KhachHangs.AnyAsync(k => k.Email == email && k.DeletedAt == null))
+            return (false, "Email đã được sử dụng.");
+
+        await using var tx = await _context.Database.BeginTransactionAsync();
+        try
         {
-            TenDangNhap = username,
-            MatKhauHash = PasswordHelper.HashPassword(password),
-            VaiTro = Roles.KhachHang,
-            HoatDong = true
-        };
+            var taiKhoan = new TaiKhoan
+            {
+                TenDangNhap = username,
+                MatKhauHash = PasswordHelper.HashPassword(request.Password),
+                VaiTro = Roles.KhachHang,
+                HoatDong = true
+            };
+            _context.TaiKhoans.Add(taiKhoan);
+            await _context.SaveChangesAsync();
 
-        _context.TaiKhoans.Add(user);
-        await _context.SaveChangesAsync();
-        return true;
+            _context.KhachHangs.Add(new KhachHang
+            {
+                HoTen = request.HoTen.Trim(),
+                SoDienThoai = request.SoDienThoai.Trim(),
+                Email = email,
+                TaiKhoanId = taiKhoan.Id,
+                VaiTroTk = Roles.KhachHang
+            });
+            await _context.SaveChangesAsync();
+
+            await tx.CommitAsync();
+            return (true, "Đăng ký thành công.");
+        }
+        catch (DbUpdateException)
+        {
+            await tx.RollbackAsync();
+            return (false, "Không thể tạo tài khoản. Vui lòng kiểm tra lại số điện thoại và email.");
+        }
     }
 
+    // ── Refresh token ───────────────────────────────────────────────
     public async Task<TokenDto> RefreshTokenAsync(string rawRefreshToken)
     {
-        var tokenHash = PasswordHelper.HashPassword(rawRefreshToken);
+        var tokenHash = HashToken(rawRefreshToken);
+        var now = DateTime.UtcNow;
 
-        var storedToken = await _context.RefreshTokens
+        var stored = await _context.RefreshTokens
             .Include(rt => rt.TaiKhoan)
-            .FirstOrDefaultAsync(rt => rt.TokenHash == tokenHash && rt.ThuHoiLuc == null);
+            .FirstOrDefaultAsync(rt => rt.TokenHash == tokenHash);
 
-        if (storedToken == null || storedToken.HetHan < DateTime.UtcNow)
-            throw new UnauthorizedAccessException("Refresh token không hợp lệ hoặc đã hết hạn.");
+        if (stored == null)
+            throw new UnauthorizedAccessException("Refresh token không hợp lệ.");
 
-        var user = storedToken.TaiKhoan;
-
-        // Thu hồi token cũ
-        storedToken.ThuHoiLuc = DateTime.UtcNow;
-
-        // Tạo token mới
-        var newAccessToken = _tokenService.GenerateAccessToken(
-            (int)user.Id, user.TenDangNhap, user.VaiTro, permissions: null);
-        var newRawRefresh = _tokenService.GenerateRefreshToken();
-
-        _context.RefreshTokens.Add(new RefreshToken
+        // Token đã bị thu hồi mà vẫn được dùng lại -> nghi bị lộ, thu hồi toàn bộ phiên của tài khoản.
+        if (stored.ThuHoiLuc != null)
         {
-            TaiKhoanId = user.Id,
-            TokenHash = PasswordHelper.HashPassword(newRawRefresh),
-            HetHan = DateTime.UtcNow.AddDays(7)
-        });
+            await RevokeAllAsync(stored.TaiKhoanId, now);
+            throw new UnauthorizedAccessException("Refresh token đã bị thu hồi. Vui lòng đăng nhập lại.");
+        }
 
-        await _context.SaveChangesAsync();
+        if (stored.HetHan < now)
+            throw new UnauthorizedAccessException("Refresh token đã hết hạn.");
 
-        return new TokenDto
-        {
-            AccessToken = newAccessToken,
-            RefreshToken = newRawRefresh,
-            ExpiresIn = DateTime.UtcNow.AddMinutes(15)
-        };
+        var user = stored.TaiKhoan;
+        if (!user.HoatDong || (user.KhoaDen.HasValue && user.KhoaDen.Value > now))
+            throw new UnauthorizedAccessException("Tài khoản hiện không khả dụng.");
+
+        // Xoay vòng: thu hồi token cũ, cấp token mới
+        stored.ThuHoiLuc = now;
+        return await IssueTokensAsync(user, now);
     }
 
+    // ── Đăng xuất ───────────────────────────────────────────────────
     public async Task<bool> LogoutAsync(int userId)
     {
-        // Thu hồi tất cả refresh token còn hiệu lực của user
-        var tokens = await _context.RefreshTokens
-            .Where(rt => rt.TaiKhoanId == userId && rt.ThuHoiLuc == null)
-            .ToListAsync();
-
-        foreach (var t in tokens)
-            t.ThuHoiLuc = DateTime.UtcNow;
-
-        await _context.SaveChangesAsync();
+        await RevokeAllAsync(userId, DateTime.UtcNow);
         return true;
     }
 
     public async Task<UserDto?> GetUserByIdAsync(int userId)
     {
-        var user = await _context.TaiKhoans.FindAsync((long)userId);
+        var user = await _context.TaiKhoans.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId);
         if (user == null) return null;
 
         return new UserDto
@@ -175,13 +180,62 @@ public class AuthService : IAuthService
 
     public async Task<bool> ChangePasswordAsync(int userId, string oldPassword, string newPassword)
     {
-        var user = await _context.TaiKhoans.FindAsync((long)userId);
+        var user = await _context.TaiKhoans.FirstOrDefaultAsync(u => u.Id == userId);
         if (user == null || !PasswordHelper.VerifyPassword(oldPassword, user.MatKhauHash))
             return false;
 
+        var now = DateTime.UtcNow;
         user.MatKhauHash = PasswordHelper.HashPassword(newPassword);
-        user.UpdatedAt = DateTime.UtcNow;
+        user.UpdatedAt = now;
         await _context.SaveChangesAsync();
+
+        // Buộc các thiết bị khác đăng nhập lại
+        await RevokeAllAsync(userId, now);
         return true;
     }
+
+    // ── helpers ─────────────────────────────────────────────────────
+    private async Task<TokenDto> IssueTokensAsync(TaiKhoan user, DateTime now)
+    {
+        var rawRefreshToken = _tokenService.GenerateRefreshToken();
+
+        _context.RefreshTokens.Add(new RefreshToken
+        {
+            TaiKhoanId = user.Id,
+            TokenHash = HashToken(rawRefreshToken),
+            HetHan = now.Add(RefreshTokenLifetime)
+        });
+
+        // Dọn các token đã hết hạn của tài khoản này
+        var expired = await _context.RefreshTokens
+            .Where(t => t.TaiKhoanId == user.Id && t.HetHan < now)
+            .ToListAsync();
+        _context.RefreshTokens.RemoveRange(expired);
+
+        await _context.SaveChangesAsync();
+
+        return new TokenDto
+        {
+            AccessToken = _tokenService.GenerateAccessToken((int)user.Id, user.TenDangNhap, user.VaiTro, permissions: null),
+            RefreshToken = rawRefreshToken,
+            ExpiresIn = now.AddMinutes(15)
+        };
+    }
+
+    private async Task RevokeAllAsync(long taiKhoanId, DateTime now)
+    {
+        await _context.RefreshTokens
+            .Where(t => t.TaiKhoanId == taiKhoanId && t.ThuHoiLuc == null)
+            .ExecuteUpdateAsync(s => s.SetProperty(t => t.ThuHoiLuc, (DateTime?)now));
+    }
+
+    /// <summary>Băm xác định (SHA-256) để tra cứu refresh token trong DB. Không dùng BCrypt vì mỗi lần băm ra giá trị khác nhau.</summary>
+    private static string HashToken(string token) =>
+        Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(token))).ToLowerInvariant();
+
+    private static LoginResponseDto Fail(string message) => new()
+    {
+        Success = false,
+        Message = message
+    };
 }
