@@ -26,6 +26,10 @@ builder.Services.AddScoped<IDichVuService, DichVuService>();
 builder.Services.AddScoped<INhaCungCapService, NhaCungCapService>();
 builder.Services.AddScoped<ILinhKienService, LinhKienService>();
 
+// Register Warehouse Services (Phase 1)
+builder.Services.AddScoped<IKhoService, KhoService>();
+builder.Services.AddScoped<IPhieuNhapService, PhieuNhapService>();
+
 // Configure JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secretKey = Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!);
