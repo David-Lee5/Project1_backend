@@ -2,6 +2,8 @@
 
 API quản lý sửa chữa thiết bị bằng ASP.NET Core 8, Entity Framework Core 8 và SQL Server 2022. Solution gồm API (`RepairSystem`), nghiệp vụ/DTO (`RepairSystem.Service`), truy cập dữ liệu (`RepairSystem.Data`), model/database mapping (`RepairSystem.Model`) và kiểm thử (`RepairSystem.Tests`).
 
+**Chạy trên Windows:** xem [hướng dẫn PowerShell + SQL Server/SSMS](docs/run-windows.md), gồm tạo schema trống và tài khoản admin mới, không cần Docker.
+
 ## Cài đặt và chạy
 
 Yêu cầu .NET SDK 8 và SQL Server 2022 có database `QLSCTBDT`. Trong môi trường đám mây đã thiết lập, SDK nằm tại `/workspace/.dotnet`; cần thêm đường dẫn này vào `PATH` nếu shell chưa nhận `dotnet`.

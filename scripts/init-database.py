@@ -4,6 +4,7 @@
 Provide SQLCMDPASSWORD in the process environment. By default imports schema only;
 --sample-data also imports the export's demonstration rows (not working credentials).
 Existing nonempty databases are preserved and rejected; never resets data.
+Use --output to export a SQL file for SSMS without Docker or a running database.
 """
 import argparse
 import os
@@ -29,9 +30,20 @@ def main():
     parser.add_argument('--container', default='repairsystem-sql')
     parser.add_argument('--database', default='QLSCTBDT')
     parser.add_argument('--sample-data', action='store_true')
+    parser.add_argument('--output', type=Path, help='Export SQL for an empty database; no Docker connection or password required.')
     options = parser.parse_args()
     if not re.fullmatch(r'[A-Za-z][A-Za-z0-9_]{0,100}', options.database):
         parser.error('Database name must contain only letters, numbers and underscores.')
+    source = (Path(__file__).resolve().parents[1] / 'data/data_v2.sql').read_text(encoding='utf-16')
+    sql = '\nGO\n'.join(schema_batches(source, options.sample_data)) + '\nGO\n'
+    sql = sql.replace('[QLSCTBDT]', f'[{options.database}]')
+    if options.output:
+        options.output.parent.mkdir(parents=True, exist_ok=True)
+        # SSMS detects UTF-8 reliably from its BOM; preserve any existing output file.
+        with options.output.open('x', encoding='utf-8-sig') as output:
+            output.write(sql)
+        print(f'SQL exported to {options.output}. Create an empty {options.database} database in SSMS, then execute the whole file.')
+        return
     if not os.environ.get('SQLCMDPASSWORD'):
         parser.error('Set SQLCMDPASSWORD securely in the process environment.')
     environment = dict(os.environ)
@@ -52,10 +64,6 @@ def main():
         query(f'CREATE DATABASE [{name}]')
     if query('SET NOCOUNT ON; SELECT COUNT(*) FROM sys.tables', name) != '0':
         raise RuntimeError('Database is not empty. Refusing to overwrite existing data. Use an empty database or review a migration.')
-    source = (Path(__file__).resolve().parents[1] / 'data/data_v2.sql').read_text(encoding='utf-16')
-    sql = '\nGO\n'.join(schema_batches(source, options.sample_data)) + '\nGO\n'
-    # The database identifier is validated above; all application object definitions remain intact.
-    sql = sql.replace('[QLSCTBDT]', f'[{name}]')
     query(sql, name)
     required = query("SET NOCOUNT ON; SELECT COUNT(*) FROM sys.procedures WHERE name IN ('usp_xac_nhan_nhap_kho','usp_xuat_kho','usp_lap_hoa_don')", name)
     if required != '3':
