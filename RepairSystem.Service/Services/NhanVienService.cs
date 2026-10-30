@@ -200,6 +200,8 @@ public class NhanVienService : INhanVienService
         ChuyenMon = chuyenMon ?? nv.KyThuatViens.FirstOrDefault()?.ChuyenMon,
         TaiKhoanId = nv.TaiKhoanId,
         TenDangNhap = nv.TaiKhoan?.TenDangNhap,
+        HoatDong = nv.TaiKhoan?.HoatDong ?? true,
+        DangNhapCuoi = nv.TaiKhoan?.DangNhapCuoi,
         CreatedAt = nv.CreatedAt,
         UpdatedAt = nv.UpdatedAt
     };

@@ -17,6 +17,8 @@ public class NhanVienDto
 
     public long TaiKhoanId { get; set; }
     public string? TenDangNhap { get; set; }
+    public bool HoatDong { get; set; } = true;
+    public DateTime? DangNhapCuoi { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 }
