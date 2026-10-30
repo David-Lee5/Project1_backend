@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
@@ -94,8 +94,8 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.LinhKienId).HasColumnName("linh_kien_id");
             entity.Property(e => e.ThuTu).HasColumnName("thu_tu");
 
-            entity.HasOne(d => d.LinhKien).WithOne(p => p.AnhLinhKien)
-                .HasForeignKey<AnhLinhKien>(d => d.LinhKienId)
+            entity.HasOne(d => d.LinhKien).WithMany(p => p.AnhLinhKiens)
+                .HasForeignKey(d => d.LinhKienId)
                 .HasConstraintName("fk_anh_linh_kien_lk");
         });
 
@@ -429,8 +429,8 @@ public partial class AppDbContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_hoa_don_le_tan");
 
-            entity.HasOne(d => d.Phieu).WithOne(p => p.HoaDon)
-                .HasForeignKey<HoaDon>(d => d.PhieuId)
+            entity.HasOne(d => d.Phieu).WithMany(p => p.HoaDons)
+                .HasForeignKey(d => d.PhieuId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_hoa_don_phieu");
         });

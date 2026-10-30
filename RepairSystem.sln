@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepairSystem.Data", "Repair
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepairSystem.Service", "RepairSystem.Service\RepairSystem.Service.csproj", "{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepairSystem.Tests", "RepairSystem.Tests\RepairSystem.Tests.csproj", "{9D2ED94F-41FF-4E2F-A449-55CF3F843E9F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4D9835BC-B062-4990-ACA8-04EBE36BDE9A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D2ED94F-41FF-4E2F-A449-55CF3F843E9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D2ED94F-41FF-4E2F-A449-55CF3F843E9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D2ED94F-41FF-4E2F-A449-55CF3F843E9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D2ED94F-41FF-4E2F-A449-55CF3F843E9F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

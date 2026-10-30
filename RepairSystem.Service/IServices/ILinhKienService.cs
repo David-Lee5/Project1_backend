@@ -14,4 +14,8 @@ public interface ILinhKienService
 
     /// <summary>Soft-delete linh kiện (đặt deleted_at).</summary>
     Task<bool> DeleteAsync(long id);
+    Task<IReadOnlyList<AnhLinhKienDto>> GetImagesAsync(long partId);
+    Task<AnhLinhKienDto> AddImageAsync(long partId, CreateAnhLinhKienDto dto);
+    Task<AnhLinhKienDto> SetPrimaryImageAsync(long partId, long imageId);
+    Task<bool> DeleteImageAsync(long partId, long imageId);
 }

@@ -46,6 +46,7 @@ public class NhanVienService : INhanVienService
 
     public async Task<NhanVienDto> CreateAsync(CreateNhanVienDto dto)
     {
+        CatalogValidation.Validate(dto);
         ValidateChucVu(dto.ChucVu);
 
         var tenDangNhap = dto.TenDangNhap.Trim();
@@ -62,7 +63,9 @@ public class NhanVienService : INhanVienService
                 TenDangNhap = tenDangNhap,
                 MatKhauHash = PasswordHelper.HashPassword(dto.MatKhau),
                 VaiTro = dto.ChucVu,
-                HoatDong = true
+                HoatDong = true,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
             };
             _context.TaiKhoans.Add(taiKhoan);
             await _context.SaveChangesAsync();
@@ -74,7 +77,9 @@ public class NhanVienService : INhanVienService
                 SoDienThoai = dto.SoDienThoai.Trim(),
                 Email = NullIfBlank(dto.Email),
                 ChucVu = dto.ChucVu,
-                TaiKhoanId = taiKhoan.Id
+                TaiKhoanId = taiKhoan.Id,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
             };
             _context.NhanViens.Add(nhanVien);
             await _context.SaveChangesAsync();
@@ -109,12 +114,13 @@ public class NhanVienService : INhanVienService
         {
             await tx.RollbackAsync();
             throw new InvalidOperationException(
-                "Không thể tạo nhân viên: dữ liệu vi phạm ràng buộc (số điện thoại 8–15 ký tự, email hợp lệ và không trùng).");
+                "Không thể tạo nhân viên: dữ liệu vi phạm ràng buộc hoặc tên đăng nhập đã tồn tại.");
         }
     }
 
     public async Task<NhanVienDto> UpdateAsync(long id, UpdateNhanVienDto dto)
     {
+        CatalogValidation.Validate(dto);
         var nv = await _context.NhanViens
             .Include(n => n.TaiKhoan)
             .Include(n => n.KyThuatViens)
@@ -143,7 +149,7 @@ public class NhanVienService : INhanVienService
         }
         catch (DbUpdateException)
         {
-            throw new ArgumentException("Dữ liệu vi phạm ràng buộc (số điện thoại 8–15 ký tự, email hợp lệ và không trùng).");
+            throw new ArgumentException("Dữ liệu vi phạm ràng buộc (số điện thoại 8–15 ký tự, email hợp lệ).");
         }
 
         return ToDto(nv);
@@ -151,11 +157,25 @@ public class NhanVienService : INhanVienService
 
     public async Task<bool> DeleteAsync(long id)
     {
+        await using var tx = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
         var nv = await _context.NhanViens
             .Include(n => n.TaiKhoan)
             .FirstOrDefaultAsync(n => n.Id == id && n.DeletedAt == null);
 
         if (nv == null) return false;
+
+        if (nv.ChucVu == Roles.Admin && nv.TaiKhoan.HoatDong &&
+            !await _context.NhanViens.AnyAsync(n => n.Id != id && n.ChucVu == Roles.Admin &&
+                n.DeletedAt == null && n.TaiKhoan.HoatDong))
+            throw new InvalidOperationException("Không thể xoá quản trị viên đang hoạt động cuối cùng.");
+
+        if (await _context.PhieuSuaChuas.AnyAsync(p => p.KyThuatVienId == id &&
+                p.TrangThai != "HUY" && p.TrangThai != "HOAN_THANH" && p.TrangThai != "DA_TRA"))
+            throw new InvalidOperationException("Nhân viên còn phiếu sửa chữa đang xử lý. Hãy phân công lại trước khi xoá.");
+
+        if (await _context.Khos.AnyAsync(k => k.ThuKhoId == id && k.DeletedAt == null) ||
+            await _context.PhieuNhaps.AnyAsync(p => p.ThuKhoId == id && p.TrangThai == "NHAP"))
+            throw new InvalidOperationException("Nhân viên còn phụ trách kho hoặc phiếu nhập nháp. Hãy bàn giao trước khi xoá.");
 
         var now = DateTime.UtcNow;
         nv.DeletedAt = now;
@@ -171,6 +191,8 @@ public class NhanVienService : INhanVienService
         await _context.RefreshTokens
             .Where(t => t.TaiKhoanId == nv.TaiKhoanId && t.ThuHoiLuc == null)
             .ExecuteUpdateAsync(s => s.SetProperty(t => t.ThuHoiLuc, (DateTime?)now));
+
+        await tx.CommitAsync();
 
         return true;
     }
@@ -200,6 +222,7 @@ public class NhanVienService : INhanVienService
         ChuyenMon = chuyenMon ?? nv.KyThuatViens.FirstOrDefault()?.ChuyenMon,
         TaiKhoanId = nv.TaiKhoanId,
         TenDangNhap = nv.TaiKhoan?.TenDangNhap,
+        HoatDong = nv.TaiKhoan?.HoatDong == true && nv.DeletedAt == null,
         CreatedAt = nv.CreatedAt,
         UpdatedAt = nv.UpdatedAt
     };

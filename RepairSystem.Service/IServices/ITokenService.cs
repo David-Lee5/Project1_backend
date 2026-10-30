@@ -2,7 +2,7 @@ namespace RepairSystem.Service.IServices;
 
 public interface ITokenService
 {
-    string GenerateAccessToken(int userId, string username, string? roleName, List<string>? permissions = null);
+    string GenerateAccessToken(long userId, string username, string? roleName, List<string>? permissions = null);
     string GenerateRefreshToken();
-    Task<(bool isValid, int? userId)> ValidateTokenAsync(string token);
+    Task<(bool isValid, long? userId)> ValidateTokenAsync(string token);
 }

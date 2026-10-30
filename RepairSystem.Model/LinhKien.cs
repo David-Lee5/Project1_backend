@@ -27,7 +27,7 @@ public partial class LinhKien
 
     public DateTime UpdatedAt { get; set; }
 
-    public virtual AnhLinhKien? AnhLinhKien { get; set; }
+    public virtual ICollection<AnhLinhKien> AnhLinhKiens { get; set; } = new List<AnhLinhKien>();
 
     public virtual ICollection<ChiTietNhapKho> ChiTietNhapKhos { get; set; } = new List<ChiTietNhapKho>();
 

@@ -10,6 +10,7 @@ public class LinhKienDto
     public string TenLinhKien { get; set; } = null!;
     public string? HangSanXuat { get; set; }
     public string? MoTa { get; set; }
+    public string? HinhAnh { get; set; }
     public string DonViTinh { get; set; } = null!;
 
     /// <summary>Giá bán niêm yết (không phải giá vốn).</summary>
@@ -18,10 +19,30 @@ public class LinhKienDto
     public int ThoiHanBaoHanhThang { get; set; }
 
     /// <summary>Tổng tồn của mọi kho. Chỉ trả về cho nhân viên, khách vãng lai thấy null.</summary>
-    public int? TongTon { get; set; }
+    public long? TongTon { get; set; }
 
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
+}
+
+/// <summary>Metadata ảnh đã có URL; hệ thống không tải nội dung từ URL này.</summary>
+public class AnhLinhKienDto
+{
+    public long Id { get; set; }
+    public long LinhKienId { get; set; }
+    public string DuongDan { get; set; } = null!;
+    public bool LaAnhChinh { get; set; }
+    public short ThuTu { get; set; }
+    public DateTime CreatedAt { get; set; }
+}
+
+public class CreateAnhLinhKienDto
+{
+    [Required] [MaxLength(500)]
+    public string DuongDan { get; set; } = null!;
+    public bool LaAnhChinh { get; set; }
+    [Range(0, short.MaxValue)]
+    public int ThuTu { get; set; }
 }
 
 /// <summary>Tạo / cập nhật linh kiện.</summary>

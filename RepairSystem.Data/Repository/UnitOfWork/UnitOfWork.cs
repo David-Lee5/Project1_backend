@@ -1,6 +1,5 @@
 using RepairSystem.Data.Repository.IRepository;
 using RepairSystem.Model;
-using RepairSystem.Data.Repository.IRepository;
 
 namespace RepairSystem.Data.Repository.UnitOfWork;
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace RepairSystem.Model;
@@ -43,7 +43,7 @@ public partial class PhieuSuaChua
 
     public virtual ICollection<ChiTietXuatKho> ChiTietXuatKhos { get; set; } = new List<ChiTietXuatKho>();
 
-    public virtual HoaDon? HoaDon { get; set; }
+    public virtual ICollection<HoaDon> HoaDons { get; set; } = new List<HoaDon>();
 
     public virtual KyThuatVien? KyThuatVien { get; set; }
 

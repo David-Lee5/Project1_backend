@@ -42,3 +42,12 @@ TestResults/
 .DS_Store
 Thumbs.db
 desktop.ini
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+.local/
+
+# Python development helpers
+__pycache__/
+*.pyc

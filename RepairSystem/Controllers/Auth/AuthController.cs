@@ -115,10 +115,10 @@ public class AuthController : ControllerBase
         return Ok(ApiResponse<bool>.SuccessResponse(true, "Đổi mật khẩu thành công."));
     }
 
-    private bool TryGetUserId(out int userId)
+    private bool TryGetUserId(out long userId)
     {
         var value = User.FindFirst("UserId")?.Value
                     ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-        return int.TryParse(value, out userId);
+        return long.TryParse(value, out userId) && userId > 0;
     }
 }

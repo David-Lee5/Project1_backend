@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using RepairSystem.Model;
 using RepairSystem.Service.DTOs;
 using RepairSystem.Service.IServices;
+using RepairSystem.Service.Helpers;
 
 namespace RepairSystem.Service.Services;
 
@@ -16,7 +17,7 @@ public class NhaCungCapService : INhaCungCapService
 
     public async Task<IEnumerable<NhaCungCapDto>> GetAllAsync(bool includeDeleted = false)
     {
-        var query = _context.NhaCungCaps.AsQueryable();
+        var query = _context.NhaCungCaps.AsNoTracking().AsQueryable();
 
         if (!includeDeleted)
             query = query.Where(ncc => ncc.DeletedAt == null);
@@ -35,13 +36,16 @@ public class NhaCungCapService : INhaCungCapService
 
     public async Task<NhaCungCapDto> CreateAsync(UpsertNhaCungCapDto dto)
     {
+        CatalogValidation.Validate(dto);
         var ncc = new NhaCungCap
         {
-            TenNcc = dto.TenNcc,
-            MaSoThue = dto.MaSoThue,
-            SoDienThoai = dto.SoDienThoai,
-            Email = dto.Email,
-            DiaChi = dto.DiaChi
+            TenNcc = dto.TenNcc.Trim(),
+            MaSoThue = CatalogValidation.NullIfBlank(dto.MaSoThue),
+            SoDienThoai = CatalogValidation.NullIfBlank(dto.SoDienThoai),
+            Email = CatalogValidation.NullIfBlank(dto.Email),
+            DiaChi = CatalogValidation.NullIfBlank(dto.DiaChi),
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
         };
 
         _context.NhaCungCaps.Add(ncc);
@@ -51,15 +55,16 @@ public class NhaCungCapService : INhaCungCapService
 
     public async Task<NhaCungCapDto> UpdateAsync(long id, UpsertNhaCungCapDto dto)
     {
+        CatalogValidation.Validate(dto);
         var ncc = await _context.NhaCungCaps
             .FirstOrDefaultAsync(n => n.Id == id && n.DeletedAt == null)
             ?? throw new KeyNotFoundException($"Không tìm thấy nhà cung cấp id={id}.");
 
-        ncc.TenNcc = dto.TenNcc;
-        ncc.MaSoThue = dto.MaSoThue;
-        ncc.SoDienThoai = dto.SoDienThoai;
-        ncc.Email = dto.Email;
-        ncc.DiaChi = dto.DiaChi;
+        ncc.TenNcc = dto.TenNcc.Trim();
+        ncc.MaSoThue = CatalogValidation.NullIfBlank(dto.MaSoThue);
+        ncc.SoDienThoai = CatalogValidation.NullIfBlank(dto.SoDienThoai);
+        ncc.Email = CatalogValidation.NullIfBlank(dto.Email);
+        ncc.DiaChi = CatalogValidation.NullIfBlank(dto.DiaChi);
         ncc.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
@@ -68,15 +73,22 @@ public class NhaCungCapService : INhaCungCapService
 
     public async Task<bool> DeleteAsync(long id)
     {
+        await using var tx = _context.Database.IsRelational()
+            ? await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable)
+            : null;
         var ncc = await _context.NhaCungCaps
             .FirstOrDefaultAsync(n => n.Id == id && n.DeletedAt == null);
 
         if (ncc == null) return false;
 
+        if (await _context.PhieuNhaps.AnyAsync(p => p.NhaCungCapId == id && p.TrangThai == "NHAP"))
+            throw new InvalidOperationException("Nhà cung cấp còn phiếu nhập nháp. Hãy xác nhận hoặc huỷ phiếu trước khi xoá.");
+
         ncc.DeletedAt = DateTime.UtcNow;
         ncc.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
+        if (tx != null) await tx.CommitAsync();
         return true;
     }
 

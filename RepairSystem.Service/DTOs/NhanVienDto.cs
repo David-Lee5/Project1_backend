@@ -17,6 +17,7 @@ public class NhanVienDto
 
     public long TaiKhoanId { get; set; }
     public string? TenDangNhap { get; set; }
+    public bool HoatDong { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 }
@@ -48,7 +49,7 @@ public class CreateNhanVienDto
     [RegularExpression(@"^[a-zA-Z0-9_.]+$", ErrorMessage = "Tên đăng nhập chỉ gồm chữ, số, dấu chấm và gạch dưới.")]
     public string TenDangNhap { get; set; } = null!;
 
-    [Required] [MinLength(6)]
+    [Required] [StringLength(100, MinimumLength = 6)]
     public string MatKhau { get; set; } = null!;
 }
 

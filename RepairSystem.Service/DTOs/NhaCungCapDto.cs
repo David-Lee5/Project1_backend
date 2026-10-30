@@ -28,7 +28,7 @@ public class UpsertNhaCungCapDto
     [MaxLength(20)]
     public string? SoDienThoai { get; set; }
 
-    [MaxLength(255)]
+    [EmailAddress] [MaxLength(255)]
     public string? Email { get; set; }
 
     [MaxLength(255)]

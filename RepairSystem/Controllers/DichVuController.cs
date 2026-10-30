@@ -24,7 +24,7 @@ public class DichVuController : ControllerBase
     public async Task<ActionResult<ApiResponse<IEnumerable<DichVuDto>>>> GetAll(
         [FromQuery] bool includeDeleted = false)
     {
-        var result = await _service.GetAllAsync(includeDeleted);
+        var result = await _service.GetAllAsync(includeDeleted && User.IsInRole(Roles.Admin));
         return Ok(ApiResponse<IEnumerable<DichVuDto>>.SuccessResponse(result));
     }
 

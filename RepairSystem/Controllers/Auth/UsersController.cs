@@ -27,8 +27,8 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>Lấy thông tin tài khoản theo id.</summary>
-    [HttpGet("{id:int}")]
-    public async Task<ActionResult<ApiResponse<UserDto>>> GetById(int id)
+    [HttpGet("{id:long}")]
+    public async Task<ActionResult<ApiResponse<UserDto>>> GetById(long id)
     {
         var user = await _userService.GetUserByIdAsync(id);
         if (user == null)
@@ -49,8 +49,8 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>Cập nhật trạng thái hoạt động của tài khoản.</summary>
-    [HttpPut("{id:int}/status")]
-    public async Task<ActionResult<ApiResponse<bool>>> UpdateStatus(int id, [FromBody] UpdateUserStatusRequestDto request)
+    [HttpPut("{id:long}/status")]
+    public async Task<ActionResult<ApiResponse<bool>>> UpdateStatus(long id, [FromBody] UpdateUserStatusRequestDto request)
     {
         var result = await _userService.UpdateUserStatusAsync(id, request.IsActive);
         if (!result)
@@ -60,8 +60,8 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>Xoá tài khoản (soft-disable).</summary>
-    [HttpDelete("{id:int}")]
-    public async Task<ActionResult<ApiResponse<bool>>> Delete(int id)
+    [HttpDelete("{id:long}")]
+    public async Task<ActionResult<ApiResponse<bool>>> Delete(long id)
     {
         var result = await _userService.DeleteUserAsync(id);
         if (!result)

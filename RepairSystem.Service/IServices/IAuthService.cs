@@ -10,7 +10,7 @@ public interface IAuthService
     Task<(bool Success, string Message)> RegisterAsync(RegisterRequestDto request);
 
     Task<TokenDto> RefreshTokenAsync(string refreshToken);
-    Task<bool> LogoutAsync(int userId);
-    Task<UserDto?> GetUserByIdAsync(int userId);
-    Task<bool> ChangePasswordAsync(int userId, string oldPassword, string newPassword);
+    Task<bool> LogoutAsync(long userId);
+    Task<UserDto?> GetUserByIdAsync(long userId);
+    Task<bool> ChangePasswordAsync(long userId, string oldPassword, string newPassword);
 }

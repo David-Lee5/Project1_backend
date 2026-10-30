@@ -20,18 +20,18 @@ public class NhanVienController : ControllerBase
 
     /// <summary>Lấy danh sách nhân viên. Query: chucVu (tuỳ chọn), includeDeleted (default false).</summary>
     [HttpGet]
-    [Authorize(Roles = Roles.Admin)]
+    [Authorize(Roles = Roles.NhanVien)]
     public async Task<ActionResult<ApiResponse<IEnumerable<NhanVienDto>>>> GetAll(
         [FromQuery] string? chucVu = null,
         [FromQuery] bool includeDeleted = false)
     {
-        var result = await _service.GetAllAsync(chucVu, includeDeleted);
+        var result = await _service.GetAllAsync(chucVu, includeDeleted && User.IsInRole(Roles.Admin));
         return Ok(ApiResponse<IEnumerable<NhanVienDto>>.SuccessResponse(result));
     }
 
     /// <summary>Lấy thông tin một nhân viên theo id.</summary>
     [HttpGet("{id:long}")]
-    [Authorize(Roles = Roles.Admin)]
+    [Authorize(Roles = Roles.NhanVien)]
     public async Task<ActionResult<ApiResponse<NhanVienDto>>> GetById(long id)
     {
         var nv = await _service.GetByIdAsync(id);

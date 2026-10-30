@@ -23,7 +23,9 @@ public class LinhKienController : ControllerBase
 
     /// <summary>Đã đăng nhập bằng tài khoản nhân viên (khách và khách vãng lai không thấy tồn kho).</summary>
     private bool IsStaff =>
-        User.Identity?.IsAuthenticated == true && !User.IsInRole(Roles.KhachHang);
+        User.Identity?.IsAuthenticated == true &&
+        (User.IsInRole(Roles.Admin) || User.IsInRole(Roles.LeTan) ||
+         User.IsInRole(Roles.ThuKho) || User.IsInRole(Roles.KyThuatVien));
 
     /// <summary>Lấy danh sách linh kiện (công khai để khách xem giá). Query: keyword, includeDeleted (chỉ Admin).</summary>
     [HttpGet]
@@ -94,5 +96,33 @@ public class LinhKienController : ControllerBase
             return NotFound(ApiResponse<bool>.ErrorResponse($"Không tìm thấy linh kiện id={id}."));
 
         return Ok(ApiResponse<bool>.SuccessResponse(true, "Xoá linh kiện thành công."));
+    }
+
+    [HttpGet("{id:long}/anh")]
+    [AllowAnonymous]
+    public async Task<ActionResult<ApiResponse<IReadOnlyList<AnhLinhKienDto>>>> GetImages(long id) =>
+        Ok(ApiResponse<IReadOnlyList<AnhLinhKienDto>>.SuccessResponse(await _service.GetImagesAsync(id)));
+
+    /// <summary>Đăng ký URL ảnh đã có; API không tải file từ URL hoặc gửi file lên dịch vụ ngoài.</summary>
+    [HttpPost("{id:long}/anh")]
+    [Authorize(Roles = WriteRoles)]
+    public async Task<ActionResult<ApiResponse<AnhLinhKienDto>>> AddImage(long id, [FromBody] CreateAnhLinhKienDto dto)
+    {
+        var image = await _service.AddImageAsync(id, dto);
+        return CreatedAtAction(nameof(GetImages), new { id }, ApiResponse<AnhLinhKienDto>.SuccessResponse(image));
+    }
+
+    [HttpPut("{id:long}/anh/{imageId:long}/chinh")]
+    [Authorize(Roles = WriteRoles)]
+    public async Task<ActionResult<ApiResponse<AnhLinhKienDto>>> SetPrimaryImage(long id, long imageId) =>
+        Ok(ApiResponse<AnhLinhKienDto>.SuccessResponse(await _service.SetPrimaryImageAsync(id, imageId)));
+
+    [HttpDelete("{id:long}/anh/{imageId:long}")]
+    [Authorize(Roles = WriteRoles)]
+    public async Task<ActionResult<ApiResponse<bool>>> DeleteImage(long id, long imageId)
+    {
+        if (!await _service.DeleteImageAsync(id, imageId))
+            return NotFound(ApiResponse<bool>.ErrorResponse("Không tìm thấy ảnh của linh kiện."));
+        return Ok(ApiResponse<bool>.SuccessResponse(true));
     }
 }

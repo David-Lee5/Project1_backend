@@ -5,7 +5,7 @@ namespace RepairSystem.Service.Helpers;
 
 public static class SeedData
 {
-    public static async Task InitializeAsync(AppDbContext context)
+    public static async Task InitializeAsync(AppDbContext context, string? initialAdminPassword = null)
     {
         // Seed chỉ chạy khi DB đã có schema (dùng SQL script thủ công, không MigrateAsync)
         // Kiểm tra xem đã có tài khoản admin chưa
@@ -22,11 +22,17 @@ public static class SeedData
 
         if (hasAdmin) return;
 
-        // Tạo tài khoản admin mặc định
+        // Chỉ tạo tài khoản quản trị khi người vận hành cung cấp mật khẩu bootstrap.
+        // Không sử dụng mật khẩu mặc định dùng chung hoặc ghi mật khẩu ra log.
+        if (string.IsNullOrWhiteSpace(initialAdminPassword)) return;
+        if (initialAdminPassword.Length < 12 || initialAdminPassword.Length > 100)
+            throw new InvalidOperationException("Bootstrap:AdminPassword phải dài 12–100 ký tự.");
+
+        await using var tx = await context.Database.BeginTransactionAsync();
         var adminTk = new TaiKhoan
         {
             TenDangNhap = "admin",
-            MatKhauHash = PasswordHelper.HashPassword("Admin@123"),
+            MatKhauHash = PasswordHelper.HashPassword(initialAdminPassword),
             VaiTro = Roles.Admin,
             HoatDong = true
         };
@@ -46,7 +52,8 @@ public static class SeedData
 
         context.NhanViens.Add(adminNv);
         await context.SaveChangesAsync();
+        await tx.CommitAsync();
 
-        Console.WriteLine("✅ Seed: tài khoản admin/Admin@123 đã được tạo.");
+        Console.WriteLine("Seed: tài khoản quản trị bootstrap đã được tạo.");
     }
 }

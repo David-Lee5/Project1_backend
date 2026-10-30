@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using RepairSystem.Model;
 using RepairSystem.Service.DTOs;
 using RepairSystem.Service.IServices;
+using RepairSystem.Service.Helpers;
 
 namespace RepairSystem.Service.Services;
 
@@ -16,7 +17,7 @@ public class DichVuService : IDichVuService
 
     public async Task<IEnumerable<DichVuDto>> GetAllAsync(bool includeDeleted = false)
     {
-        var query = _context.DichVus.AsQueryable();
+        var query = _context.DichVus.AsNoTracking().AsQueryable();
 
         if (!includeDeleted)
             query = query.Where(dv => dv.DeletedAt == null);
@@ -35,12 +36,16 @@ public class DichVuService : IDichVuService
 
     public async Task<DichVuDto> CreateAsync(UpsertDichVuDto dto)
     {
+        CatalogValidation.Validate(dto);
+        CatalogValidation.Money(dto.GiaNiemYet);
         var dv = new DichVu
         {
-            TenDichVu = dto.TenDichVu,
-            MoTa = dto.MoTa,
-            HinhAnh = dto.HinhAnh,
-            GiaNiemYet = dto.GiaNiemYet
+            TenDichVu = dto.TenDichVu.Trim(),
+            MoTa = CatalogValidation.NullIfBlank(dto.MoTa),
+            HinhAnh = CatalogValidation.NullIfBlank(dto.HinhAnh),
+            GiaNiemYet = dto.GiaNiemYet,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
         };
 
         _context.DichVus.Add(dv);
@@ -50,13 +55,15 @@ public class DichVuService : IDichVuService
 
     public async Task<DichVuDto> UpdateAsync(long id, UpsertDichVuDto dto)
     {
+        CatalogValidation.Validate(dto);
+        CatalogValidation.Money(dto.GiaNiemYet);
         var dv = await _context.DichVus
             .FirstOrDefaultAsync(d => d.Id == id && d.DeletedAt == null)
             ?? throw new KeyNotFoundException($"Không tìm thấy dịch vụ id={id}.");
 
-        dv.TenDichVu = dto.TenDichVu;
-        dv.MoTa = dto.MoTa;
-        dv.HinhAnh = dto.HinhAnh;
+        dv.TenDichVu = dto.TenDichVu.Trim();
+        dv.MoTa = CatalogValidation.NullIfBlank(dto.MoTa);
+        dv.HinhAnh = CatalogValidation.NullIfBlank(dto.HinhAnh);
         dv.GiaNiemYet = dto.GiaNiemYet;
         dv.UpdatedAt = DateTime.UtcNow;
 

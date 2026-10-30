@@ -16,7 +16,7 @@ public class TokenHelper : ITokenService
         _configuration = configuration;
     }
 
-    public string GenerateAccessToken(int userId, string username, string? roleName, List<string>? permissions = null)
+    public string GenerateAccessToken(long userId, string username, string? roleName, List<string>? permissions = null)
     {
         var jwtSettings = _configuration.GetSection("JwtSettings");
         var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!));
@@ -26,7 +26,8 @@ public class TokenHelper : ITokenService
         {
             new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
             new Claim(ClaimTypes.Name, username),
-            new Claim("UserId", userId.ToString())
+            new Claim("UserId", userId.ToString()),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString("N"))
         };
 
         if (!string.IsNullOrEmpty(roleName))
@@ -63,7 +64,7 @@ public class TokenHelper : ITokenService
         }
     }
 
-    public async Task<(bool isValid, int? userId)> ValidateTokenAsync(string token)
+    public Task<(bool isValid, long? userId)> ValidateTokenAsync(string token)
     {
         try
         {
@@ -80,22 +81,23 @@ public class TokenHelper : ITokenService
                 ValidateAudience = true,
                 ValidAudience = jwtSettings["Audience"],
                 ValidateLifetime = true,
+                ValidAlgorithms = new[] { SecurityAlgorithms.HmacSha256 },
                 ClockSkew = TimeSpan.Zero
             }, out SecurityToken validatedToken);
 
             var jwtToken = (JwtSecurityToken)validatedToken;
             var userIdClaim = jwtToken.Claims.FirstOrDefault(x => x.Type == "UserId");
 
-            if (userIdClaim != null && int.TryParse(userIdClaim.Value, out var userId))
+            if (userIdClaim != null && long.TryParse(userIdClaim.Value, out var userId) && userId > 0)
             {
-                return (true, userId);
+                return Task.FromResult<(bool isValid, long? userId)>((true, userId));
             }
 
-            return (false, null);
+            return Task.FromResult<(bool isValid, long? userId)>((false, null));
         }
         catch
         {
-            return (false, null);
+            return Task.FromResult<(bool isValid, long? userId)>((false, null));
         }
     }
 }

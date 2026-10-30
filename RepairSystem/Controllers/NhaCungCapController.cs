@@ -24,7 +24,7 @@ public class NhaCungCapController : ControllerBase
     public async Task<ActionResult<ApiResponse<IEnumerable<NhaCungCapDto>>>> GetAll(
         [FromQuery] bool includeDeleted = false)
     {
-        var result = await _service.GetAllAsync(includeDeleted);
+        var result = await _service.GetAllAsync(includeDeleted && User.IsInRole(Roles.Admin));
         return Ok(ApiResponse<IEnumerable<NhaCungCapDto>>.SuccessResponse(result));
     }
 
