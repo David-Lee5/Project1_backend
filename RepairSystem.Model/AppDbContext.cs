@@ -41,6 +41,8 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<LinhKien> LinhKiens { get; set; }
 
+    public virtual DbSet<LinhKienSerial> LinhKienSerials { get; set; }
+
     public virtual DbSet<NhaCungCap> NhaCungCaps { get; set; }
 
     public virtual DbSet<NhanVien> NhanViens { get; set; }
@@ -259,6 +261,7 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.DonGiaNhap)
                 .HasColumnType("decimal(14, 2)")
                 .HasColumnName("don_gia_nhap");
+            entity.Property(e => e.DanhSachSerial).HasColumnName("danh_sach_serial");
             entity.Property(e => e.SoLuongNhap).HasColumnName("so_luong_nhap");
             entity.Property(e => e.ThanhTien)
                 .HasComputedColumnSql("(CONVERT([decimal](14,2),[so_luong_nhap]*[don_gia_nhap]))", true)
@@ -294,6 +297,7 @@ public partial class AppDbContext : DbContext
                 .HasColumnName("don_gia_xuat");
             entity.Property(e => e.KhoId).HasColumnName("kho_id");
             entity.Property(e => e.LinhKienId).HasColumnName("linh_kien_id");
+            entity.Property(e => e.LinhKienSerialId).HasColumnName("linh_kien_serial_id");
             entity.Property(e => e.NgayXuat)
                 .HasPrecision(3)
                 .HasDefaultValueSql("(sysutcdatetime())")
@@ -310,6 +314,10 @@ public partial class AppDbContext : DbContext
                 .HasForeignKey(d => d.PhieuId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_ctxk_phieu");
+
+            entity.HasOne(d => d.LinhKienSerial).WithMany()
+                .HasForeignKey(d => d.LinhKienSerialId)
+                .HasConstraintName("fk_ctxk_serial");
 
             entity.HasOne(d => d.ThuKho).WithMany(p => p.ChiTietXuatKhos)
                 .HasForeignKey(d => d.ThuKhoId)
@@ -665,6 +673,64 @@ public partial class AppDbContext : DbContext
                 .HasColumnName("updated_at");
         });
 
+        modelBuilder.Entity<LinhKienSerial>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.ToTable("linh_kien_serial");
+
+            entity.HasIndex(e => e.KhoId, "ix_lks_kho_id");
+
+            entity.HasIndex(e => e.LinhKienId, "ix_lks_linh_kien_id");
+
+            entity.HasIndex(e => e.PhieuNhapId, "ix_lks_phieu_nhap_id");
+
+            entity.HasIndex(e => e.TrangThai, "ix_lks_trang_thai");
+
+            entity.HasIndex(e => e.SoSerial, "uq_linh_kien_serial_so_serial").IsUnique();
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.ChiTietXuatKhoId).HasColumnName("chi_tiet_xuat_kho_id");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getutcdate())")
+                .HasColumnName("created_at");
+            entity.Property(e => e.GhiChu)
+                .HasMaxLength(500)
+                .HasColumnName("ghi_chu");
+            entity.Property(e => e.KhoId).HasColumnName("kho_id");
+            entity.Property(e => e.LinhKienId).HasColumnName("linh_kien_id");
+            entity.Property(e => e.PhieuNhapId).HasColumnName("phieu_nhap_id");
+            entity.Property(e => e.SoSerial)
+                .HasMaxLength(150)
+                .IsUnicode(false)
+                .HasColumnName("so_serial");
+            entity.Property(e => e.TrangThai)
+                .HasMaxLength(30)
+                .HasDefaultValue("TRONG_KHO")
+                .HasColumnName("trang_thai");
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getutcdate())")
+                .HasColumnName("updated_at");
+
+            entity.HasOne(d => d.ChiTietXuatKho).WithMany(p => p.LinhKienSerialsXuat)
+                .HasForeignKey(d => d.ChiTietXuatKhoId)
+                .HasConstraintName("fk_lks_chi_tiet_xuat_kho");
+
+            entity.HasOne(d => d.Kho).WithMany(p => p.LinhKienSerials)
+                .HasForeignKey(d => d.KhoId)
+                .HasConstraintName("fk_lks_kho");
+
+            entity.HasOne(d => d.LinhKien).WithMany(p => p.LinhKienSerials)
+                .HasForeignKey(d => d.LinhKienId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_lks_linh_kien");
+
+            entity.HasOne(d => d.PhieuNhap).WithMany(p => p.LinhKienSerials)
+                .HasForeignKey(d => d.PhieuNhapId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_lks_phieu_nhap");
+        });
+
         modelBuilder.Entity<NhaCungCap>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__nha_cung__3213E83FD04CFCA3");
@@ -870,6 +936,15 @@ public partial class AppDbContext : DbContext
                 .HasPrecision(3)
                 .HasColumnName("ngay_tra");
             entity.Property(e => e.ThietBiId).HasColumnName("thiet_bi_id");
+            entity.Property(e => e.TinhTrangNgoaiQuan)
+                .HasMaxLength(500)
+                .HasColumnName("tinh_trang_ngoai_quan");
+            entity.Property(e => e.PhuKienKemTheo)
+                .HasMaxLength(500)
+                .HasColumnName("phu_kien_kem_theo");
+            entity.Property(e => e.MatKhauMay)
+                .HasMaxLength(100)
+                .HasColumnName("mat_khau_may");
             entity.Property(e => e.TinhTrangLoi).HasColumnName("tinh_trang_loi");
             entity.Property(e => e.TrangThai)
                 .HasMaxLength(15)

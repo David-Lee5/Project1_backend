@@ -31,6 +31,8 @@ public partial class PhieuNhap
 
     public virtual ICollection<ChiTietNhapKho> ChiTietNhapKhos { get; set; } = new List<ChiTietNhapKho>();
 
+    public virtual ICollection<LinhKienSerial> LinhKienSerials { get; set; } = new List<LinhKienSerial>();
+
     public virtual Kho Kho { get; set; } = null!;
 
     public virtual NhaCungCap NhaCungCap { get; set; } = null!;

@@ -23,6 +23,8 @@ public partial class Kho
 
     public virtual ICollection<PhieuNhap> PhieuNhaps { get; set; } = new List<PhieuNhap>();
 
+    public virtual ICollection<LinhKienSerial> LinhKienSerials { get; set; } = new List<LinhKienSerial>();
+
     public virtual ThuKho? ThuKho { get; set; }
 
     public virtual ICollection<TonKho> TonKhos { get; set; } = new List<TonKho>();

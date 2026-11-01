@@ -14,6 +14,12 @@ public class DongNhapKhoRequestDto
     /// <summary>Đơn giá nhập (giá vốn). Tối đa 999.999.999.999,99 theo kiểu decimal(14,2) của DB.</summary>
     [Range(0, 999_999_999_999.99, ErrorMessage = "Đơn giá nhập phải lớn hơn hoặc bằng 0.")]
     public decimal DonGiaNhap { get; set; }
+
+    /// <summary>
+    /// Danh sách số serial tương ứng với số lượng nhập. Để trống = nhập theo số lượng tổng (không theo dõi serial).
+    /// Nếu có thì phải khớp đúng SoLuongNhap, không trùng nhau và không trùng serial đã có trong hệ thống.
+    /// </summary>
+    public List<string>? DanhSachSerial { get; set; }
 }
 
 /// <summary>Yêu cầu tạo phiếu nhập kho.</summary>
@@ -60,6 +66,9 @@ public class DongNhapKhoDto
     public int SoLuongNhap { get; set; }
     public decimal DonGiaNhap { get; set; }
     public decimal ThanhTien { get; set; }
+
+    /// <summary>Danh sách serial đã ghi nhận cho dòng này (rỗng nếu không theo dõi serial).</summary>
+    public List<string> DanhSachSerial { get; set; } = new();
 }
 
 /// <summary>Thông tin chung của phiếu nhập (dùng cho danh sách).</summary>
