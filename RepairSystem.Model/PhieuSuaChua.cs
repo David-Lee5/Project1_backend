@@ -37,6 +37,12 @@ public partial class PhieuSuaChua
 
     public DateTime UpdatedAt { get; set; }
 
+    public string? TinhTrangNgoaiQuan { get; set; }
+
+    public string? PhuKienKemTheo { get; set; }
+
+    public string? MatKhauMay { get; set; }
+
     public virtual ICollection<AnhPhieuSuaChua> AnhPhieuSuaChuas { get; set; } = new List<AnhPhieuSuaChua>();
 
     public virtual ICollection<ChiTietDichVu> ChiTietDichVus { get; set; } = new List<ChiTietDichVu>();

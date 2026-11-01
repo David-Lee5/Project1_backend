@@ -29,6 +29,7 @@ builder.Services.AddScoped<ILinhKienService, LinhKienService>();
 // Register Warehouse Services (Phase 1)
 builder.Services.AddScoped<IKhoService, KhoService>();
 builder.Services.AddScoped<IPhieuNhapService, PhieuNhapService>();
+builder.Services.AddScoped<ILinhKienSerialService, LinhKienSerialService>();
 
 // Configure JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");

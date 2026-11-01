@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using RepairSystem.Model;
@@ -48,6 +49,12 @@ public class PhieuNhapService : IPhieuNhapService
         if (lkThieu.Count > 0)
             throw new ArgumentException($"Linh kiện không tồn tại hoặc đã bị xoá: {string.Join(", ", lkThieu)}.");
 
+        // Serial (nếu có): chuẩn hoá, kiểm tra khớp số lượng, không trùng trong phiếu và trong hệ thống
+        var serialTheoLk = ChuanHoaSerial(dto.ChiTiet);
+        var serialDaCo = await TimSerialTrungAsync(serialTheoLk.Values.SelectMany(x => x));
+        if (serialDaCo.Count > 0)
+            throw new ArgumentException($"Serial đã tồn tại trong hệ thống: {string.Join(", ", serialDaCo)}.");
+
         // Người thực hiện (cần cho thủ kho và cho bước xác nhận)
         long? nhanVienId = null;
         if (vaiTro == Roles.ThuKho || dto.XacNhanNgay)
@@ -84,7 +91,10 @@ public class PhieuNhapService : IPhieuNhapService
             {
                 LinhKienId = c.LinhKienId,
                 SoLuongNhap = c.SoLuongNhap,
-                DonGiaNhap = c.DonGiaNhap
+                DonGiaNhap = c.DonGiaNhap,
+                DanhSachSerial = serialTheoLk.TryGetValue(c.LinhKienId, out var ds)
+                    ? JsonSerializer.Serialize(ds)
+                    : null
             });
         }
 
@@ -125,13 +135,21 @@ public class PhieuNhapService : IPhieuNhapService
     {
         var nhanVienId = await GetNhanVienIdAsync(taiKhoanId);
 
+        await using var tx = await _context.Database.BeginTransactionAsync();
         try
         {
             await ChayXacNhanAsync(id, nhanVienId);
+            await tx.CommitAsync();
         }
         catch (SqlException ex)
         {
+            await tx.RollbackAsync();
             throw MapSqlException(ex);
+        }
+        catch
+        {
+            await tx.RollbackAsync();
+            throw;
         }
 
         return (await GetByIdAsync(id))!;
@@ -253,6 +271,17 @@ public class PhieuNhapService : IPhieuNhapService
             })
             .ToListAsync();
 
+        // Serial lưu dạng JSON trong cột danh_sach_serial: giải mã trong bộ nhớ
+        var serialJson = await _context.ChiTietNhapKhos
+            .AsNoTracking()
+            .Where(c => c.PhieuNhapId == id && c.DanhSachSerial != null)
+            .ToDictionaryAsync(c => c.LinhKienId, c => c.DanhSachSerial!);
+        foreach (var dong in chiTiet)
+        {
+            if (serialJson.TryGetValue(dong.LinhKienId, out var json))
+                dong.DanhSachSerial = JsonSerializer.Deserialize<List<string>>(json) ?? new List<string>();
+        }
+
         phieu.TongTienNhap = chiTiet.Sum(c => c.ThanhTien);
 
         return new PhieuNhapChiTietDto { Phieu = phieu, ChiTiet = chiTiet };
@@ -264,6 +293,108 @@ public class PhieuNhapService : IPhieuNhapService
     {
         await _context.Database.ExecuteSqlInterpolatedAsync(
             $"EXEC dbo.usp_xac_nhan_nhap_kho @phieu_nhap_id = {phieuNhapId}, @nhan_vien_id = {nhanVienId}");
+
+        // Cộng tồn xong thì sinh các dòng serial (cùng transaction với bước trên)
+        await TaoSerialTuPhieuAsync(phieuNhapId);
+    }
+
+    // ── Serial ─────────────────────────────────────────────────────────────
+    /// <summary>
+    /// Chuẩn hoá (Trim + IN HOA) và kiểm tra serial theo từng dòng. Chỉ trả về các dòng có serial.
+    /// </summary>
+    private static Dictionary<long, List<string>> ChuanHoaSerial(IEnumerable<DongNhapKhoRequestDto> chiTiet)
+    {
+        var ketQua = new Dictionary<long, List<string>>();
+        var daThay = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var c in chiTiet)
+        {
+            if (c.DanhSachSerial == null || c.DanhSachSerial.Count == 0) continue;
+
+            if (c.DanhSachSerial.Count != c.SoLuongNhap)
+                throw new ArgumentException(
+                    $"Linh kiện {c.LinhKienId}: số lượng serial ({c.DanhSachSerial.Count}) " +
+                    $"không khớp với số lượng nhập ({c.SoLuongNhap}).");
+
+            var ds = new List<string>();
+            foreach (var raw in c.DanhSachSerial)
+            {
+                var s = raw?.Trim().ToUpperInvariant();
+                if (string.IsNullOrEmpty(s))
+                    throw new ArgumentException($"Linh kiện {c.LinhKienId}: có serial bị để trống.");
+                if (s.Length > 150)
+                    throw new ArgumentException($"Serial quá dài (tối đa 150 ký tự): {s[..30]}...");
+                if (!daThay.Add(s))
+                    throw new ArgumentException($"Serial bị trùng trong phiếu: {s}.");
+                ds.Add(s);
+            }
+            ketQua[c.LinhKienId] = ds;
+        }
+
+        return ketQua;
+    }
+
+    /// <summary>Trả về các serial trong danh sách đã tồn tại trong DB.</summary>
+    private async Task<List<string>> TimSerialTrungAsync(IEnumerable<string> serials)
+    {
+        var list = serials.ToList();
+        if (list.Count == 0) return new List<string>();
+
+        return await _context.LinhKienSerials
+            .AsNoTracking()
+            .Where(s => list.Contains(s.SoSerial))
+            .Select(s => s.SoSerial)
+            .ToListAsync();
+    }
+
+    /// <summary>
+    /// Sinh các dòng linh_kien_serial (TRONG_KHO) từ cột danh_sach_serial của phiếu vừa được nhập kho.
+    /// Phải gọi trong cùng transaction với bước cộng tồn.
+    /// </summary>
+    private async Task TaoSerialTuPhieuAsync(long phieuNhapId)
+    {
+        var dong = await _context.ChiTietNhapKhos
+            .AsNoTracking()
+            .Where(c => c.PhieuNhapId == phieuNhapId && c.DanhSachSerial != null)
+            .Select(c => new { c.LinhKienId, c.DanhSachSerial })
+            .ToListAsync();
+        if (dong.Count == 0) return;
+
+        var khoId = await _context.PhieuNhaps
+            .Where(p => p.Id == phieuNhapId)
+            .Select(p => p.KhoId)
+            .FirstAsync();
+
+        var moi = new List<LinhKienSerial>();
+        foreach (var d in dong)
+        {
+            var ds = JsonSerializer.Deserialize<List<string>>(d.DanhSachSerial!) ?? new List<string>();
+            moi.AddRange(ds.Select(s => new LinhKienSerial
+            {
+                LinhKienId = d.LinhKienId,
+                SoSerial = s,
+                KhoId = khoId,
+                PhieuNhapId = phieuNhapId,
+                TrangThai = "TRONG_KHO"
+            }));
+        }
+        if (moi.Count == 0) return;
+
+        var trung = await TimSerialTrungAsync(moi.Select(m => m.SoSerial));
+        if (trung.Count > 0)
+            throw new InvalidOperationException(
+                $"Không thể nhập kho: serial đã tồn tại trong hệ thống: {string.Join(", ", trung)}.");
+
+        _context.LinhKienSerials.AddRange(moi);
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException)
+        {
+            throw new InvalidOperationException(
+                "Không thể lưu serial (có thể bị trùng do thao tác đồng thời). Vui lòng thử lại.");
+        }
     }
 
     private async Task<long> GetNhanVienIdAsync(long taiKhoanId)

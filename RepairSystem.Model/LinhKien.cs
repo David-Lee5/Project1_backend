@@ -31,5 +31,7 @@ public partial class LinhKien
 
     public virtual ICollection<ChiTietNhapKho> ChiTietNhapKhos { get; set; } = new List<ChiTietNhapKho>();
 
+    public virtual ICollection<LinhKienSerial> LinhKienSerials { get; set; } = new List<LinhKienSerial>();
+
     public virtual ICollection<TonKho> TonKhos { get; set; } = new List<TonKho>();
 }
