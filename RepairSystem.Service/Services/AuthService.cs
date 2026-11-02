@@ -85,12 +85,25 @@ public class AuthService : IAuthService
     {
         var username = request.Username.Trim();
         var email = string.IsNullOrWhiteSpace(request.Email) ? null : request.Email.Trim();
+        var phone = request.SoDienThoai.Trim();
 
         if (await _context.TaiKhoans.AnyAsync(u => u.TenDangNhap == username))
             return (false, "Tên đăng nhập đã tồn tại.");
 
-        if (email != null && await _context.KhachHangs.AnyAsync(k => k.Email == email && k.DeletedAt == null))
-            return (false, "Email đã được sử dụng.");
+        // Kiểm tra xem số điện thoại này đã có hồ sơ Khách hàng chưa
+        var existingKhach = await _context.KhachHangs
+            .FirstOrDefaultAsync(k => k.SoDienThoai == phone && k.DeletedAt == null);
+
+        if (existingKhach != null && existingKhach.TaiKhoanId != null)
+            return (false, "Số điện thoại này đã được liên kết với một tài khoản khác.");
+
+        if (email != null)
+        {
+            var emailExists = await _context.KhachHangs
+                .AnyAsync(k => k.Email == email && k.DeletedAt == null && (existingKhach == null || k.Id != existingKhach.Id));
+            if (emailExists)
+                return (false, "Email đã được sử dụng.");
+        }
 
         await using var tx = await _context.Database.BeginTransactionAsync();
         try
@@ -105,14 +118,28 @@ public class AuthService : IAuthService
             _context.TaiKhoans.Add(taiKhoan);
             await _context.SaveChangesAsync();
 
-            _context.KhachHangs.Add(new KhachHang
+            if (existingKhach != null)
             {
-                HoTen = request.HoTen.Trim(),
-                SoDienThoai = request.SoDienThoai.Trim(),
-                Email = email,
-                TaiKhoanId = taiKhoan.Id,
-                VaiTroTk = Roles.KhachHang
-            });
+                // Khách hàng đã từng có hồ sơ do Lễ tân tạo lúc tiếp nhận máy -> liên kết tài khoản vào hồ sơ cũ
+                existingKhach.TaiKhoanId = taiKhoan.Id;
+                existingKhach.VaiTroTk = Roles.KhachHang;
+                if (string.IsNullOrWhiteSpace(existingKhach.Email) && email != null)
+                {
+                    existingKhach.Email = email;
+                }
+                existingKhach.UpdatedAt = DateTime.UtcNow;
+            }
+            else
+            {
+                _context.KhachHangs.Add(new KhachHang
+                {
+                    HoTen = request.HoTen.Trim(),
+                    SoDienThoai = phone,
+                    Email = email,
+                    TaiKhoanId = taiKhoan.Id,
+                    VaiTroTk = Roles.KhachHang
+                });
+            }
             await _context.SaveChangesAsync();
 
             await tx.CommitAsync();
