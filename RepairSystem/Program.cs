@@ -30,6 +30,7 @@ builder.Services.AddScoped<ILinhKienService, LinhKienService>();
 builder.Services.AddScoped<IKhoService, KhoService>();
 builder.Services.AddScoped<IPhieuNhapService, PhieuNhapService>();
 builder.Services.AddScoped<ILinhKienSerialService, LinhKienSerialService>();
+builder.Services.AddScoped<IXuatKhoService, XuatKhoService>();
 
 // Configure JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
