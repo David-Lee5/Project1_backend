@@ -9,10 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="DTOs\Common\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\RepairSystem.Data\RepairSystem.Data.csproj" />
     <ProjectReference Include="..\RepairSystem.Model\RepairSystem.Model.csproj" />
   </ItemGroup>

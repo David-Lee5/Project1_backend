@@ -19,6 +19,9 @@ public class XuatKhoRequestDto
     /// Bắt buộc nếu linh kiện đó trong kho đang được theo dõi theo serial.
     /// </summary>
     public List<long>? LinhKienSerialIds { get; set; }
+
+    /// <summary>Chi tiết yêu cầu vật tư V3 đã được duyệt; bắt buộc khi bật quy trình duyệt.</summary>
+    public long? YeuCauChiTietId { get; set; }
 }
 
 /// <summary>Một dòng đã xuất kho cho phiếu sửa chữa.</summary>

@@ -3,15 +3,23 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using RepairSystem.Model;
+using RepairSystem.Model.ScaffoldV3.Entities;
 using RepairSystem.Service.IServices;
 using RepairSystem.Service.Services;
 using RepairSystem.Service.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+if (string.IsNullOrWhiteSpace(connectionString))
+    throw new InvalidOperationException(
+        "Thiếu ConnectionStrings:DefaultConnection. Đặt biến môi trường ConnectionStrings__DefaultConnection.");
 
 // Add services to the container.
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<AppDbContextV3>(options =>
+    options.UseSqlServer(connectionString));
+builder.Services.AddDataProtection();
 
 // Register Services
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -34,7 +42,11 @@ builder.Services.AddScoped<IXuatKhoService, XuatKhoService>();
 
 // Configure JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var secretKey = Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!);
+var configuredSecret = jwtSettings["SecretKey"];
+if (string.IsNullOrWhiteSpace(configuredSecret) || Encoding.UTF8.GetByteCount(configuredSecret) < 32)
+    throw new InvalidOperationException(
+        "Thiếu JWT SecretKey hợp lệ (ít nhất 32 byte). Đặt biến môi trường JwtSettings__SecretKey.");
+var secretKey = Encoding.UTF8.GetBytes(configuredSecret);
 
 builder.Services.AddAuthentication(options =>
 {
@@ -93,7 +105,7 @@ try
     using (var scope = app.Services.CreateScope())
     {
         var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        await SeedData.InitializeAsync(context);
+        await SeedData.InitializeAsync(context, builder.Configuration, app.Environment.IsDevelopment());
     }
 }
 catch (Exception ex)

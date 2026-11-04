@@ -53,6 +53,7 @@ public class BaoHanhSerialDto
     public string? TenThietBi { get; set; }
 
     public DateOnly? BaoHanhDen { get; set; }
+    public DateOnly? BaoHanhTu { get; set; }
 
     /// <summary>true nếu đã bán ra và còn trong thời hạn bảo hành.</summary>
     public bool ConBaoHanh { get; set; }

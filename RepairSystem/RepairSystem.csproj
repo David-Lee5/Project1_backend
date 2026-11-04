@@ -33,8 +33,4 @@
     <ProjectReference Include="..\RepairSystem.Service\RepairSystem.Service.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\NewFolder\" />
-  </ItemGroup>
-
 </Project>

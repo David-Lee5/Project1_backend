@@ -12,10 +12,13 @@ public class XuatKhoService : IXuatKhoService
     private const string TrongKho = "TRONG_KHO";
 
     private readonly AppDbContext _context;
+    private readonly bool _requireApproval;
 
-    public XuatKhoService(AppDbContext context)
+    public XuatKhoService(AppDbContext context, Microsoft.Extensions.Configuration.IConfiguration configuration)
     {
         _context = context;
+        _requireApproval = string.Equals(configuration["V3:RequireApprovedMaterialRequest"],
+            "true", StringComparison.OrdinalIgnoreCase);
     }
 
     public async Task<List<DongXuatKhoDto>> XuatKhoAsync(long phieuId, XuatKhoRequestDto dto, long taiKhoanId)
@@ -30,11 +33,26 @@ public class XuatKhoService : IXuatKhoService
         var soLuong = serialIds.Count > 0 ? serialIds.Count : dto.SoLuong;
         if (soLuong <= 0)
             throw new ArgumentException("Số lượng xuất phải lớn hơn 0.");
+        if (_requireApproval && !dto.YeuCauChiTietId.HasValue)
+            throw new ArgumentException("Cần chọn dòng yêu cầu vật tư đã được duyệt trước khi xuất kho.");
 
         if (!await _context.Khos.AnyAsync(k => k.Id == dto.KhoId && k.DeletedAt == null))
             throw new ArgumentException($"Kho id={dto.KhoId} không tồn tại.");
         if (!await _context.LinhKiens.AnyAsync(l => l.Id == dto.LinhKienId && l.DeletedAt == null))
             throw new ArgumentException($"Linh kiện id={dto.LinhKienId} không tồn tại hoặc đã bị xoá.");
+
+        if (_requireApproval)
+        {
+            var theoDoiSerial = await _context.Database.SqlQueryRaw<int?>(
+                "SELECT CAST(theo_doi_serial AS int) AS Value FROM dbo.linh_kien WHERE id=@id",
+                new SqlParameter("@id", dto.LinhKienId)).SingleOrDefaultAsync();
+            if (theoDoiSerial == null)
+                throw new ArgumentException("Mẫu linh kiện chưa chọn chính sách theo dõi serial.");
+            if (theoDoiSerial == 1 && serialIds.Count == 0)
+                throw new ArgumentException("Mẫu linh kiện này bắt buộc chọn serial khi xuất.");
+            if (theoDoiSerial == 0 && serialIds.Count > 0)
+                throw new ArgumentException("Mẫu linh kiện này quản lý theo số lượng, không chọn serial.");
+        }
 
         if (serialIds.Count > 0)
         {
@@ -69,6 +87,27 @@ public class XuatKhoService : IXuatKhoService
         await using var tx = await _context.Database.BeginTransactionAsync();
         try
         {
+            if (dto.YeuCauChiTietId.HasValue)
+            {
+                // Khóa dòng yêu cầu đến hết transaction: hai lần xuất đồng thời không vượt số lượng duyệt.
+                var duocXuat = await _context.Database.SqlQueryRaw<int>(@"
+                    SELECT CAST(CASE WHEN r.trang_thai='DA_DUYET'
+                            AND c.phieu_id=@phieu_id AND c.linh_kien_id=@linh_kien_id
+                            AND c.so_luong_duyet-COALESCE((
+                                SELECT SUM(x.so_luong_xuat) FROM dbo.chi_tiet_xuat_kho x
+                                WHERE x.yeu_cau_chi_tiet_id=c.id),0)>=@so_luong
+                        THEN 1 ELSE 0 END AS int) AS Value
+                    FROM dbo.chi_tiet_yeu_cau_linh_kien_v3 c WITH (UPDLOCK,HOLDLOCK)
+                    JOIN dbo.yeu_cau_linh_kien_v3 r ON r.id=c.yeu_cau_id
+                    WHERE c.id=@chi_tiet_id",
+                    new SqlParameter("@phieu_id", phieuId),
+                    new SqlParameter("@linh_kien_id", dto.LinhKienId),
+                    new SqlParameter("@so_luong", soLuong),
+                    new SqlParameter("@chi_tiet_id", dto.YeuCauChiTietId.Value))
+                    .SingleOrDefaultAsync();
+                if (duocXuat != 1)
+                    throw new InvalidOperationException("Yêu cầu vật tư chưa được duyệt, không đúng phiếu/hàng, hoặc đã xuất hết số lượng duyệt.");
+            }
             if (serialIds.Count == 0)
             {
                 ids.Add(await GoiXuatKhoAsync(phieuId, dto.KhoId, dto.LinhKienId, soLuong, thuKhoId));
@@ -102,6 +141,12 @@ public class XuatKhoService : IXuatKhoService
                     ids.Add(chiTietId);
                 }
             }
+
+            if (dto.YeuCauChiTietId.HasValue)
+                foreach (var chiTietId in ids)
+                    await _context.Database.ExecuteSqlInterpolatedAsync($@"
+                        UPDATE dbo.chi_tiet_xuat_kho SET yeu_cau_chi_tiet_id={dto.YeuCauChiTietId.Value}
+                        WHERE id={chiTietId} AND phieu_id={phieuId} AND linh_kien_id={dto.LinhKienId}");
 
             await tx.CommitAsync();
         }

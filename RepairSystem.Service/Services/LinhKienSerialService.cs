@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using RepairSystem.Model;
+using RepairSystem.Model.ScaffoldV3.Entities;
 using RepairSystem.Service.DTOs;
 using RepairSystem.Service.IServices;
 
@@ -12,10 +13,15 @@ public class LinhKienSerialService : ILinhKienSerialService
         new() { "TRONG_KHO", "DA_XUAT", "BAO_HANH", "THANH_LY" };
 
     private readonly AppDbContext _context;
+    private readonly AppDbContextV3 _v3Context;
+    private readonly bool _v3Enabled;
 
-    public LinhKienSerialService(AppDbContext context)
+    public LinhKienSerialService(AppDbContext context, AppDbContextV3 v3Context,
+        Microsoft.Extensions.Configuration.IConfiguration configuration)
     {
         _context = context;
+        _v3Context = v3Context;
+        _v3Enabled = string.Equals(configuration["V3:Enabled"], "true", StringComparison.OrdinalIgnoreCase);
     }
 
     public async Task<IEnumerable<LinhKienSerialDto>> GetDanhSachAsync(long? linhKienId, string? trangThai, long? khoId)
@@ -115,6 +121,23 @@ public class LinhKienSerialService : ILinhKienSerialService
 
         if (dto == null) return null;
 
+        if (_v3Enabled && dto.TrangThai == "DA_XUAT")
+        {
+            var issueId = await _v3Context.LinhKienSerials.AsNoTracking()
+                .Where(s => s.SoSerial == so)
+                .Select(s => s.ChiTietXuatKhoId)
+                .FirstOrDefaultAsync();
+            var policy = issueId.HasValue
+                ? await _v3Context.CamKetBaoHanhs.AsNoTracking()
+                    .Where(x => x.Loai == "LINH_KIEN" && x.ChiTietXuatKhoId == issueId)
+                    .OrderByDescending(x => x.NgayKetThuc)
+                    .Select(x => new { x.NgayBatDau, x.NgayKetThuc })
+                    .FirstOrDefaultAsync()
+                : null;
+            dto.BaoHanhTu = policy?.NgayBatDau;
+            dto.BaoHanhDen = policy?.NgayKetThuc;
+        }
+
         // Ngày hiện tại theo giờ Việt Nam (UTC+7)
         var homNay = DateOnly.FromDateTime(DateTime.UtcNow.AddHours(7));
 
@@ -132,7 +155,13 @@ public class LinhKienSerialService : ILinhKienSerialService
             default: // DA_XUAT
                 if (dto.BaoHanhDen == null)
                 {
-                    dto.ThongBao = "Linh kiện đã bán ra nhưng không có chính sách bảo hành.";
+                    dto.ThongBao = _v3Enabled
+                        ? "Linh kiện đã xuất nhưng chưa ghi nhận cam kết bảo hành sau bàn giao. Vui lòng liên hệ cửa hàng."
+                        : "Linh kiện đã bán ra nhưng không có chính sách bảo hành.";
+                }
+                else if (dto.BaoHanhTu.HasValue && dto.BaoHanhTu.Value > homNay)
+                {
+                    dto.ThongBao = $"Bảo hành bắt đầu từ {dto.BaoHanhTu.Value:dd/MM/yyyy}.";
                 }
                 else if (dto.BaoHanhDen.Value >= homNay)
                 {
