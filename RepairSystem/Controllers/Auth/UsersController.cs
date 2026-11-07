@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 using RepairSystem.Service.DTOs;
 using RepairSystem.Service.Helpers;
 using RepairSystem.Service.IServices;
@@ -59,6 +60,18 @@ public class UsersController : ControllerBase
         return Ok(ApiResponse<bool>.SuccessResponse(true, "Cập nhật trạng thái thành công."));
     }
 
+    [HttpPost("{id:long}/reset-password")]
+    public async Task<ActionResult<ApiResponse<bool>>> ResetPassword(long id, [FromBody] ResetPasswordRequest request)
+    {
+        var actorId = User.GetTaiKhoanId();
+        if (actorId == null) return Unauthorized();
+        if (actorId == id)
+            return BadRequest(ApiResponse<bool>.ErrorResponse("Dùng chức năng đổi mật khẩu để thay mật khẩu của chính bạn."));
+        var updated = await _userService.ResetPasswordAsync(id, request.NewPassword, actorId.Value);
+        if (!updated) return NotFound(ApiResponse<bool>.ErrorResponse("Không tìm thấy tài khoản."));
+        return Ok(ApiResponse<bool>.SuccessResponse(true, "Đã đặt lại mật khẩu. Các phiên làm mới đã bị thu hồi."));
+    }
+
     /// <summary>Xoá tài khoản (soft-disable).</summary>
     [HttpDelete("{id:int}")]
     public async Task<ActionResult<ApiResponse<bool>>> Delete(int id)
@@ -69,4 +82,13 @@ public class UsersController : ControllerBase
 
         return Ok(ApiResponse<bool>.SuccessResponse(true, "Xoá tài khoản thành công."));
     }
+}
+
+public sealed class ResetPasswordRequest
+{
+    [Required, StringLength(100, MinimumLength = 8)]
+    public string NewPassword { get; set; } = null!;
+
+    [Required, Compare(nameof(NewPassword))]
+    public string ConfirmPassword { get; set; } = null!;
 }
