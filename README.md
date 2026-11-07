@@ -35,5 +35,7 @@ Nếu CSDL V3 đã có migration trên, chạy tiếp
 để bật bước KTV xác nhận nhận máy và ghi kết quả kiểm tra. File tạo mới V3 đã gồm cả hai phần bổ sung.
 Xem [QUY_TRINH_KTV_20261107.md](QUY_TRINH_KTV_20261107.md) để biết thứ tự thao tác.
 Backend kiểm tra migration `V3_20261106_API`, `V3_20261107_KTV` và các bảng/cột bắt buộc khi khởi động.
+Các API chỉnh sửa danh mục V3, đặt lại mật khẩu qua Admin và kiểm tra sức chứa lịch hẹn được mô tả tại [API_V3_COMPLETION.md](API_V3_COMPLETION.md).
+Để nạp dữ liệu thử, chạy [database/DU_LIEU_MAU_V3.sql](database/DU_LIEU_MAU_V3.sql) bằng SSMS trên CSDL `QLSCTBDT_V3` sau khi áp dụng đủ migration. Script tạo tài khoản `demo_letan`, `demo_kho`, `demo_ktv`, `demo_khach` (mật khẩu chung `Demo@123456`) và dữ liệu cho các luồng tiếp nhận, báo giá, kho, thanh toán, lịch hẹn, bảo hành. Chạy lại sẽ không tạo trùng.
 Nếu kết nối nhầm CSDL hoặc thiếu migration, ứng dụng dừng với thông báo chỉ rõ CSDL,
 SQL Server và thành phần còn thiếu thay vì phục vụ API rồi trả lỗi SQL 500.

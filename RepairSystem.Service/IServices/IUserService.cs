@@ -13,4 +13,7 @@ public interface IUserService
 
     /// <summary>Bật/tắt tài khoản. Bật lại sẽ gỡ khoá đăng nhập sai; tắt sẽ thu hồi mọi refresh token.</summary>
     Task<bool> UpdateUserStatusAsync(int userId, bool isActive);
+
+    /// <summary>Admin đặt lại mật khẩu và thu hồi các phiên làm mới của tài khoản.</summary>
+    Task<bool> ResetPasswordAsync(long userId, string newPassword, long actorId);
 }

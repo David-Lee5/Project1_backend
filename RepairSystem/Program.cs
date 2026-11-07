@@ -10,6 +10,12 @@ using RepairSystem.Service.Helpers;
 using RepairSystem.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
+var appointmentStart = builder.Configuration.GetValue("Appointments:StartHour", 9);
+var appointmentEnd = builder.Configuration.GetValue("Appointments:EndHourExclusive", 18);
+var appointmentCapacity = builder.Configuration.GetValue("Appointments:CapacityPerSlot", 3);
+if (appointmentStart is < 0 or > 23 || appointmentEnd <= appointmentStart || appointmentEnd > 24
+    || appointmentCapacity < 1)
+    throw new InvalidOperationException("Cấu hình Appointments không hợp lệ: cần giờ bắt đầu, giờ kết thúc và sức chứa dương.");
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 if (string.IsNullOrWhiteSpace(connectionString))
     throw new InvalidOperationException(

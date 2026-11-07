@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using RepairSystem.Model;
 using RepairSystem.Service.DTOs;
 using RepairSystem.Service.IServices;
+using RepairSystem.Service.Helpers;
 
 namespace RepairSystem.Service.Services;
 
@@ -61,6 +62,28 @@ public class UserService : IUserService
                 .ExecuteUpdateAsync(s => s.SetProperty(t => t.ThuHoiLuc, (DateTime?)now));
         }
 
+        return true;
+    }
+
+    public async Task<bool> ResetPasswordAsync(long userId, string newPassword, long actorId)
+    {
+        await using var tx = await _context.Database.BeginTransactionAsync();
+        var user = await _context.TaiKhoans.FirstOrDefaultAsync(u => u.Id == userId);
+        if (user == null) return false;
+        var now = DateTime.UtcNow;
+        user.MatKhauHash = PasswordHelper.HashPassword(newPassword);
+        user.SoLanDangNhapSai = 0;
+        user.KhoaDen = null;
+        user.UpdatedAt = now;
+        _context.AuditLogs.Add(new AuditLog {
+            Bang = "tai_khoan", BanGhiId = user.Id, HanhDong = "UPDATE",
+            DuLieuMoi = "Đặt lại mật khẩu bởi quản trị viên; không ghi nội dung mật khẩu.",
+            NguoiThucHienId = actorId, ThoiGian = now
+        });
+        await _context.SaveChangesAsync();
+        await _context.RefreshTokens.Where(t => t.TaiKhoanId == user.Id && t.ThuHoiLuc == null)
+            .ExecuteUpdateAsync(s => s.SetProperty(t => t.ThuHoiLuc, (DateTime?)now));
+        await tx.CommitAsync();
         return true;
     }
 
