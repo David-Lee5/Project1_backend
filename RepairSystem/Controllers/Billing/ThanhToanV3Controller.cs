@@ -55,8 +55,9 @@ public class ThanhToanV3Controller(AppDbContextV3 db) : ControllerBase
         var leTanId = User.IsInRole(Roles.LeTan) ? actor.Value : req.LeTanId ?? 0;
         if (!await db.LeTans.AnyAsync(x => x.NhanVienId == leTanId))
             return BadRequest(ApiResponse<object>.ErrorResponse("Cần chọn lễ tân hợp lệ để lập hóa đơn."));
-        var quoteExists = await db.BaoGia.AnyAsync(x => x.PhieuId == phieuId && x.TrangThai != "HUY");
-        if (quoteExists && !await db.BaoGia.AnyAsync(x => x.PhieuId == phieuId && x.TrangThai == "DA_DUYET"))
+        var latestQuote = await db.BaoGia.Where(x => x.PhieuId == phieuId)
+            .OrderByDescending(x => x.PhienBan).Select(x => x.TrangThai).FirstOrDefaultAsync();
+        if (latestQuote != null && latestQuote != "DA_DUYET")
             return Conflict(ApiResponse<object>.ErrorResponse("Báo giá của phiếu chưa được khách chấp thuận."));
         var outId = new SqlParameter("@hoa_don_id", SqlDbType.BigInt) { Direction = ParameterDirection.Output };
         try

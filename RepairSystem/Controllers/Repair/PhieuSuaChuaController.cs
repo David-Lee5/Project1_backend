@@ -5,6 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.DataProtection;
 using System.Text;
+using System.Data;
+using System.Text.Json;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore.Storage;
 using RepairSystem.Model;
 using V3Context = RepairSystem.Model.ScaffoldV3.Entities.AppDbContextV3;
 using RepairSystem.Service.DTOs;
@@ -140,6 +144,12 @@ public class PhieuSuaChuaController : ControllerBase
                 }
             }
         }
+
+        dto.BaoGiaMoiNhatTrangThai = await _v3Context.BaoGia.AsNoTracking()
+            .Where(x => x.PhieuId == id)
+            .OrderByDescending(x => x.PhienBan)
+            .Select(x => x.TrangThai)
+            .FirstOrDefaultAsync();
 
         return Ok(ApiResponse<PhieuSuaChuaViewDto>.SuccessResponse(dto));
     }
@@ -339,6 +349,142 @@ public class PhieuSuaChuaController : ControllerBase
         }
     }
 
+    [HttpPatch("{id:long}/phan-cong")]
+    [Authorize(Roles = Roles.Admin + "," + Roles.LeTan)]
+    public async Task<IActionResult> PhanCong(long id, [FromBody] PhanCongPhieuRequest req)
+    {
+        var actor = await GetNhanVienIdAsync();
+        if (actor == null) return Unauthorized();
+        await using var tx = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+        var phieu = await _context.PhieuSuaChuas.FirstOrDefaultAsync(x => x.Id == id);
+        if (phieu == null) return NotFound();
+        if (phieu.TrangThai is Huy or DaTra or HoanThanh)
+            return Conflict(ApiResponse<object>.ErrorResponse("Phiếu đã kết thúc hoặc chờ bàn giao."));
+        if (req.KyThuatVienId == null && phieu.TrangThai != TiepNhan)
+            return Conflict(ApiResponse<object>.ErrorResponse("Phiếu đang sửa phải có kỹ thuật viên."));
+        if (req.KyThuatVienId.HasValue && !await _context.KyThuatViens.AnyAsync(x =>
+            x.NhanVienId == req.KyThuatVienId && x.NhanVien.DeletedAt == null && x.NhanVien.TaiKhoan.HoatDong))
+            return BadRequest(ApiResponse<object>.ErrorResponse("Kỹ thuật viên không hoạt động."));
+        var previous = phieu.KyThuatVienId;
+        var previousReceipt = phieu.KtvNhanId;
+        var previousReceiptAt = phieu.KtvNhanLuc;
+        var previousDiagnosis = phieu.KetQuaKiemTra;
+        if (previous != req.KyThuatVienId)
+        {
+            phieu.KyThuatVienId = req.KyThuatVienId;
+            phieu.KtvNhanId = null;
+            phieu.KtvNhanLuc = null;
+            if (phieu.TrangThai == TiepNhan) phieu.KetQuaKiemTra = null;
+        }
+        phieu.UpdatedAt = DateTime.UtcNow;
+        _context.AuditLogs.Add(new AuditLog {
+            Bang = "phieu_sua_chua", BanGhiId = id, HanhDong = "UPDATE",
+            DuLieuCu = JsonSerializer.Serialize(new { KyThuatVienId = previous, KtvNhanId = previousReceipt,
+                KtvNhanLuc = previousReceiptAt, KetQuaKiemTra = previousDiagnosis }),
+            DuLieuMoi = JsonSerializer.Serialize(new { req.KyThuatVienId, phieu.KtvNhanId,
+                phieu.KtvNhanLuc, phieu.KetQuaKiemTra }),
+            NguoiThucHienId = User.GetTaiKhoanId()
+        });
+        await _context.SaveChangesAsync();
+        await tx.CommitAsync();
+        return Ok(ApiResponse<object>.SuccessResponse(new { phieu.Id, phieu.KyThuatVienId }));
+    }
+
+    [HttpPatch("{id:long}/hen-tra")]
+    [Authorize(Roles = Roles.Admin + "," + Roles.LeTan)]
+    public async Task<IActionResult> HenTra(long id, [FromBody] HenTraPhieuRequest req)
+    {
+        if (req.NgayHenTra.HasValue && req.NgayHenTra.Value.UtcDateTime <= DateTime.UtcNow)
+            return BadRequest(ApiResponse<object>.ErrorResponse("Thời gian hẹn trả phải ở tương lai."));
+        var phieu = await _context.PhieuSuaChuas.FirstOrDefaultAsync(x => x.Id == id);
+        if (phieu == null) return NotFound();
+        if (phieu.TrangThai is Huy or DaTra)
+            return Conflict(ApiResponse<object>.ErrorResponse("Phiếu đã kết thúc."));
+        var previous = phieu.NgayHenTra;
+        phieu.NgayHenTra = req.NgayHenTra?.UtcDateTime;
+        phieu.UpdatedAt = DateTime.UtcNow;
+        _context.AuditLogs.Add(new AuditLog {
+            Bang = "phieu_sua_chua", BanGhiId = id, HanhDong = "UPDATE",
+            DuLieuCu = JsonSerializer.Serialize(new { NgayHenTra = previous }),
+            DuLieuMoi = JsonSerializer.Serialize(new { phieu.NgayHenTra }),
+            NguoiThucHienId = User.GetTaiKhoanId()
+        });
+        await _context.SaveChangesAsync();
+        return Ok(ApiResponse<object>.SuccessResponse(new { phieu.Id, phieu.NgayHenTra }));
+    }
+
+    /// <summary>KTV được phân công xác nhận đã nhận thiết bị thực tế từ lễ tân.</summary>
+    [HttpPost("{id:long}/nhan-may")]
+    [Authorize(Roles = Roles.KyThuatVien)]
+    public async Task<IActionResult> NhanMay(long id)
+    {
+        var actor = await GetNhanVienIdAsync();
+        if (actor == null) return Unauthorized(ApiResponse<object>.ErrorResponse("Tài khoản chưa gắn với hồ sơ nhân viên."));
+        await using var tx = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+        var phieu = await _context.PhieuSuaChuas.FirstOrDefaultAsync(x => x.Id == id);
+        if (phieu == null) return NotFound(ApiResponse<object>.ErrorResponse("Không tìm thấy phiếu sửa chữa."));
+        if (phieu.KyThuatVienId != actor)
+            return StatusCode(StatusCodes.Status403Forbidden,
+                ApiResponse<object>.ErrorResponse("Bạn không được phân công phiếu này."));
+        if (phieu.TrangThai is not (TiepNhan or DangSua or ChoLinhKien))
+            return Conflict(ApiResponse<object>.ErrorResponse("Phiếu không còn ở giai đoạn KTV nhận máy."));
+        if (phieu.KtvNhanId == actor && phieu.KtvNhanLuc.HasValue)
+            return Ok(ApiResponse<object>.SuccessResponse(
+                new { phieu.Id, phieu.KtvNhanId, phieu.KtvNhanLuc }, "Đã xác nhận nhận máy trước đó."));
+        if (phieu.KtvNhanId != null)
+            return Conflict(ApiResponse<object>.ErrorResponse("Máy đã được KTV khác xác nhận; yêu cầu lễ tân kiểm tra phân công."));
+
+        phieu.KtvNhanId = actor;
+        phieu.KtvNhanLuc = DateTime.UtcNow;
+        phieu.UpdatedAt = phieu.KtvNhanLuc.Value;
+        _context.AuditLogs.Add(new AuditLog {
+            Bang = "phieu_sua_chua", BanGhiId = id, HanhDong = "UPDATE",
+            DuLieuCu = JsonSerializer.Serialize(new { KtvNhanId = (long?)null, KtvNhanLuc = (DateTime?)null }),
+            DuLieuMoi = JsonSerializer.Serialize(new { phieu.KtvNhanId, phieu.KtvNhanLuc }),
+            NguoiThucHienId = User.GetTaiKhoanId()
+        });
+        await _context.SaveChangesAsync();
+        await tx.CommitAsync();
+        return Ok(ApiResponse<object>.SuccessResponse(
+            new { phieu.Id, phieu.KtvNhanId, phieu.KtvNhanLuc }, "Đã xác nhận nhận máy."));
+    }
+
+    /// <summary>Lưu kết quả kiểm tra ban đầu để lễ tân lập báo giá cho khách.</summary>
+    [HttpPatch("{id:long}/kiem-tra")]
+    [Authorize(Roles = Roles.KyThuatVien)]
+    public async Task<IActionResult> KiemTra(long id, [FromBody] KiemTraPhieuRequest req)
+    {
+        var ketQua = req.KetQuaKiemTra?.Trim();
+        if (string.IsNullOrEmpty(ketQua) || ketQua.Length > 1000)
+            return BadRequest(ApiResponse<object>.ErrorResponse("Kết quả kiểm tra phải có từ 1 đến 1000 ký tự."));
+        var actor = await GetNhanVienIdAsync();
+        if (actor == null) return Unauthorized(ApiResponse<object>.ErrorResponse("Tài khoản chưa gắn với hồ sơ nhân viên."));
+        await using var tx = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+        var phieu = await _context.PhieuSuaChuas.FirstOrDefaultAsync(x => x.Id == id);
+        if (phieu == null) return NotFound(ApiResponse<object>.ErrorResponse("Không tìm thấy phiếu sửa chữa."));
+        if (phieu.KyThuatVienId != actor)
+            return StatusCode(StatusCodes.Status403Forbidden,
+                ApiResponse<object>.ErrorResponse("Bạn không được phân công phiếu này."));
+        if (phieu.TrangThai is not (TiepNhan or DangSua or ChoLinhKien))
+            return Conflict(ApiResponse<object>.ErrorResponse("Phiếu đã kết thúc giai đoạn kiểm tra."));
+        if (phieu.KtvNhanId != actor || phieu.KtvNhanLuc == null)
+            return Conflict(ApiResponse<object>.ErrorResponse("Hãy xác nhận nhận máy trước khi ghi kết quả kiểm tra."));
+
+        var previous = phieu.KetQuaKiemTra;
+        phieu.KetQuaKiemTra = ketQua;
+        phieu.UpdatedAt = DateTime.UtcNow;
+        _context.AuditLogs.Add(new AuditLog {
+            Bang = "phieu_sua_chua", BanGhiId = id, HanhDong = "UPDATE",
+            DuLieuCu = JsonSerializer.Serialize(new { KetQuaKiemTra = previous }),
+            DuLieuMoi = JsonSerializer.Serialize(new { KetQuaKiemTra = ketQua }),
+            NguoiThucHienId = User.GetTaiKhoanId()
+        });
+        await _context.SaveChangesAsync();
+        await tx.CommitAsync();
+        return Ok(ApiResponse<object>.SuccessResponse(
+            new { phieu.Id, phieu.KetQuaKiemTra }, "Đã lưu kết quả kiểm tra."));
+    }
+
     // ── Chuyển trạng thái ──────────────────────────────────────────
 
     /// <summary>
@@ -360,6 +506,7 @@ public class PhieuSuaChuaController : ControllerBase
         if (nhanVienId == null)
             return Unauthorized(ApiResponse<object>.ErrorResponse("Tài khoản chưa gắn với hồ sơ nhân viên."));
 
+        await using var tx = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
         var phieu = await _context.PhieuSuaChuas.FirstOrDefaultAsync(p => p.Id == id);
         if (phieu == null)
             return NotFound(ApiResponse<object>.ErrorResponse($"Không tìm thấy phiếu sửa chữa id={id}."));
@@ -381,18 +528,53 @@ public class PhieuSuaChuaController : ControllerBase
                     ApiResponse<object>.ErrorResponse("Bạn không phụ trách phiếu này."));
         }
 
-        // DB bắt buộc phiếu đã sửa phải có KTV: KTV nhận việc thì tự gán, vai trò khác phải có KTV sẵn
+        // Phiếu phải được lễ tân phân công trước khi bắt đầu sửa.
         if (dich != Huy && phieu.KyThuatVienId == null)
+            return BadRequest(ApiResponse<object>.ErrorResponse("Phiếu chưa có kỹ thuật viên phụ trách."));
+
+        if (phieu.TrangThai == TiepNhan && dich == DangSua)
         {
-            if (laKtv) phieu.KyThuatVienId = nhanVienId;
-            else
-                return BadRequest(ApiResponse<object>.ErrorResponse("Phiếu chưa có kỹ thuật viên phụ trách."));
+            if (phieu.KtvNhanId != phieu.KyThuatVienId || phieu.KtvNhanLuc == null)
+                return Conflict(ApiResponse<object>.ErrorResponse("KTV được phân công chưa xác nhận nhận máy."));
+            if (string.IsNullOrWhiteSpace(phieu.KetQuaKiemTra))
+                return Conflict(ApiResponse<object>.ErrorResponse("KTV chưa ghi kết quả kiểm tra ban đầu."));
+            await using var quoteCheck = _context.Database.GetDbConnection().CreateCommand();
+            quoteCheck.Transaction = tx.GetDbTransaction();
+            quoteCheck.CommandText = "SELECT TOP (1) trang_thai FROM dbo.bao_gia WHERE phieu_id=@id ORDER BY phien_ban DESC, id DESC";
+            quoteCheck.Parameters.Add(new SqlParameter("@id", id));
+            var quoteStatus = (string?)await quoteCheck.ExecuteScalarAsync();
+            if (quoteStatus != "DA_DUYET")
+                return Conflict(ApiResponse<object>.ErrorResponse(
+                    "Chưa thể bắt đầu sửa: báo giá mới nhất chưa được khách đồng ý."));
         }
 
         if (dich == Huy)
         {
             if (string.IsNullOrWhiteSpace(dto.LyDoHuy))
                 return BadRequest(ApiResponse<object>.ErrorResponse("Vui lòng nhập lý do hủy phiếu."));
+            await using var check = _context.Database.GetDbConnection().CreateCommand();
+            check.Transaction = tx.GetDbTransaction();
+            check.CommandText = @"SELECT
+                CASE WHEN EXISTS (SELECT 1 FROM dbo.hoa_don WHERE phieu_id=@id AND trang_thai<>'HUY') THEN 1 ELSE 0 END,
+                COALESCE((SELECT SUM(CASE WHEN loai='THU' THEN so_tien ELSE -so_tien END)
+                    FROM dbo.giao_dich_thanh_toan WHERE phieu_id=@id),0),
+                CASE WHEN EXISTS (SELECT 1 FROM dbo.chi_tiet_xuat_kho x WHERE x.phieu_id=@id
+                    AND x.so_luong_xuat>COALESCE((SELECT SUM(t.so_luong)
+                        FROM dbo.tra_linh_kien_kho_v3 t WHERE t.chi_tiet_xuat_kho_id=x.id),0))
+                    THEN 1 ELSE 0 END";
+            check.Parameters.Add(new SqlParameter("@id", id));
+            await using var result = await check.ExecuteReaderAsync();
+            await result.ReadAsync();
+            var coHoaDon = result.GetInt32(0) == 1;
+            var daThuRong = result.GetDecimal(1);
+            var chuaTraHet = result.GetInt32(2) == 1;
+            await result.CloseAsync();
+            if (coHoaDon)
+                return Conflict(ApiResponse<object>.ErrorResponse("Phiếu đã có hóa đơn; cần xử lý hóa đơn trước khi hủy."));
+            if (daThuRong != 0)
+                return Conflict(ApiResponse<object>.ErrorResponse("Cần hoàn hoặc đối soát hết tiền cọc trước khi hủy."));
+            if (chuaTraHet)
+                return Conflict(ApiResponse<object>.ErrorResponse("Cần trả hết vật tư đã xuất trước khi hủy phiếu."));
             phieu.LyDoHuy = dto.LyDoHuy.Trim();
         }
 
@@ -419,6 +601,7 @@ public class PhieuSuaChuaController : ControllerBase
         try
         {
             await _context.SaveChangesAsync();
+            await tx.CommitAsync();
         }
         catch (DbUpdateException)
         {
@@ -529,13 +712,20 @@ public class PhieuSuaChuaController : ControllerBase
             PhuKienKemTheo = p.PhuKienKemTheo,
             MatKhauMay = xemMatKhau ? p.MatKhauMay : null,
             TrangThai = p.TrangThai,
-            GhiChu = p.GhiChu
+            GhiChu = p.GhiChu,
+            KtvNhanId = p.KtvNhanId,
+            KtvNhanLuc = p.KtvNhanLuc,
+            KetQuaKiemTra = p.KetQuaKiemTra
         };
 
     private static bool Dai(string? s, int max) => s != null && s.Trim().Length > max;
 
     private static string? NullIfBlank(string? s) => string.IsNullOrWhiteSpace(s) ? null : s.Trim();
 }
+
+public sealed record PhanCongPhieuRequest(long? KyThuatVienId);
+public sealed record HenTraPhieuRequest(DateTimeOffset? NgayHenTra);
+public sealed record KiemTraPhieuRequest(string? KetQuaKiemTra);
 
 /// <summary>Dữ liệu phiếu trả về cho giao diện.</summary>
 public class PhieuSuaChuaViewDto
@@ -560,6 +750,10 @@ public class PhieuSuaChuaViewDto
     public string? MatKhauMay { get; set; }
     public string TrangThai { get; set; } = null!;
     public string? GhiChu { get; set; }
+    public long? KtvNhanId { get; set; }
+    public DateTime? KtvNhanLuc { get; set; }
+    public string? KetQuaKiemTra { get; set; }
+    public string? BaoGiaMoiNhatTrangThai { get; set; }
 }
 
 /// <summary>Kỹ thuật viên kèm số ca đang làm, dùng để phân công.</summary>

@@ -30,4 +30,9 @@ public class RegisterRequestDto
     [EmailAddress(ErrorMessage = "Email không hợp lệ.")]
     [StringLength(255)]
     public string? Email { get; set; }
+
+    /// <summary>Mã do nhân viên cấp khi số điện thoại đã có hồ sơ tại cửa hàng.</summary>
+    [StringLength(32, MinimumLength = 32, ErrorMessage = "Mã liên kết phải có 32 ký tự.")]
+    [RegularExpression("^[A-Fa-f0-9]{32}$", ErrorMessage = "Mã liên kết không hợp lệ.")]
+    public string? MaLienKet { get; set; }
 }
