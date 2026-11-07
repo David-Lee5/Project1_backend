@@ -44,11 +44,11 @@ CREATE TABLE [dbo].[phieu_sua_chua](
 	[tinh_trang_ngoai_quan] [nvarchar](500) NULL,
 	[phu_kien_kem_theo] [nvarchar](500) NULL,
 	[mat_khau_may] [nvarchar](100) NULL,
-PRIMARY KEY CLUSTERED
+PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
- CONSTRAINT [uq_phieu_sua_chua_ma] UNIQUE NONCLUSTERED
+ CONSTRAINT [uq_phieu_sua_chua_ma] UNIQUE NONCLUSTERED 
 (
 	[ma_phieu] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -66,7 +66,7 @@ CREATE TABLE [dbo].[chi_tiet_dich_vu](
 	[don_gia_thuc_te] [decimal](14, 2) NOT NULL,
 	[thanh_tien]  AS (CONVERT([decimal](14,2),[so_luong]*[don_gia_thuc_te])) PERSISTED,
 	[created_at] [datetime2](3) NOT NULL,
- CONSTRAINT [pk_chi_tiet_dich_vu] PRIMARY KEY CLUSTERED
+ CONSTRAINT [pk_chi_tiet_dich_vu] PRIMARY KEY CLUSTERED 
 (
 	[phieu_id] ASC,
 	[dich_vu_id] ASC
@@ -90,7 +90,7 @@ CREATE TABLE [dbo].[chi_tiet_xuat_kho](
 	[ngay_xuat] [datetime2](3) NOT NULL,
 	[bao_hanh_den] [date] NULL,
 	[linh_kien_serial_id] [bigint] NULL,
-PRIMARY KEY CLUSTERED
+PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -134,11 +134,11 @@ CREATE TABLE [dbo].[phieu_nhap](
 	[ghi_chu] [nvarchar](max) NULL,
 	[created_at] [datetime2](3) NOT NULL,
 	[updated_at] [datetime2](3) NOT NULL,
-PRIMARY KEY CLUSTERED
+PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
- CONSTRAINT [uq_phieu_nhap_ma] UNIQUE NONCLUSTERED
+ CONSTRAINT [uq_phieu_nhap_ma] UNIQUE NONCLUSTERED 
 (
 	[ma_pn] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -156,7 +156,7 @@ CREATE TABLE [dbo].[chi_tiet_nhap_kho](
 	[don_gia_nhap] [decimal](14, 2) NOT NULL,
 	[thanh_tien]  AS (CONVERT([decimal](14,2),[so_luong_nhap]*[don_gia_nhap])) PERSISTED,
 	[danh_sach_serial] [nvarchar](max) NULL,
- CONSTRAINT [pk_chi_tiet_nhap_kho] PRIMARY KEY CLUSTERED
+ CONSTRAINT [pk_chi_tiet_nhap_kho] PRIMARY KEY CLUSTERED 
 (
 	[phieu_nhap_id] ASC,
 	[linh_kien_id] ASC
@@ -195,11 +195,11 @@ CREATE TABLE [dbo].[linh_kien](
 	[deleted_at] [datetime2](3) NULL,
 	[created_at] [datetime2](3) NOT NULL,
 	[updated_at] [datetime2](3) NOT NULL,
-PRIMARY KEY CLUSTERED
+PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
- CONSTRAINT [uq_linh_kien_ma] UNIQUE NONCLUSTERED
+ CONSTRAINT [uq_linh_kien_ma] UNIQUE NONCLUSTERED 
 (
 	[ma_lk] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -217,7 +217,7 @@ CREATE TABLE [dbo].[anh_linh_kien](
 	[la_anh_chinh] [bit] NOT NULL,
 	[thu_tu] [smallint] NOT NULL,
 	[created_at] [datetime2](3) NOT NULL,
-PRIMARY KEY CLUSTERED
+PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -234,7 +234,7 @@ CREATE TABLE [dbo].[ton_kho](
 	[so_luong_ton] [int] NOT NULL,
 	[muc_ton_toi_thieu] [int] NOT NULL,
 	[ngay_cap_nhat] [datetime2](3) NOT NULL,
- CONSTRAINT [pk_ton_kho] PRIMARY KEY CLUSTERED
+ CONSTRAINT [pk_ton_kho] PRIMARY KEY CLUSTERED 
 (
 	[kho_id] ASC,
 	[linh_kien_id] ASC
@@ -273,11 +273,11 @@ CREATE TABLE [dbo].[kho](
 	[deleted_at] [datetime2](3) NULL,
 	[created_at] [datetime2](3) NOT NULL,
 	[updated_at] [datetime2](3) NOT NULL,
-PRIMARY KEY CLUSTERED
+PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
- CONSTRAINT [uq_kho_ma] UNIQUE NONCLUSTERED
+ CONSTRAINT [uq_kho_ma] UNIQUE NONCLUSTERED 
 (
 	[ma_kho] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -310,7 +310,7 @@ CREATE TABLE [dbo].[anh_phieu_sua_chua](
 	[duong_dan] [varchar](500) NOT NULL,
 	[mo_ta] [nvarchar](255) NULL,
 	[created_at] [datetime2](3) NOT NULL,
-PRIMARY KEY CLUSTERED
+PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -330,7 +330,7 @@ CREATE TABLE [dbo].[audit_log](
 	[du_lieu_moi] [nvarchar](max) NULL,
 	[nguoi_thuc_hien_id] [bigint] NULL,
 	[thoi_gian] [datetime2](3) NOT NULL,
-PRIMARY KEY CLUSTERED
+PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -353,7 +353,7 @@ CREATE TABLE [dbo].[bien_dong_kho](
 	[nguoi_thuc_hien_id] [bigint] NOT NULL,
 	[thoi_gian] [datetime2](3) NOT NULL,
 	[ly_do] [nvarchar](max) NULL,
-PRIMARY KEY CLUSTERED
+PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -374,11 +374,11 @@ CREATE TABLE [dbo].[dich_vu](
 	[deleted_at] [datetime2](3) NULL,
 	[created_at] [datetime2](3) NOT NULL,
 	[updated_at] [datetime2](3) NOT NULL,
-PRIMARY KEY CLUSTERED
+PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
- CONSTRAINT [uq_dich_vu_ma] UNIQUE NONCLUSTERED
+ CONSTRAINT [uq_dich_vu_ma] UNIQUE NONCLUSTERED 
 (
 	[ma_dv] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -405,11 +405,11 @@ CREATE TABLE [dbo].[hoa_don](
 	[ghi_chu] [nvarchar](max) NULL,
 	[created_at] [datetime2](3) NOT NULL,
 	[updated_at] [datetime2](3) NOT NULL,
-PRIMARY KEY CLUSTERED
+PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
- CONSTRAINT [uq_hoa_don_ma] UNIQUE NONCLUSTERED
+ CONSTRAINT [uq_hoa_don_ma] UNIQUE NONCLUSTERED 
 (
 	[ma_hd] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -424,7 +424,7 @@ CREATE TABLE [dbo].[ky_thuat_vien](
 	[nhan_vien_id] [bigint] NOT NULL,
 	[chuc_vu] [varchar](20) NOT NULL,
 	[chuyen_mon] [nvarchar](100) NULL,
-PRIMARY KEY CLUSTERED
+PRIMARY KEY CLUSTERED 
 (
 	[nhan_vien_id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -447,11 +447,11 @@ CREATE TABLE [dbo].[khach_hang](
 	[deleted_at] [datetime2](3) NULL,
 	[created_at] [datetime2](3) NOT NULL,
 	[updated_at] [datetime2](3) NOT NULL,
-PRIMARY KEY CLUSTERED
+PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
- CONSTRAINT [uq_khach_hang_ma] UNIQUE NONCLUSTERED
+ CONSTRAINT [uq_khach_hang_ma] UNIQUE NONCLUSTERED 
 (
 	[ma_kh] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -465,7 +465,7 @@ GO
 CREATE TABLE [dbo].[le_tan](
 	[nhan_vien_id] [bigint] NOT NULL,
 	[chuc_vu] [varchar](20) NOT NULL,
-PRIMARY KEY CLUSTERED
+PRIMARY KEY CLUSTERED 
 (
 	[nhan_vien_id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -484,7 +484,7 @@ CREATE TABLE [dbo].[lich_su_trang_thai_phieu](
 	[nguoi_thuc_hien_id] [bigint] NULL,
 	[thoi_gian] [datetime2](3) NOT NULL,
 	[ghi_chu] [nvarchar](max) NULL,
-PRIMARY KEY CLUSTERED
+PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -506,11 +506,11 @@ CREATE TABLE [dbo].[linh_kien_serial](
 	[ghi_chu] [nvarchar](500) NULL,
 	[created_at] [datetime2](7) NOT NULL,
 	[updated_at] [datetime2](7) NOT NULL,
-PRIMARY KEY CLUSTERED
+PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
- CONSTRAINT [uq_linh_kien_serial_so_serial] UNIQUE NONCLUSTERED
+ CONSTRAINT [uq_linh_kien_serial_so_serial] UNIQUE NONCLUSTERED 
 (
 	[so_serial] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -532,11 +532,11 @@ CREATE TABLE [dbo].[nha_cung_cap](
 	[deleted_at] [datetime2](3) NULL,
 	[created_at] [datetime2](3) NOT NULL,
 	[updated_at] [datetime2](3) NOT NULL,
-PRIMARY KEY CLUSTERED
+PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
- CONSTRAINT [uq_nha_cung_cap_ma] UNIQUE NONCLUSTERED
+ CONSTRAINT [uq_nha_cung_cap_ma] UNIQUE NONCLUSTERED 
 (
 	[ma_ncc] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -558,20 +558,20 @@ CREATE TABLE [dbo].[nhan_vien](
 	[deleted_at] [datetime2](3) NULL,
 	[created_at] [datetime2](3) NOT NULL,
 	[updated_at] [datetime2](3) NOT NULL,
-PRIMARY KEY CLUSTERED
+PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
- CONSTRAINT [uq_nhan_vien_id_chuc_vu] UNIQUE NONCLUSTERED
+ CONSTRAINT [uq_nhan_vien_id_chuc_vu] UNIQUE NONCLUSTERED 
 (
 	[id] ASC,
 	[chuc_vu] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
- CONSTRAINT [uq_nhan_vien_ma] UNIQUE NONCLUSTERED
+ CONSTRAINT [uq_nhan_vien_ma] UNIQUE NONCLUSTERED 
 (
 	[ma_nv] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
- CONSTRAINT [uq_nhan_vien_tai_khoan] UNIQUE NONCLUSTERED
+ CONSTRAINT [uq_nhan_vien_tai_khoan] UNIQUE NONCLUSTERED 
 (
 	[tai_khoan_id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -589,11 +589,11 @@ CREATE TABLE [dbo].[refresh_token](
 	[het_han] [datetime2](3) NOT NULL,
 	[thu_hoi_luc] [datetime2](3) NULL,
 	[created_at] [datetime2](3) NOT NULL,
-PRIMARY KEY CLUSTERED
+PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
- CONSTRAINT [uq_refresh_token_hash] UNIQUE NONCLUSTERED
+ CONSTRAINT [uq_refresh_token_hash] UNIQUE NONCLUSTERED 
 (
 	[token_hash] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -615,16 +615,16 @@ CREATE TABLE [dbo].[tai_khoan](
 	[dang_nhap_cuoi] [datetime2](3) NULL,
 	[created_at] [datetime2](3) NOT NULL,
 	[updated_at] [datetime2](3) NOT NULL,
-PRIMARY KEY CLUSTERED
+PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
- CONSTRAINT [uq_tai_khoan_id_vai_tro] UNIQUE NONCLUSTERED
+ CONSTRAINT [uq_tai_khoan_id_vai_tro] UNIQUE NONCLUSTERED 
 (
 	[id] ASC,
 	[vai_tro] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
- CONSTRAINT [uq_tai_khoan_ten_dang_nhap] UNIQUE NONCLUSTERED
+ CONSTRAINT [uq_tai_khoan_ten_dang_nhap] UNIQUE NONCLUSTERED 
 (
 	[ten_dang_nhap] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -647,11 +647,11 @@ CREATE TABLE [dbo].[thiet_bi](
 	[deleted_at] [datetime2](3) NULL,
 	[created_at] [datetime2](3) NOT NULL,
 	[updated_at] [datetime2](3) NOT NULL,
-PRIMARY KEY CLUSTERED
+PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
- CONSTRAINT [uq_thiet_bi_ma] UNIQUE NONCLUSTERED
+ CONSTRAINT [uq_thiet_bi_ma] UNIQUE NONCLUSTERED 
 (
 	[ma_thiet_bi] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -665,7 +665,7 @@ GO
 CREATE TABLE [dbo].[thu_kho](
 	[nhan_vien_id] [bigint] NOT NULL,
 	[chuc_vu] [varchar](20) NOT NULL,
-PRIMARY KEY CLUSTERED
+PRIMARY KEY CLUSTERED 
 (
 	[nhan_vien_id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -2423,6 +2423,147 @@ END;';
     EXEC sys.sp_executesql N'INSERT INTO dbo.v3_schema_migration(version) VALUES (''V3_20261104_01''),(''V3_20261104_02'');';
     COMMIT TRANSACTION;
     PRINT N'Đã áp dụng V3. Các tính năng mới cần backend kết nối trước khi sử dụng.';
+END TRY
+BEGIN CATCH
+    IF XACT_STATE() <> 0 ROLLBACK TRANSACTION;
+    THROW;
+END CATCH;
+
+GO
+-- Chạy một lần trên CSDL V3 hiện có. File tạo mới V3 đã bao gồm phần này.
+SET NOCOUNT ON;
+SET XACT_ABORT ON;
+SET ANSI_NULLS ON;
+SET ANSI_PADDING ON;
+SET ANSI_WARNINGS ON;
+SET ARITHABORT ON;
+SET CONCAT_NULL_YIELDS_NULL ON;
+SET QUOTED_IDENTIFIER ON;
+SET NUMERIC_ROUNDABORT OFF;
+IF DB_NAME() IN (N'master', N'model', N'msdb', N'tempdb')
+    THROW 51200, N'Hãy chọn CSDL ứng dụng V3.', 1;
+IF OBJECT_ID(N'dbo.v3_schema_migration', N'U') IS NULL
+    THROW 51201, N'CSDL chưa có schema V3.', 1;
+IF EXISTS (SELECT 1 FROM dbo.v3_schema_migration WHERE version = 'V3_20261106_API')
+    THROW 51202, N'Bản bổ sung API đã được áp dụng.', 1;
+BEGIN TRY
+    BEGIN TRANSACTION;
+
+    CREATE TABLE dbo.ma_lien_ket_khach_hang_v3 (
+        id bigint IDENTITY(1,1) NOT NULL PRIMARY KEY,
+        khach_hang_id bigint NOT NULL REFERENCES dbo.khach_hang(id),
+        ma_hash varchar(64) NOT NULL,
+        het_han datetime2(3) NOT NULL,
+        da_dung_luc datetime2(3) NULL,
+        nguoi_cap_id bigint NOT NULL REFERENCES dbo.nhan_vien(id),
+        created_at datetime2(3) NOT NULL DEFAULT SYSUTCDATETIME()
+    );
+    CREATE INDEX ix_mlkkh_khach ON dbo.ma_lien_ket_khach_hang_v3(khach_hang_id, id DESC);
+
+    CREATE TABLE dbo.lich_hen_v3 (
+        id bigint IDENTITY(1,1) NOT NULL PRIMARY KEY,
+        khach_hang_id bigint NOT NULL REFERENCES dbo.khach_hang(id),
+        thoi_gian_mong_muon datetime2(3) NOT NULL,
+        ten_thiet_bi nvarchar(150) NOT NULL,
+        mo_ta_loi nvarchar(1000) NOT NULL,
+        trang_thai varchar(20) NOT NULL DEFAULT 'CHO_XAC_NHAN',
+        ghi_chu nvarchar(500) NULL,
+        phieu_id bigint NULL REFERENCES dbo.phieu_sua_chua(id),
+        created_at datetime2(3) NOT NULL DEFAULT SYSUTCDATETIME(),
+        updated_at datetime2(3) NOT NULL DEFAULT SYSUTCDATETIME(),
+        CONSTRAINT ck_lich_hen_v3_status CHECK (trang_thai IN
+            ('CHO_XAC_NHAN','DA_XAC_NHAN','TU_CHOI','DA_TIEP_NHAN','HUY'))
+    );
+    CREATE UNIQUE INDEX uq_lich_hen_phieu ON dbo.lich_hen_v3(phieu_id) WHERE phieu_id IS NOT NULL;
+    CREATE INDEX ix_lich_hen_khach ON dbo.lich_hen_v3(khach_hang_id, created_at DESC);
+
+    ALTER TABLE dbo.bao_gia ADD khach_hang_phan_hoi_id bigint NULL;
+    ALTER TABLE dbo.bao_gia ADD CONSTRAINT fk_bg_khach_phan_hoi
+        FOREIGN KEY(khach_hang_phan_hoi_id) REFERENCES dbo.khach_hang(id);
+    ALTER TABLE dbo.bao_gia DROP CONSTRAINT ck_bg_phan_hoi;
+    -- SQL Server biên dịch cả batch trước khi chạy: ràng buộc dùng cột vừa thêm cần batch riêng.
+    EXEC sys.sp_executesql N'ALTER TABLE dbo.bao_gia ADD CONSTRAINT ck_bg_phan_hoi CHECK
+        (trang_thai NOT IN (''DA_DUYET'',''TU_CHOI'') OR
+         (ngay_phan_hoi IS NOT NULL AND kenh_phan_hoi IS NOT NULL
+          AND LEN(LTRIM(RTRIM(kenh_phan_hoi))) > 0
+          AND (nguoi_ghi_nhan_id IS NOT NULL OR khach_hang_phan_hoi_id IS NOT NULL)))';
+
+    ALTER TABLE dbo.phieu_bao_hanh_ncc ADD kho_gui_id bigint NULL;
+    ALTER TABLE dbo.phieu_bao_hanh_ncc ADD da_tru_ton bit NOT NULL
+        CONSTRAINT df_pbh_ncc_da_tru_ton DEFAULT 0;
+    ALTER TABLE dbo.phieu_bao_hanh_ncc ADD nguon_hang varchar(10) NOT NULL
+        CONSTRAINT df_pbh_ncc_nguon_hang DEFAULT 'CU';
+    EXEC sys.sp_executesql N'ALTER TABLE dbo.phieu_bao_hanh_ncc ADD CONSTRAINT ck_pbh_ncc_nguon_hang
+        CHECK (nguon_hang IN (''CU'',''KHO'',''KHACH''))';
+    ALTER TABLE dbo.phieu_bao_hanh_ncc ADD CONSTRAINT fk_pbh_ncc_kho_gui
+        FOREIGN KEY(kho_gui_id) REFERENCES dbo.kho(id);
+
+    CREATE TABLE dbo.xu_ly_bao_hanh_ncc_v3 (
+        id bigint IDENTITY(1,1) NOT NULL PRIMARY KEY,
+        phieu_bao_hanh_ncc_id bigint NOT NULL,
+        loai varchar(20) NOT NULL,
+        kho_id bigint NULL REFERENCES dbo.kho(id),
+        phieu_nhap_id bigint NULL REFERENCES dbo.phieu_nhap(id),
+        so_luong int NOT NULL,
+        nguoi_thuc_hien_id bigint NOT NULL REFERENCES dbo.nhan_vien(id),
+        thoi_gian datetime2(3) NOT NULL DEFAULT SYSUTCDATETIME(),
+        ghi_chu nvarchar(500) NULL,
+        CONSTRAINT uq_xlbh_ncc_ho_so UNIQUE (phieu_bao_hanh_ncc_id),
+        CONSTRAINT fk_xlbh_ncc_ho_so FOREIGN KEY (phieu_bao_hanh_ncc_id)
+            REFERENCES dbo.phieu_bao_hanh_ncc(id),
+        CONSTRAINT ck_xlbh_ncc_loai CHECK (loai IN ('NHAP_LAI','NHAP_THAY_THE','KHONG_NHAP')),
+        CONSTRAINT ck_xlbh_ncc_sl CHECK (so_luong > 0)
+    );
+    CREATE UNIQUE INDEX uq_xlbh_ncc_phieu_nhap ON dbo.xu_ly_bao_hanh_ncc_v3(phieu_nhap_id)
+        WHERE phieu_nhap_id IS NOT NULL;
+
+    INSERT dbo.v3_schema_migration(version) VALUES ('V3_20261106_API');
+    COMMIT TRANSACTION;
+END TRY
+BEGIN CATCH
+    IF XACT_STATE() <> 0 ROLLBACK TRANSACTION;
+    THROW;
+END CATCH;
+
+GO
+-- Chạy sau BO_SUNG_API_20261106.sql trên CSDL V3 hiện có.
+SET NOCOUNT ON;
+SET XACT_ABORT ON;
+SET ANSI_NULLS ON;
+SET ANSI_PADDING ON;
+SET ANSI_WARNINGS ON;
+SET ARITHABORT ON;
+SET CONCAT_NULL_YIELDS_NULL ON;
+SET QUOTED_IDENTIFIER ON;
+SET NUMERIC_ROUNDABORT OFF;
+IF DB_NAME() IN (N'master', N'model', N'msdb', N'tempdb')
+    THROW 51300, N'Hãy chọn CSDL ứng dụng V3.', 1;
+IF OBJECT_ID(N'dbo.v3_schema_migration', N'U') IS NULL
+    THROW 51301, N'CSDL chưa có schema V3.', 1;
+IF NOT EXISTS (SELECT 1 FROM dbo.v3_schema_migration WHERE version = 'V3_20261106_API')
+    THROW 51302, N'Cần áp dụng BO_SUNG_API_20261106.sql trước.', 1;
+IF EXISTS (SELECT 1 FROM dbo.v3_schema_migration WHERE version = 'V3_20261107_KTV')
+    THROW 51303, N'Bản bổ sung quy trình KTV đã được áp dụng.', 1;
+IF COL_LENGTH(N'dbo.phieu_sua_chua', N'ktv_nhan_id') IS NOT NULL
+    OR COL_LENGTH(N'dbo.phieu_sua_chua', N'ktv_nhan_luc') IS NOT NULL
+    OR COL_LENGTH(N'dbo.phieu_sua_chua', N'ket_qua_kiem_tra') IS NOT NULL
+    THROW 51304, N'Schema KTV đã thay đổi một phần; kiểm tra trước khi chạy migration.', 1;
+BEGIN TRY
+    BEGIN TRANSACTION;
+
+    ALTER TABLE dbo.phieu_sua_chua ADD
+        ktv_nhan_id bigint NULL,
+        ktv_nhan_luc datetime2(3) NULL,
+        ket_qua_kiem_tra nvarchar(1000) NULL;
+    -- SQL Server biên dịch cả batch; ràng buộc dùng cột vừa thêm cần batch riêng.
+    EXEC sys.sp_executesql N'ALTER TABLE dbo.phieu_sua_chua ADD CONSTRAINT fk_psc_ktv_nhan
+        FOREIGN KEY (ktv_nhan_id) REFERENCES dbo.nhan_vien(id)';
+    EXEC sys.sp_executesql N'ALTER TABLE dbo.phieu_sua_chua ADD CONSTRAINT ck_psc_ktv_nhan_du
+        CHECK ((ktv_nhan_id IS NULL AND ktv_nhan_luc IS NULL)
+            OR (ktv_nhan_id IS NOT NULL AND ktv_nhan_luc IS NOT NULL))';
+
+    INSERT dbo.v3_schema_migration(version) VALUES ('V3_20261107_KTV');
+    COMMIT TRANSACTION;
 END TRY
 BEGIN CATCH
     IF XACT_STATE() <> 0 ROLLBACK TRANSACTION;

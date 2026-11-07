@@ -1,5 +1,7 @@
 using System.Security.Cryptography;
+using System.Data;
 using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using RepairSystem.Model;
 using RepairSystem.Service.DTOs;
@@ -85,7 +87,7 @@ public class AuthService : IAuthService
     {
         var username = request.Username.Trim();
         var email = string.IsNullOrWhiteSpace(request.Email) ? null : request.Email.Trim();
-        var phone = request.SoDienThoai.Trim();
+        var phone = Regex.Replace(request.SoDienThoai, @"[\s.\-()]", "");
 
         if (await _context.TaiKhoans.AnyAsync(u => u.TenDangNhap == username))
             return (false, "Tên đăng nhập đã tồn tại.");
@@ -97,6 +99,9 @@ public class AuthService : IAuthService
         if (existingKhach != null && existingKhach.TaiKhoanId != null)
             return (false, "Số điện thoại này đã được liên kết với một tài khoản khác.");
 
+        if (existingKhach != null && string.IsNullOrWhiteSpace(request.MaLienKet))
+            return (false, "Số điện thoại đã có hồ sơ. Vui lòng nhận mã liên kết sau khi xác minh tại cửa hàng.");
+
         if (email != null)
         {
             var emailExists = await _context.KhachHangs
@@ -105,9 +110,26 @@ public class AuthService : IAuthService
                 return (false, "Email đã được sử dụng.");
         }
 
-        await using var tx = await _context.Database.BeginTransactionAsync();
+        await using var tx = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
         try
         {
+            MaLienKetKhachHang? maLienKet = null;
+            if (existingKhach != null)
+            {
+                existingKhach = await _context.KhachHangs
+                    .FirstAsync(k => k.Id == existingKhach.Id);
+                if (existingKhach.TaiKhoanId != null)
+                    return (false, "Hồ sơ đã được liên kết với tài khoản khác.");
+                maLienKet = await _context.MaLienKetKhachHangs
+                    .Where(x => x.KhachHangId == existingKhach.Id && x.DaDungLuc == null
+                        && x.HetHan > DateTime.UtcNow)
+                    .OrderByDescending(x => x.Id).FirstOrDefaultAsync();
+                var suppliedHash = SHA256.HashData(Encoding.UTF8.GetBytes(request.MaLienKet!.Trim().ToUpperInvariant()));
+                if (maLienKet == null || !CryptographicOperations.FixedTimeEquals(
+                        Convert.FromHexString(maLienKet.MaHash), suppliedHash))
+                    return (false, "Mã liên kết không hợp lệ hoặc đã hết hạn.");
+            }
+
             var taiKhoan = new TaiKhoan
             {
                 TenDangNhap = username,
@@ -128,6 +150,7 @@ public class AuthService : IAuthService
                     existingKhach.Email = email;
                 }
                 existingKhach.UpdatedAt = DateTime.UtcNow;
+                maLienKet!.DaDungLuc = DateTime.UtcNow;
             }
             else
             {

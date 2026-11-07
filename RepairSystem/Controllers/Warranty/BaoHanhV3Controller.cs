@@ -132,7 +132,11 @@ public class BaoHanhV3Controller(AppDbContextV3 db) : ControllerBase
         if (phieuBaoHanhId.HasValue) q = q.Where(x => x.PhieuBaoHanhId == phieuBaoHanhId);
         var rows = await q.OrderByDescending(x => x.Id).Select(x => new {
             x.Id, x.PhieuBaoHanhId, x.NhaCungCapId, x.LinhKienId, x.LinhKienSerialId,
-            x.SoLuong, x.TrangThai, x.NgayGui, x.NgayNhanLai, x.KetQua
+            x.SoLuong, x.TrangThai, x.NgayGui, x.NgayNhanLai, x.KetQua,
+            x.KhoGuiId, x.DaTruTon, x.NguonHang,
+            XuLyKho = db.XuLyBaoHanhNccV3s.Where(y => y.PhieuBaoHanhNccId == x.Id)
+                .Select(y => new { y.Id, y.Loai, y.KhoId, y.PhieuNhapId,
+                    y.SoLuong, y.ThoiGian, y.GhiChu }).FirstOrDefault()
         }).ToListAsync();
         return Ok(ApiResponse<object>.SuccessResponse(rows));
     }
@@ -154,7 +158,7 @@ public class BaoHanhV3Controller(AppDbContextV3 db) : ControllerBase
         var row = new PhieuBaoHanhNcc {
             PhieuBaoHanhId = req.PhieuBaoHanhId, NhaCungCapId = req.NhaCungCapId,
             LinhKienId = req.LinhKienId, LinhKienSerialId = req.LinhKienSerialId,
-            SoLuong = req.SoLuong, TrangThai = "CHO_GUI"
+            SoLuong = req.SoLuong, TrangThai = "CHO_GUI", NguonHang = "CU"
         };
         db.PhieuBaoHanhNccs.Add(row);
         await db.SaveChangesAsync();
@@ -163,14 +167,69 @@ public class BaoHanhV3Controller(AppDbContextV3 db) : ControllerBase
 
     [HttpPost("nha-cung-cap/{id:long}/gui")]
     [Authorize(Roles = Roles.Admin + "," + Roles.ThuKho)]
-    public async Task<IActionResult> GuiNcc(long id)
+    public async Task<IActionResult> GuiNcc(long id,
+        [FromBody(EmptyBodyBehavior = Microsoft.AspNetCore.Mvc.ModelBinding.EmptyBodyBehavior.Allow)] GuiBaoHanhNccRequest? req)
     {
+        var actor = await V3Auth.NhanVienIdAsync(db, User);
+        if (actor == null) return Unauthorized();
+        await using var tx = await db.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
         var row = await db.PhieuBaoHanhNccs.FirstOrDefaultAsync(x => x.Id == id);
         if (row == null) return NotFound();
         if (row.TrangThai != "CHO_GUI") return Conflict(ApiResponse<object>.ErrorResponse("Hồ sơ không ở trạng thái chờ gửi."));
+        var tracked = await db.LinhKiens.Where(x => x.Id == row.LinhKienId)
+            .Select(x => x.TheoDoiSerial).FirstAsync();
+        if (tracked == true && row.LinhKienSerialId == null)
+            return BadRequest(ApiResponse<object>.ErrorResponse("Mẫu linh kiện theo dõi serial; cần chọn serial trước khi gửi."));
+        var fromCustomer = req?.Nguon == "KHACH";
+        if (req?.Nguon is not null and not ("KHO" or "KHACH"))
+            return BadRequest(ApiResponse<object>.ErrorResponse("Nguồn linh kiện không hợp lệ."));
+        if (fromCustomer && row.PhieuBaoHanhId == null)
+            return BadRequest(ApiResponse<object>.ErrorResponse("Hàng của khách phải gắn phiếu bảo hành khách."));
+        long? khoId = null;
+        if (row.LinhKienSerialId.HasValue)
+        {
+            var serial = await db.LinhKienSerials.FirstAsync(x => x.Id == row.LinhKienSerialId);
+            if (serial.TrangThai == "TRONG_KHO" && !fromCustomer)
+                khoId = serial.KhoId;
+            else if (serial.TrangThai != "DA_XUAT" || !fromCustomer)
+                return Conflict(ApiResponse<object>.ErrorResponse("Trạng thái serial không khớp nguồn hàng."));
+            if (fromCustomer && !await db.PhieuBaoHanhs.AnyAsync(x => x.Id == row.PhieuBaoHanhId
+                && db.ChiTietXuatKhos.Any(c => c.PhieuId == x.PhieuGocId
+                    && c.LinhKienSerialId == row.LinhKienSerialId)))
+                return Conflict(ApiResponse<object>.ErrorResponse("Serial không thuộc phiếu bảo hành khách."));
+            serial.TrangThai = "BAO_HANH";
+            serial.KhoId = null;
+            serial.UpdatedAt = DateTime.UtcNow;
+        }
+        else if (!fromCustomer)
+            khoId = req?.KhoId;
+        else if (!await db.PhieuBaoHanhs.AnyAsync(x => x.Id == row.PhieuBaoHanhId
+            && db.ChiTietXuatKhos.Any(c => c.PhieuId == x.PhieuGocId && c.LinhKienId == row.LinhKienId)))
+            return Conflict(ApiResponse<object>.ErrorResponse("Linh kiện không thuộc phiếu bảo hành khách."));
+
+        if (!fromCustomer)
+        {
+            if (khoId == null || !await db.Khos.AnyAsync(x => x.Id == khoId && x.DeletedAt == null))
+                return BadRequest(ApiResponse<object>.ErrorResponse("Cần chọn kho gửi hàng hợp lệ."));
+            var stock = await db.TonKhos.FirstOrDefaultAsync(x => x.KhoId == khoId && x.LinhKienId == row.LinhKienId);
+            if (stock == null || stock.SoLuongTon < row.SoLuong)
+                return Conflict(ApiResponse<object>.ErrorResponse("Tồn kho không đủ để gửi bảo hành."));
+            stock.SoLuongTon -= row.SoLuong;
+            stock.NgayCapNhat = DateTime.UtcNow;
+            db.BienDongKhos.Add(new BienDongKho {
+                KhoId = khoId.Value, LinhKienId = row.LinhKienId, Loai = "DIEU_CHINH",
+                SoLuongThayDoi = -row.SoLuong, SoLuongSau = stock.SoLuongTon,
+                NguoiThucHienId = actor.Value, LyDo = $"Gửi bảo hành NCC #{row.Id}",
+                ThoiGian = DateTime.UtcNow
+            });
+            row.DaTruTon = true;
+            row.KhoGuiId = khoId;
+        }
         row.TrangThai = "DA_GUI";
+        row.NguonHang = fromCustomer ? "KHACH" : "KHO";
         row.NgayGui = DateTime.UtcNow;
         await db.SaveChangesAsync();
+        await tx.CommitAsync();
         return Ok(ApiResponse<object>.SuccessResponse(new { row.Id, row.TrangThai }));
     }
 
@@ -189,6 +248,88 @@ public class BaoHanhV3Controller(AppDbContextV3 db) : ControllerBase
         await db.SaveChangesAsync();
         return Ok(ApiResponse<object>.SuccessResponse(new { row.Id, row.TrangThai }));
     }
+
+    [HttpPost("nha-cung-cap/{id:long}/xu-ly-kho")]
+    [Authorize(Roles = Roles.Admin + "," + Roles.ThuKho)]
+    public async Task<IActionResult> XuLyKho(long id, [FromBody] XuLyKhoBaoHanhNccRequest req)
+    {
+        if (req.Loai is not ("NHAP_LAI" or "NHAP_THAY_THE" or "KHONG_NHAP")
+            || req.GhiChu?.Length > 500)
+            return BadRequest(ApiResponse<object>.ErrorResponse("Kết quả xử lý kho không hợp lệ."));
+        var actor = await V3Auth.NhanVienIdAsync(db, User);
+        if (actor == null) return Unauthorized();
+        await using var tx = await db.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
+        var row = await db.PhieuBaoHanhNccs.FirstOrDefaultAsync(x => x.Id == id);
+        if (row == null) return NotFound();
+        if (row.TrangThai != "DA_NHAN_LAI"
+            || await db.XuLyBaoHanhNccV3s.AnyAsync(x => x.PhieuBaoHanhNccId == id))
+            return Conflict(ApiResponse<object>.ErrorResponse("Hồ sơ chưa nhận lại hoặc đã xử lý kho."));
+        if (row.NguonHang == "CU")
+            return Conflict(ApiResponse<object>.ErrorResponse(
+                "Hồ sơ cũ chưa xác định nguồn hàng; cần đối soát thủ công trước khi xử lý tồn."));
+
+        if (req.Loai == "NHAP_LAI")
+        {
+            if (req.KhoId == null || req.PhieuNhapId != null
+                || !await db.Khos.AnyAsync(x => x.Id == req.KhoId && x.DeletedAt == null))
+                return BadRequest(ApiResponse<object>.ErrorResponse("Cần kho nhập lại hợp lệ."));
+            var stock = await db.TonKhos.FirstOrDefaultAsync(x => x.KhoId == req.KhoId && x.LinhKienId == row.LinhKienId);
+            if (stock == null)
+            {
+                stock = new TonKho { KhoId = req.KhoId.Value, LinhKienId = row.LinhKienId,
+                    SoLuongTon = 0, MucTonToiThieu = 0, NgayCapNhat = DateTime.UtcNow };
+                db.TonKhos.Add(stock);
+            }
+            stock.SoLuongTon = checked(stock.SoLuongTon + row.SoLuong);
+            stock.NgayCapNhat = DateTime.UtcNow;
+            if (row.LinhKienSerialId.HasValue)
+            {
+                var serial = await db.LinhKienSerials.FirstAsync(x => x.Id == row.LinhKienSerialId);
+                if (serial.TrangThai != "BAO_HANH")
+                    return Conflict(ApiResponse<object>.ErrorResponse("Serial không còn trong luồng bảo hành."));
+                serial.TrangThai = "TRONG_KHO";
+                serial.KhoId = req.KhoId;
+                serial.ChiTietXuatKhoId = null;
+                serial.UpdatedAt = DateTime.UtcNow;
+            }
+            db.BienDongKhos.Add(new BienDongKho {
+                KhoId = req.KhoId.Value, LinhKienId = row.LinhKienId, Loai = "DIEU_CHINH",
+                SoLuongThayDoi = row.SoLuong, SoLuongSau = stock.SoLuongTon,
+                NguoiThucHienId = actor.Value, LyDo = $"Nhập lại bảo hành NCC #{id}",
+                ThoiGian = DateTime.UtcNow
+            });
+        }
+        else if (req.Loai == "NHAP_THAY_THE")
+        {
+            if (req.PhieuNhapId == null || req.KhoId != null
+                || !await db.PhieuNhaps.AnyAsync(x => x.Id == req.PhieuNhapId
+                    && x.TrangThai == "DA_NHAP_KHO" && x.NhaCungCapId == row.NhaCungCapId
+                    && x.ChiTietNhapKhos.Any(c => c.LinhKienId == row.LinhKienId
+                        && c.SoLuongNhap >= row.SoLuong)))
+                return BadRequest(ApiResponse<object>.ErrorResponse("Cần phiếu nhập thay thế đã xác nhận, cùng NCC và linh kiện."));
+        }
+        else if (req.KhoId != null || req.PhieuNhapId != null || string.IsNullOrWhiteSpace(req.GhiChu))
+            return BadRequest(ApiResponse<object>.ErrorResponse("Cần lý do khi không nhập lại."));
+
+        if (req.Loai != "NHAP_LAI" && row.LinhKienSerialId.HasValue)
+        {
+            var serial = await db.LinhKienSerials.FirstAsync(x => x.Id == row.LinhKienSerialId);
+            if (serial.TrangThai != "BAO_HANH")
+                return Conflict(ApiResponse<object>.ErrorResponse("Serial không còn trong luồng bảo hành."));
+            serial.TrangThai = "THANH_LY";
+            serial.UpdatedAt = DateTime.UtcNow;
+        }
+        var disposition = new XuLyBaoHanhNccV3 {
+            PhieuBaoHanhNccId = id, Loai = req.Loai, KhoId = req.KhoId,
+            PhieuNhapId = req.PhieuNhapId, SoLuong = row.SoLuong,
+            NguoiThucHienId = actor.Value, ThoiGian = DateTime.UtcNow,
+            GhiChu = req.GhiChu?.Trim()
+        };
+        db.XuLyBaoHanhNccV3s.Add(disposition);
+        await db.SaveChangesAsync();
+        await tx.CommitAsync();
+        return Ok(ApiResponse<object>.SuccessResponse(new { disposition.Id, disposition.Loai }));
+    }
 }
 
 public sealed record TaoCamKetBaoHanhRequest(long PhieuGocId, string Loai,
@@ -199,3 +340,5 @@ public sealed record DoiTrangThaiBaoHanhRequest(string TrangThai, string? KetLua
 public sealed record TaoBaoHanhNccRequest(long? PhieuBaoHanhId, long NhaCungCapId,
     long LinhKienId, long? LinhKienSerialId, int SoLuong);
 public sealed record NhanLaiBaoHanhNccRequest(string? KetQua);
+public sealed record GuiBaoHanhNccRequest(string? Nguon, long? KhoId);
+public sealed record XuLyKhoBaoHanhNccRequest(string Loai, long? KhoId, long? PhieuNhapId, string? GhiChu);

@@ -7,6 +7,7 @@ using RepairSystem.Model.ScaffoldV3.Entities;
 using RepairSystem.Service.IServices;
 using RepairSystem.Service.Services;
 using RepairSystem.Service.Helpers;
+using RepairSystem.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -98,6 +99,9 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
+
+// Không phục vụ API trên schema cũ: lỗi sẽ được báo ngay lúc khởi động, kèm CSDL và migration cần chạy.
+await V3SchemaValidator.ValidateAsync(connectionString);
 
 // Initialize database with seed data (wrapped in try-catch)
 try

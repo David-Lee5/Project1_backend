@@ -55,6 +55,9 @@ public class BaoGiaV3Controller(AppDbContextV3 db) : ControllerBase
             return Conflict(ApiResponse<object>.ErrorResponse("Phiếu sửa chữa đã kết thúc."));
         var phienBan = (await db.BaoGia.Where(x => x.PhieuId == phieuId)
             .MaxAsync(x => (int?)x.PhienBan) ?? 0) + 1;
+        var olderOpen = await db.BaoGia.Where(x => x.PhieuId == phieuId
+            && (x.TrangThai == "NHAP" || x.TrangThai == "CHO_DUYET")).ToListAsync();
+        foreach (var old in olderOpen) old.TrangThai = "HUY";
         var row = new BaoGium {
             PhieuId = phieuId, PhienBan = phienBan, TrangThai = "NHAP",
             GiamGia = req.GiamGia, NguoiTaoId = actor.Value
@@ -76,6 +79,8 @@ public class BaoGiaV3Controller(AppDbContextV3 db) : ControllerBase
         var row = await db.BaoGia.FirstOrDefaultAsync(x => x.Id == baoGiaId && x.PhieuId == phieuId);
         if (row == null) return NotFound();
         if (row.TrangThai != "NHAP") return Conflict(ApiResponse<object>.ErrorResponse("Chỉ gửi được báo giá nháp."));
+        if (row.PhienBan != await db.BaoGia.Where(x => x.PhieuId == phieuId).MaxAsync(x => x.PhienBan))
+            return Conflict(ApiResponse<object>.ErrorResponse("Chỉ gửi phiên bản báo giá mới nhất."));
         row.NgayGui = DateTime.UtcNow;
         row.TrangThai = "CHO_DUYET";
         try { await db.SaveChangesAsync(); }
@@ -95,6 +100,8 @@ public class BaoGiaV3Controller(AppDbContextV3 db) : ControllerBase
         var row = await db.BaoGia.FirstOrDefaultAsync(x => x.Id == baoGiaId && x.PhieuId == phieuId);
         if (row == null) return NotFound();
         if (row.TrangThai != "CHO_DUYET") return Conflict(ApiResponse<object>.ErrorResponse("Báo giá không còn chờ phản hồi."));
+        if (row.PhienBan != await db.BaoGia.Where(x => x.PhieuId == phieuId).MaxAsync(x => x.PhienBan))
+            return Conflict(ApiResponse<object>.ErrorResponse("Chỉ phản hồi phiên bản báo giá mới nhất."));
         row.TrangThai = req.QuyetDinh;
         row.NgayPhanHoi = DateTime.UtcNow;
         row.KenhPhanHoi = req.KenhPhanHoi.Trim();
