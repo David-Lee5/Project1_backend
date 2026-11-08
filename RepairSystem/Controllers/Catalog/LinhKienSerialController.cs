@@ -22,7 +22,8 @@ public class LinhKienSerialController : ControllerBase
     }
 
     /// <summary>
-    /// Danh sách serial. Query: linhKienId, trangThai (TRONG_KHO | DA_XUAT | BAO_HANH | THANH_LY), khoId.
+    /// Danh sách serial. Query: linhKienId, trangThai
+    /// (TRONG_KHO | DA_XUAT | BAO_HANH | THANH_LY | THIEU_KIEM_KE | CACH_LY), khoId.
     /// Dùng trangThai=TRONG_KHO để lấy các serial có thể xuất kho.
     /// </summary>
     [HttpGet]

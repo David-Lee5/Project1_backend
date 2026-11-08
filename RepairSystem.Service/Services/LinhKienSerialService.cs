@@ -10,7 +10,7 @@ public class LinhKienSerialService : ILinhKienSerialService
 {
     // Giá trị cột linh_kien_serial.trang_thai (có CHECK trong DB)
     private static readonly HashSet<string> TrangThaiHopLe =
-        new() { "TRONG_KHO", "DA_XUAT", "BAO_HANH", "THANH_LY" };
+        new() { "TRONG_KHO", "DA_XUAT", "BAO_HANH", "THANH_LY", "THIEU_KIEM_KE", "CACH_LY" };
 
     private readonly AppDbContext _context;
     private readonly AppDbContextV3 _v3Context;
@@ -151,6 +151,12 @@ public class LinhKienSerialService : ILinhKienSerialService
                 break;
             case "THANH_LY":
                 dto.ThongBao = "Linh kiện đã được thanh lý.";
+                break;
+            case "THIEU_KIEM_KE":
+                dto.ThongBao = "Linh kiện đang thiếu sau kiểm kê; cần đối soát trước khi xuất.";
+                break;
+            case "CACH_LY":
+                dto.ThongBao = "Linh kiện lỗi đang được cách ly, không thể xuất.";
                 break;
             default: // DA_XUAT
                 if (dto.BaoHanhDen == null)

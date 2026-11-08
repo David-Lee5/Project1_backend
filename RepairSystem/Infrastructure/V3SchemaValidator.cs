@@ -8,6 +8,10 @@ internal static class V3SchemaValidator
     private const string MigrationFile = "database_v3/BO_SUNG_API_20261106.sql";
     private const string KtvMigration = "V3_20261107_KTV";
     private const string KtvMigrationFile = "database_v3/BO_SUNG_QUY_TRINH_KTV_20261107.sql";
+    private const string RulesMigration = "V3_20261108_RULES";
+    private const string RulesMigrationFile = "database/BO_SUNG_QUY_TAC_KIEM_KE_20261108.sql";
+    private const string WorkflowMigration = "V3_20261108_WORKFLOW";
+    private const string WorkflowMigrationFile = "database/BO_SUNG_CONG_VIEC_THANH_LY_TAI_CHINH_20261108.sql";
 
     public static async Task ValidateAsync(string connectionString)
     {
@@ -93,5 +97,57 @@ internal static class V3SchemaValidator
             throw new InvalidOperationException(
                 $"CSDL '{databaseName}' trên '{settings.DataSource}' đã ghi migration {KtvMigration} " +
                 $"nhưng thiếu: {string.Join(", ", missingKtv)}. Kiểm tra schema và khôi phục từ bản sao lưu.");
+
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@version", RulesMigration);
+        var rulesApplied = (long)(await command.ExecuteScalarAsync() ?? 0L) > 0;
+        if (!rulesApplied)
+            throw new InvalidOperationException(
+                $"CSDL '{databaseName}' trên '{settings.DataSource}' thiếu migration {RulesMigration}. " +
+                $"Dừng backend, sao lưu CSDL, chạy {RulesMigrationFile} trên đúng CSDL rồi khởi động lại.");
+
+        command.Parameters.Clear();
+        command.CommandText = """
+            SELECT CASE WHEN COL_LENGTH(N'dbo.phieu_sua_chua', N'ly_do_khong_serial') IS NOT NULL
+                AND COL_LENGTH(N'dbo.phieu_sua_chua', N'ap_dung_kiem_soat_tiep_nhan') IS NOT NULL
+                AND COL_LENGTH(N'dbo.phieu_sua_chua', N'checklist_tiep_nhan_json') IS NOT NULL
+                AND COL_LENGTH(N'dbo.anh_phieu_sua_chua', N'sha256') IS NOT NULL
+                AND COL_LENGTH(N'dbo.anh_phieu_sua_chua', N'nguoi_tai_len_id') IS NOT NULL
+                AND OBJECT_ID(N'dbo.quy_tac_van_hanh_v3', N'U') IS NOT NULL
+                AND OBJECT_ID(N'dbo.xac_nhan_tiep_nhan_v3', N'U') IS NOT NULL
+                AND OBJECT_ID(N'dbo.duyet_bao_hanh_lap_v3', N'U') IS NOT NULL
+                AND OBJECT_ID(N'dbo.kiem_ke_kho_v3', N'U') IS NOT NULL
+                AND OBJECT_ID(N'dbo.dong_kiem_ke_kho_v3', N'U') IS NOT NULL
+                AND OBJECT_ID(N'dbo.bien_dong_serial_kiem_ke_v3', N'U') IS NOT NULL
+                AND OBJECT_ID(N'dbo.cach_ly_vat_tu_v3', N'U') IS NOT NULL
+                THEN 1 ELSE 0 END
+            """;
+        if ((int)(await command.ExecuteScalarAsync() ?? 0) != 1)
+            throw new InvalidOperationException(
+                $"CSDL '{databaseName}' trên '{settings.DataSource}' đã ghi migration {RulesMigration} " +
+                "nhưng thiếu thành phần schema. Kiểm tra và khôi phục từ bản sao lưu.");
+
+        command.CommandText = "SELECT COUNT_BIG(*) FROM dbo.v3_schema_migration WHERE version = @version";
+        command.Parameters.Clear();
+        command.Parameters.AddWithValue("@version", WorkflowMigration);
+        if ((long)(await command.ExecuteScalarAsync() ?? 0L) == 0)
+            throw new InvalidOperationException(
+                $"CSDL '{databaseName}' trên '{settings.DataSource}' thiếu migration {WorkflowMigration}. " +
+                $"Dừng backend, sao lưu CSDL, chạy {WorkflowMigrationFile} trên đúng CSDL rồi khởi động lại.");
+        command.CommandText = """
+            SELECT CASE WHEN OBJECT_ID(N'dbo.cong_viec_sua_chua_v3', N'U') IS NOT NULL
+                AND OBJECT_ID(N'dbo.cong_viec_vat_tu_v3', N'U') IS NOT NULL
+                AND OBJECT_ID(N'dbo.bao_hanh_phan_tich_v3', N'U') IS NOT NULL
+                AND OBJECT_ID(N'dbo.ho_so_thanh_ly_v3', N'U') IS NOT NULL
+                AND OBJECT_ID(N'dbo.tai_lieu_thanh_ly_v3', N'U') IS NOT NULL
+                AND OBJECT_ID(N'dbo.hoa_don_dau_vao_v3', N'U') IS NOT NULL
+                AND OBJECT_ID(N'dbo.hoa_don_dien_tu_v3', N'U') IS NOT NULL
+                AND OBJECT_ID(N'dbo.dieu_chinh_hoa_don_v3', N'U') IS NOT NULL
+                THEN 1 ELSE 0 END
+            """;
+        if ((int)(await command.ExecuteScalarAsync() ?? 0) != 1)
+            throw new InvalidOperationException(
+                $"CSDL '{databaseName}' trên '{settings.DataSource}' đã ghi migration {WorkflowMigration} " +
+                "nhưng thiếu thành phần schema. Kiểm tra và khôi phục từ bản sao lưu.");
     }
 }

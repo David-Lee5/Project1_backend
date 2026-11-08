@@ -14,6 +14,14 @@ Tài liệu này áp dụng khi bạn **clone repo `Project1_backend` về máy 
 2. Mở file [`database/TAO_MOI_QLSCTBDT_V3.sql`](database/TAO_MOI_QLSCTBDT_V3.sql) từ bản clone.
 3. Bấm **Execute** để chạy **toàn bộ** file. Script tự chọn `master`, tạo `QLSCTBDT_V3`, tạo bảng, khóa, thủ tục và loại linh kiện mẫu.
 4. Refresh **Databases**. Kiểm tra đã có `QLSCTBDT_V3` và các bảng như `dbo.tai_khoan`, `dbo.linh_kien`, `dbo.phieu_sua_chua`.
+5. Chọn database `QLSCTBDT_V3`, mở và chạy
+   [`database/BO_SUNG_QUY_TAC_KIEM_KE_20261108.sql`](database/BO_SUNG_QUY_TAC_KIEM_KE_20261108.sql).
+   Bản bổ sung này tạo quy tắc vận hành, xác nhận tiếp nhận, kiểm kê và cách ly.
+   Với CSDL V3 đang sử dụng, sao lưu rồi chạy riêng file này; không chạy lại file tạo mới.
+6. Trên cùng CSDL, chạy tiếp
+   [`database/BO_SUNG_CONG_VIEC_THANH_LY_TAI_CHINH_20261108.sql`](database/BO_SUNG_CONG_VIEC_THANH_LY_TAI_CHINH_20261108.sql).
+   Script tạo bảng công việc sửa chữa, phân tích bảo hành, hồ sơ thanh lý và chứng từ tài chính.
+   Với CSDL đang dùng, dừng backend và sao lưu trước khi chạy. Chỉ chạy một lần.
 
 Có thể kiểm tra trong cửa sổ query mới:
 
@@ -21,6 +29,8 @@ Có thể kiểm tra trong cửa sổ query mới:
 USE QLSCTBDT_V3;
 SELECT COUNT(*) AS so_loai FROM dbo.loai_linh_kien;
 SELECT COUNT(*) AS so_tai_khoan FROM dbo.tai_khoan;
+SELECT version FROM dbo.v3_schema_migration WHERE version = 'V3_20261108_RULES';
+SELECT version FROM dbo.v3_schema_migration WHERE version = 'V3_20261108_WORKFLOW';
 ```
 
 Sau khi tạo mới, `so_loai` là `3` (RAM, quạt laptop, màn hình); `so_tai_khoan` là `0` cho tới khi backend chạy lần đầu. Script **dừng nếu CSDL `QLSCTBDT_V3` đã tồn tại**, không ghi đè hay xóa dữ liệu. Không chạy file nâng cấp CSDL cũ sau file tạo mới này. Nếu CSDL đã có, dùng lại hoặc nhờ người phụ trách kiểm tra; không tự xóa CSDL để thử lại.

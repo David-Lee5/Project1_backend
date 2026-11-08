@@ -18,6 +18,9 @@ public partial class AppDbContext
             entity.Property(x => x.KtvNhanLuc).HasColumnName("ktv_nhan_luc")
                 .HasPrecision(3).HasConversion(utcDateTime);
             entity.Property(x => x.KetQuaKiemTra).HasColumnName("ket_qua_kiem_tra").HasMaxLength(1000);
+            entity.Property(x => x.LyDoKhongSerial).HasColumnName("ly_do_khong_serial").HasMaxLength(250);
+            entity.Property(x => x.ApDungKiemSoatTiepNhan).HasColumnName("ap_dung_kiem_soat_tiep_nhan");
+            entity.Property(x => x.ChecklistTiepNhanJson).HasColumnName("checklist_tiep_nhan_json");
         });
         modelBuilder.Entity<MaLienKetKhachHang>(entity =>
         {
