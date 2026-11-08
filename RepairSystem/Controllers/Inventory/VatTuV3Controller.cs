@@ -43,7 +43,9 @@ public class VatTuV3Controller(AppDbContextV3 db) : ControllerBase
         if (actor == null) return Unauthorized();
         var phieu = await db.PhieuSuaChuas.AsNoTracking().FirstOrDefaultAsync(x => x.Id == phieuId);
         if (phieu == null) return NotFound();
-        if (!User.IsInRole(Roles.Admin) && phieu.KyThuatVienId != actor)
+        if (!User.IsInRole(Roles.Admin) && phieu.KyThuatVienId != actor
+            && !await db.CongViecSuaChuaV3s.AsNoTracking().AnyAsync(x =>
+                x.PhieuId == phieuId && x.KyThuatVienId == actor && x.TrangThai != "HUY"))
             return Forbid();
         if (phieu.TrangThai is not ("DANG_SUA" or "CHO_LINH_KIEN"))
             return Conflict(ApiResponse<object>.ErrorResponse("Phiếu không ở trạng thái được yêu cầu vật tư."));
@@ -78,6 +80,8 @@ public class VatTuV3Controller(AppDbContextV3 db) : ControllerBase
         if (row == null) return NotFound();
         if (row.TrangThai != "CHO_DUYET")
             return Conflict(ApiResponse<object>.ErrorResponse("Yêu cầu đã được xử lý."));
+        if (row.NguoiYeuCauId == actor.Value)
+            return Conflict(ApiResponse<object>.ErrorResponse("Người yêu cầu không được tự duyệt vật tư."));
         if (req.QuyetDinh == "DA_DUYET")
         {
             if (req.SoLuongDuyet == null || req.SoLuongDuyet.Count != row.ChiTietYeuCauLinhKienV3s.Count
@@ -134,7 +138,9 @@ public class VatTuV3Controller(AppDbContextV3 db) : ControllerBase
         var phieu = await db.PhieuSuaChuas.AsNoTracking().FirstOrDefaultAsync(x => x.Id == phieuId);
         if (phieu == null) return false;
         if (!User.IsInRole(Roles.KyThuatVien)) return true;
-        return phieu.KyThuatVienId == await V3Auth.NhanVienIdAsync(db, User);
+        var actor = await V3Auth.NhanVienIdAsync(db, User);
+        return phieu.KyThuatVienId == actor || await db.CongViecSuaChuaV3s.AsNoTracking()
+            .AnyAsync(x => x.PhieuId == phieuId && x.KyThuatVienId == actor && x.TrangThai != "HUY");
     }
 }
 

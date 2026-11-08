@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
 using RepairSystem.Model.ScaffoldV3.Entities;
 using RepairSystem.Service.DTOs;
 using RepairSystem.Service.Helpers;
@@ -35,6 +36,10 @@ public class AnhPhieuSuaChuaController(AppDbContextV3 db, IWebHostEnvironment en
         var name = Path.GetFileName(row.DuongDan);
         var path = Path.Combine(Folder, name);
         if (!System.IO.File.Exists(path)) return NotFound();
+        if (row.Sha256 != null && !string.Equals(
+            Convert.ToHexString(SHA256.HashData(await System.IO.File.ReadAllBytesAsync(path))),
+            row.Sha256, StringComparison.OrdinalIgnoreCase))
+            return Conflict(ApiResponse<object>.ErrorResponse("Ảnh không khớp mã kiểm tra toàn vẹn."));
         var mime = Path.GetExtension(name) switch {
             ".png" => "image/png", ".webp" => "image/webp", _ => "image/jpeg"
         };
@@ -47,6 +52,9 @@ public class AnhPhieuSuaChuaController(AppDbContextV3 db, IWebHostEnvironment en
         [FromForm] string loai = "KHAC", [FromForm] string? moTa = null)
     {
         if (!await DuocXem(phieuId)) return Forbid();
+        if (loai == "LUC_TIEP_NHAN"
+            && await db.XacNhanTiepNhanV3s.AnyAsync(x => x.PhieuId == phieuId))
+            return Conflict(ApiResponse<object>.ErrorResponse("Đã xác nhận tiếp nhận; không thể thêm ảnh đầu vào."));
         if (loai is not ("KHAC" or "LUC_TIEP_NHAN" or "SAU_SUA") || moTa?.Length > 255
             || file == null || file.Length == 0 || file.Length > MaxBytes)
             return BadRequest(ApiResponse<object>.ErrorResponse("Ảnh, loại hoặc mô tả không hợp lệ (tối đa 5 MB)."));
@@ -54,6 +62,8 @@ public class AnhPhieuSuaChuaController(AppDbContextV3 db, IWebHostEnvironment en
             return Conflict(ApiResponse<object>.ErrorResponse("Phiếu đã có tối đa 20 ảnh."));
         if (User.IsInRole(Roles.KyThuatVien) && loai == "LUC_TIEP_NHAN")
             return Forbid();
+        var actor = await V3Auth.NhanVienIdAsync(db, User);
+        if (actor == null) return Unauthorized();
 
         await using var input = file.OpenReadStream();
         using var buffer = new MemoryStream((int)file.Length);
@@ -72,7 +82,9 @@ public class AnhPhieuSuaChuaController(AppDbContextV3 db, IWebHostEnvironment en
             await using (var output = new FileStream(path, FileMode.CreateNew, FileAccess.Write))
                 await output.WriteAsync(bytes);
             var row = new AnhPhieuSuaChua {
-                PhieuId = phieuId, Loai = loai, MoTa = moTa?.Trim(), DuongDan = name
+                PhieuId = phieuId, Loai = loai, MoTa = moTa?.Trim(), DuongDan = name,
+                NguoiTaiLenId = actor.Value,
+                Sha256 = Convert.ToHexString(SHA256.HashData(bytes))
             };
             db.AnhPhieuSuaChuas.Add(row);
             await db.SaveChangesAsync();
@@ -91,6 +103,8 @@ public class AnhPhieuSuaChuaController(AppDbContextV3 db, IWebHostEnvironment en
     {
         var row = await db.AnhPhieuSuaChuas.FirstOrDefaultAsync(x => x.Id == id && x.PhieuId == phieuId);
         if (row == null) return NotFound();
+        if (await db.XacNhanTiepNhanV3s.AnyAsync(x => x.PhieuId == phieuId))
+            return Conflict(ApiResponse<object>.ErrorResponse("Ảnh của phiếu đã xác nhận tiếp nhận không được xóa."));
         if (await db.PhieuSuaChuas.AnyAsync(x => x.Id == phieuId && x.TrangThai == "DA_TRA"))
             return Conflict(ApiResponse<object>.ErrorResponse("Không xóa ảnh sau khi bàn giao."));
         db.AnhPhieuSuaChuas.Remove(row);
@@ -106,7 +120,8 @@ public class AnhPhieuSuaChuaController(AppDbContextV3 db, IWebHostEnvironment en
         if (ticket == null) return false;
         if (!User.IsInRole(Roles.KyThuatVien)) return true;
         var actor = await V3Auth.NhanVienIdAsync(db, User);
-        return ticket.KyThuatVienId == actor;
+        return ticket.KyThuatVienId == actor || await db.CongViecSuaChuaV3s.AsNoTracking()
+            .AnyAsync(x => x.PhieuId == phieuId && x.KyThuatVienId == actor && x.TrangThai != "HUY");
     }
 
     private static string? SignatureExtension(byte[] h)

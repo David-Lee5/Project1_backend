@@ -84,7 +84,10 @@ public class PhieuSuaChuaController : ControllerBase
             if (nvId == null)
                 return Unauthorized(ApiResponse<IEnumerable<PhieuSuaChuaViewDto>>.ErrorResponse(
                     "Tài khoản chưa gắn với hồ sơ nhân viên."));
-            query = query.Where(p => p.KyThuatVienId == nvId);
+            var assignedIds = await _v3Context.CongViecSuaChuaV3s.AsNoTracking()
+                .Where(x => x.KyThuatVienId == nvId && x.TrangThai != "HUY")
+                .Select(x => x.PhieuId).Distinct().ToListAsync();
+            query = query.Where(p => p.KyThuatVienId == nvId || assignedIds.Contains(p.Id));
         }
 
         if (!string.IsNullOrWhiteSpace(trangThai))
@@ -109,6 +112,11 @@ public class PhieuSuaChuaController : ControllerBase
             .OrderByDescending(p => p.NgayNhan)
             .Select(ChieuXem(XemLienHe(), !_v3RequireHandover && XemMatKhau()))
             .ToListAsync();
+        if (User.IsInRole(Roles.KyThuatVien))
+        {
+            var actor = await GetNhanVienIdAsync();
+            foreach (var item in list) item.LaKtvChinh = item.KyThuatVienId == actor;
+        }
 
         return Ok(ApiResponse<IEnumerable<PhieuSuaChuaViewDto>>.SuccessResponse(list));
     }
@@ -126,7 +134,7 @@ public class PhieuSuaChuaController : ControllerBase
         if (dto == null)
             return NotFound(ApiResponse<PhieuSuaChuaViewDto>.ErrorResponse($"Không tìm thấy phiếu sửa chữa id={id}."));
 
-        if (!await DuocXemPhieuAsync(dto.KyThuatVienId))
+        if (!await DuocXemPhieuAsync(dto.KyThuatVienId, id))
             return StatusCode(StatusCodes.Status403Forbidden,
                 ApiResponse<PhieuSuaChuaViewDto>.ErrorResponse("Bạn không phụ trách phiếu này."));
 
@@ -150,6 +158,8 @@ public class PhieuSuaChuaController : ControllerBase
             .OrderByDescending(x => x.PhienBan)
             .Select(x => x.TrangThai)
             .FirstOrDefaultAsync();
+        if (User.IsInRole(Roles.KyThuatVien))
+            dto.LaKtvChinh = dto.KyThuatVienId == await GetNhanVienIdAsync();
 
         return Ok(ApiResponse<PhieuSuaChuaViewDto>.SuccessResponse(dto));
     }
@@ -181,6 +191,28 @@ public class PhieuSuaChuaController : ControllerBase
     // ── Tiếp nhận máy ──────────────────────────────────────────────
 
     /// <summary>
+    /// Tra cứu máy đã tiếp nhận theo serial để chọn lại đúng hồ sơ khi khách quay lại.
+    /// </summary>
+    [HttpGet("tra-cuu-thiet-bi")]
+    [Authorize(Roles = Roles.Admin + "," + Roles.LeTan)]
+    public async Task<IActionResult> TraCuuThietBi([FromQuery] string serial)
+    {
+        if (string.IsNullOrWhiteSpace(serial))
+            return BadRequest(ApiResponse<object>.ErrorResponse("Cần nhập serial thiết bị."));
+        var normalized = serial.Trim().ToUpperInvariant();
+        var device = await _context.ThietBis.AsNoTracking()
+            .Where(x => x.SoSerial != null && x.SoSerial.ToUpper() == normalized
+                && x.DeletedAt == null && x.KhachHang.DeletedAt == null)
+            .Select(x => new { ThietBiId = x.Id, x.MaThietBi, x.TenThietBi,
+                x.LoaiMay, x.SoSerial, CustomerName = x.KhachHang.HoTen,
+                Phone = x.KhachHang.SoDienThoai, Email = x.KhachHang.Email })
+            .FirstOrDefaultAsync();
+        if (device == null)
+            return NotFound(ApiResponse<object>.ErrorResponse("Chưa có thiết bị với serial này."));
+        return Ok(ApiResponse<object>.SuccessResponse(device));
+    }
+
+    /// <summary>
     /// Tạo phiếu tiếp nhận (form Intake). Lễ tân được lấy từ tài khoản đăng nhập.
     /// Mã phiếu (SCxxxxxxx) do database tự sinh.
     /// </summary>
@@ -191,8 +223,16 @@ public class PhieuSuaChuaController : ControllerBase
         // ── Kiểm tra dữ liệu đầu vào ──
         if (string.IsNullOrWhiteSpace(dto.TinhTrangLoi))
             return BadRequest(ApiResponse<object>.ErrorResponse("Vui lòng nhập mô tả tình trạng lỗi."));
-        if (Dai(dto.TinhTrangNgoaiQuan, 500) || Dai(dto.PhuKienKemTheo, 500))
-            return BadRequest(ApiResponse<object>.ErrorResponse("Tình trạng ngoại quan và phụ kiện tối đa 500 ký tự."));
+        if (string.IsNullOrWhiteSpace(dto.TinhTrangNgoaiQuan)
+            || string.IsNullOrWhiteSpace(dto.PhuKienKemTheo)
+            || Dai(dto.TinhTrangNgoaiQuan, 500) || Dai(dto.PhuKienKemTheo, 500))
+            return BadRequest(ApiResponse<object>.ErrorResponse(
+                "Cần ghi tình trạng ngoại quan và phụ kiện (ghi KHONG_CO nếu không có), tối đa 500 ký tự."));
+        if (!HopLeChecklist(dto.ChecklistTiepNhan))
+            return BadRequest(ApiResponse<object>.ErrorResponse(
+                "Checklist tiếp nhận phải ghi màn hình, vỏ, nguồn, tem ốc và dấu hiệu vào nước."));
+        if (Dai(dto.LyDoKhongSerial, 250))
+            return BadRequest(ApiResponse<object>.ErrorResponse("Lý do không có serial tối đa 250 ký tự."));
         if (Dai(dto.MatKhauMay, 100))
             return BadRequest(ApiResponse<object>.ErrorResponse("Mật khẩu máy tối đa 100 ký tự."));
 
@@ -220,9 +260,24 @@ public class PhieuSuaChuaController : ControllerBase
             long thietBiId;
             if (dto.ThietBiId is > 0)
             {
-                var tonTai = await _context.ThietBis.AnyAsync(t => t.Id == dto.ThietBiId.Value && t.DeletedAt == null);
-                if (!tonTai)
+                var existingDevice = await _context.ThietBis.FirstOrDefaultAsync(t =>
+                    t.Id == dto.ThietBiId.Value && t.DeletedAt == null);
+                if (existingDevice == null)
                     return BadRequest(ApiResponse<object>.ErrorResponse($"Thiết bị id={dto.ThietBiId} không tồn tại."));
+                var ownerPhone = await _context.KhachHangs.AsNoTracking()
+                    .Where(x => x.Id == existingDevice.KhachHangId && x.DeletedAt == null)
+                    .Select(x => x.SoDienThoai).FirstOrDefaultAsync();
+                var enteredPhone = Regex.Replace(dto.Phone ?? string.Empty, @"[\s.\-()]", "");
+                if (ownerPhone == null || enteredPhone != ownerPhone)
+                    return Conflict(ApiResponse<object>.ErrorResponse(
+                        "Số điện thoại không khớp hồ sơ máy cũ. Hãy tra cứu serial và xác minh khách trước khi tiếp nhận."));
+                if (!string.IsNullOrWhiteSpace(existingDevice.SoSerial)
+                    && !string.Equals(existingDevice.SoSerial, dto.SoSerial?.Trim(), StringComparison.OrdinalIgnoreCase))
+                    return BadRequest(ApiResponse<object>.ErrorResponse("Serial không khớp thiết bị đã chọn."));
+                if (string.IsNullOrWhiteSpace(existingDevice.SoSerial)
+                    && string.IsNullOrWhiteSpace(dto.LyDoKhongSerial))
+                    return BadRequest(ApiResponse<object>.ErrorResponse(
+                        "Thiết bị chưa có serial; cần ghi lý do để dùng mã thiết bị nội bộ."));
                 thietBiId = dto.ThietBiId.Value;
             }
             else
@@ -261,6 +316,9 @@ public class PhieuSuaChuaController : ControllerBase
                 }
 
                 var serial = string.IsNullOrWhiteSpace(dto.SoSerial) ? null : dto.SoSerial.Trim().ToUpperInvariant();
+                if (serial == null && string.IsNullOrWhiteSpace(dto.LyDoKhongSerial))
+                    return BadRequest(ApiResponse<object>.ErrorResponse(
+                        "Cần serial hoặc lý do không có serial để cấp mã thiết bị nội bộ."));
                 ThietBi? thietBi = null;
                 if (serial != null)
                 {
@@ -286,6 +344,13 @@ public class PhieuSuaChuaController : ControllerBase
                 thietBiId = thietBi.Id;
             }
 
+            var serialThietBi = await _context.ThietBis.Where(x => x.Id == thietBiId)
+                .Select(x => x.SoSerial).SingleAsync();
+            if (!string.IsNullOrWhiteSpace(serialThietBi)
+                && !string.IsNullOrWhiteSpace(dto.LyDoKhongSerial))
+                return BadRequest(ApiResponse<object>.ErrorResponse(
+                    "Thiết bị đã có serial; không cần lý do không có serial."));
+
             // ── Phiếu sửa chữa (không gán MaPhieu: đây là cột tính toán của DB) ──
             var phieu = new PhieuSuaChua
             {
@@ -297,6 +362,9 @@ public class PhieuSuaChuaController : ControllerBase
                 TinhTrangLoi = dto.TinhTrangLoi.Trim(),
                 TinhTrangNgoaiQuan = NullIfBlank(dto.TinhTrangNgoaiQuan),
                 PhuKienKemTheo = NullIfBlank(dto.PhuKienKemTheo),
+                LyDoKhongSerial = NullIfBlank(dto.LyDoKhongSerial),
+                ApDungKiemSoatTiepNhan = true,
+                ChecklistTiepNhanJson = JsonSerializer.Serialize(dto.ChecklistTiepNhan),
                 MatKhauMay = _v3RequireHandover ? null : NullIfBlank(dto.MatKhauMay),
                 TrangThai = TiepNhan,
                 GhiChu = NullIfBlank(dto.GhiChu)
@@ -423,6 +491,10 @@ public class PhieuSuaChuaController : ControllerBase
         await using var tx = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
         var phieu = await _context.PhieuSuaChuas.FirstOrDefaultAsync(x => x.Id == id);
         if (phieu == null) return NotFound(ApiResponse<object>.ErrorResponse("Không tìm thấy phiếu sửa chữa."));
+        if (phieu.ApDungKiemSoatTiepNhan
+            && !await _v3Context.XacNhanTiepNhanV3s.AnyAsync(x => x.PhieuId == id))
+            return Conflict(ApiResponse<object>.ErrorResponse(
+                "Cần tải ảnh tiếp nhận và ghi xác nhận của khách trước khi KTV nhận máy."));
         if (phieu.KyThuatVienId != actor)
             return StatusCode(StatusCodes.Status403Forbidden,
                 ApiResponse<object>.ErrorResponse("Bạn không được phân công phiếu này."));
@@ -548,6 +620,17 @@ public class PhieuSuaChuaController : ControllerBase
                     "Chưa thể bắt đầu sửa: báo giá mới nhất chưa được khách đồng ý."));
         }
 
+        if (dich == HoanThanh && _v3RequireHandover)
+        {
+            await using var workCheck = _context.Database.GetDbConnection().CreateCommand();
+            workCheck.Transaction = tx.GetDbTransaction();
+            workCheck.CommandText = "SELECT COUNT_BIG(*) FROM dbo.cong_viec_sua_chua_v3 WHERE phieu_id=@id AND trang_thai IN ('CHO_LAM','DANG_LAM')";
+            workCheck.Parameters.Add(new SqlParameter("@id", id));
+            if ((long)(await workCheck.ExecuteScalarAsync() ?? 0L) > 0)
+                return Conflict(ApiResponse<object>.ErrorResponse(
+                    "Còn công việc được phân công chưa hoàn thành; cần kết thúc từng công việc trước."));
+        }
+
         if (dich == Huy)
         {
             if (string.IsNullOrWhiteSpace(dto.LyDoHuy))
@@ -657,7 +740,7 @@ public class PhieuSuaChuaController : ControllerBase
         if (kyThuatVienId == null)
             return NotFound(ApiResponse<List<DongXuatKhoDto>>.ErrorResponse($"Không tìm thấy phiếu sửa chữa id={id}."));
 
-        if (!await DuocXemPhieuAsync(kyThuatVienId.KyThuatVienId))
+        if (!await DuocXemPhieuAsync(kyThuatVienId.KyThuatVienId, id))
             return StatusCode(StatusCodes.Status403Forbidden,
                 ApiResponse<List<DongXuatKhoDto>>.ErrorResponse("Bạn không phụ trách phiếu này."));
 
@@ -673,11 +756,13 @@ public class PhieuSuaChuaController : ControllerBase
         User.IsInRole(Roles.Admin) || User.IsInRole(Roles.LeTan) || User.IsInRole(Roles.KyThuatVien);
 
     /// <summary>Kỹ thuật viên chỉ được xem phiếu mình phụ trách; các vai trò còn lại xem được mọi phiếu.</summary>
-    private async Task<bool> DuocXemPhieuAsync(long? kyThuatVienId)
+    private async Task<bool> DuocXemPhieuAsync(long? kyThuatVienId, long phieuId)
     {
         if (!User.IsInRole(Roles.KyThuatVien)) return true;
         var nvId = await GetNhanVienIdAsync();
-        return nvId != null && kyThuatVienId == nvId;
+        return nvId != null && (kyThuatVienId == nvId
+            || await _v3Context.CongViecSuaChuaV3s.AsNoTracking().AnyAsync(x =>
+                x.PhieuId == phieuId && x.KyThuatVienId == nvId && x.TrangThai != "HUY"));
     }
 
     private async Task<long?> GetNhanVienIdAsync()
@@ -710,6 +795,9 @@ public class PhieuSuaChuaController : ControllerBase
             TinhTrangLoi = p.TinhTrangLoi,
             TinhTrangNgoaiQuan = p.TinhTrangNgoaiQuan,
             PhuKienKemTheo = p.PhuKienKemTheo,
+            LyDoKhongSerial = p.LyDoKhongSerial,
+            ApDungKiemSoatTiepNhan = p.ApDungKiemSoatTiepNhan,
+            ChecklistTiepNhanJson = p.ChecklistTiepNhanJson,
             MatKhauMay = xemMatKhau ? p.MatKhauMay : null,
             TrangThai = p.TrangThai,
             GhiChu = p.GhiChu,
@@ -721,11 +809,20 @@ public class PhieuSuaChuaController : ControllerBase
     private static bool Dai(string? s, int max) => s != null && s.Trim().Length > max;
 
     private static string? NullIfBlank(string? s) => string.IsNullOrWhiteSpace(s) ? null : s.Trim();
+
+    private static bool HopLeChecklist(ChecklistTiepNhanDto? c) => c != null
+        && c.ManHinh is ("BINH_THUONG" or "TRAY_XUOC" or "VO_HONG" or "KHONG_KIEM_TRA")
+        && c.VoMay is ("BINH_THUONG" or "TRAY_XUOC" or "VO_HONG" or "KHONG_KIEM_TRA")
+        && c.Nguon is ("BAT_DUOC" or "KHONG_BAT_DUOC" or "KHONG_KIEM_TRA")
+        && c.TemOc is ("NGUYEN_VEN" or "HONG_THIEU" or "KHONG_KIEM_TRA")
+        && c.DauHieuNuoc is ("CO" or "KHONG" or "KHONG_KIEM_TRA");
 }
 
 public sealed record PhanCongPhieuRequest(long? KyThuatVienId);
 public sealed record HenTraPhieuRequest(DateTimeOffset? NgayHenTra);
 public sealed record KiemTraPhieuRequest(string? KetQuaKiemTra);
+public sealed record ChecklistTiepNhanDto(string? ManHinh, string? VoMay,
+    string? Nguon, string? TemOc, string? DauHieuNuoc);
 
 /// <summary>Dữ liệu phiếu trả về cho giao diện.</summary>
 public class PhieuSuaChuaViewDto
@@ -740,12 +837,16 @@ public class PhieuSuaChuaViewDto
     public string? SoDienThoaiKhach { get; set; }
     public string TenLeTan { get; set; } = null!;
     public long? KyThuatVienId { get; set; }
+    public bool LaKtvChinh { get; set; }
     public string? TenKyThuatVien { get; set; }
     public DateTime NgayNhan { get; set; }
     public DateTime? NgayHenTra { get; set; }
     public string TinhTrangLoi { get; set; } = null!;
     public string? TinhTrangNgoaiQuan { get; set; }
     public string? PhuKienKemTheo { get; set; }
+    public string? LyDoKhongSerial { get; set; }
+    public bool ApDungKiemSoatTiepNhan { get; set; }
+    public string? ChecklistTiepNhanJson { get; set; }
     /// <summary>Chỉ Admin, Lễ tân và Kỹ thuật viên phụ trách thấy.</summary>
     public string? MatKhauMay { get; set; }
     public string TrangThai { get; set; } = null!;
@@ -781,6 +882,8 @@ public class IntakeRequestDto
     public string TinhTrangLoi { get; set; } = null!;
     public string? TinhTrangNgoaiQuan { get; set; }
     public string? PhuKienKemTheo { get; set; }
+    public string? LyDoKhongSerial { get; set; }
+    public ChecklistTiepNhanDto? ChecklistTiepNhan { get; set; }
     public string? MatKhauMay { get; set; }
     public string? GhiChu { get; set; }
 }

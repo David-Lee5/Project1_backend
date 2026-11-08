@@ -48,3 +48,4 @@ desktop.ini
 .env.*
 !.env.example
 **/appsettings.Local.json
+**/App_Data/

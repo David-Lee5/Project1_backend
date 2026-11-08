@@ -54,14 +54,24 @@ public class BaoHanhV3Controller(AppDbContextV3 db) : ControllerBase
     }
 
     [HttpGet("khach")]
-    public async Task<IActionResult> DanhSachKhach([FromQuery] long? phieuGocId)
+    public async Task<IActionResult> DanhSachKhach([FromQuery] long? phieuGocId,
+        [FromQuery] long? phieuId)
     {
         var q = db.PhieuBaoHanhs.AsNoTracking().AsQueryable();
         if (phieuGocId.HasValue) q = q.Where(x => x.PhieuGocId == phieuGocId);
+        if (phieuId.HasValue) q = q.Where(x => x.PhieuGocId == phieuId
+            || x.PhieuSuaBaoHanhId == phieuId);
         var rows = await q.OrderByDescending(x => x.NgayTiepNhan)
             .Select(x => new { x.Id, x.PhieuGocId, x.ThietBiId, x.CamKetId,
                 x.PhieuSuaBaoHanhId, x.NgayTiepNhan, x.LoiKhachBao,
-                x.TrangThai, x.KetLuan, x.KetQuaXuLy, x.NgayHoanThanh }).ToListAsync();
+                x.TrangThai, x.KetLuan, x.KetQuaXuLy, x.NgayHoanThanh,
+                PheDuyetLap = db.DuyetBaoHanhLapV3s.Where(a => a.PhieuBaoHanhId == x.Id)
+                    .Select(a => new { a.LanThu, a.TrangThai, a.NguyenNhanSoBo,
+                        a.LyDoQuyetDinh, a.NguoiDuyetId, a.NgayDuyet }).FirstOrDefault(),
+                PhanTich = db.BaoHanhPhanTichV3s.Where(a => a.PhieuBaoHanhId == x.Id)
+                    .Select(a => new { a.NguyenNhan, a.BenChiuChiPhi,
+                        a.ChiPhiDuKien, a.ChiPhiThucTe, a.NguoiGhiId, a.CapNhatLuc }).FirstOrDefault()
+            }).ToListAsync();
         return Ok(ApiResponse<object>.SuccessResponse(rows));
     }
 
@@ -74,6 +84,7 @@ public class BaoHanhV3Controller(AppDbContextV3 db) : ControllerBase
             return BadRequest(ApiResponse<object>.ErrorResponse("Thông tin tiếp nhận bảo hành không hợp lệ."));
         var actor = await V3Auth.NhanVienIdAsync(db, User);
         if (actor == null) return Unauthorized();
+        await using var tx = await db.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
         var phieu = await db.PhieuSuaChuas.AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == req.PhieuGocId);
         if (phieu == null || phieu.TrangThai != "DA_TRA")
@@ -91,6 +102,9 @@ public class BaoHanhV3Controller(AppDbContextV3 db) : ControllerBase
             && !await db.PhieuSuaChuas.AnyAsync(x => x.Id == req.PhieuSuaBaoHanhId
                 && x.ThietBiId == phieu.ThietBiId && x.Id != phieu.Id))
             return BadRequest(ApiResponse<object>.ErrorResponse("Phiếu sửa bảo hành không cùng thiết bị."));
+        if (req.PhieuSuaBaoHanhId.HasValue && await db.PhieuBaoHanhs
+            .AnyAsync(x => x.PhieuSuaBaoHanhId == req.PhieuSuaBaoHanhId))
+            return Conflict(ApiResponse<object>.ErrorResponse("Phiếu sửa đã liên kết với hồ sơ bảo hành khác."));
         var row = new PhieuBaoHanh {
             PhieuGocId = phieu.Id, ThietBiId = phieu.ThietBiId,
             CamKetId = req.CamKetId, PhieuSuaBaoHanhId = req.PhieuSuaBaoHanhId,
@@ -99,15 +113,82 @@ public class BaoHanhV3Controller(AppDbContextV3 db) : ControllerBase
         };
         db.PhieuBaoHanhs.Add(row);
         await db.SaveChangesAsync();
-        return Ok(ApiResponse<object>.SuccessResponse(new { row.Id, row.TrangThai }));
+        var lanThu = checked(await db.PhieuBaoHanhs.CountAsync(x => x.PhieuGocId == phieu.Id));
+        var threshold = await db.QuyTacVanHanhV3s.AsNoTracking()
+            .Where(x => x.Id == 1).Select(x => x.BaoHanhLapDuyetTuLan).SingleAsync();
+        var approval = new DuyetBaoHanhLapV3 {
+            PhieuBaoHanhId = row.Id, LanThu = lanThu,
+            TrangThai = lanThu >= threshold ? "CHO_DUYET" : "KHONG_CAN_DUYET",
+            NguoiDeXuatId = actor.Value
+        };
+        db.DuyetBaoHanhLapV3s.Add(approval);
+        await db.SaveChangesAsync();
+        await tx.CommitAsync();
+        return Ok(ApiResponse<object>.SuccessResponse(new {
+            row.Id, row.TrangThai, LanThu = lanThu, TrangThaiPheDuyet = approval.TrangThai }));
+    }
+
+    [HttpPost("khach/{id:long}/duyet-lap-lai")]
+    [Authorize(Roles = Roles.Admin)]
+    public async Task<IActionResult> DuyetBaoHanhLap(long id, [FromBody] DuyetBaoHanhLapRequest req)
+    {
+        if (req.QuyetDinh is not ("DA_DUYET" or "TU_CHOI")
+            || string.IsNullOrWhiteSpace(req.NguyenNhanSoBo) || req.NguyenNhanSoBo.Length > 1000
+            || string.IsNullOrWhiteSpace(req.LyDoQuyetDinh) || req.LyDoQuyetDinh.Length > 1000)
+            return BadRequest(ApiResponse<object>.ErrorResponse("Cần kết luận nguyên nhân và lý do quyết định."));
+        var actor = await V3Auth.NhanVienIdAsync(db, User);
+        if (actor == null) return Unauthorized();
+        await using var tx = await db.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
+        var approval = await db.DuyetBaoHanhLapV3s.FirstOrDefaultAsync(x => x.PhieuBaoHanhId == id);
+        if (approval == null) return NotFound();
+        if (approval.TrangThai != "CHO_DUYET")
+            return Conflict(ApiResponse<object>.ErrorResponse("Hồ sơ không chờ duyệt bảo hành lặp lại."));
+        if (approval.NguoiDeXuatId == actor)
+            return Conflict(ApiResponse<object>.ErrorResponse("Người tiếp nhận không được tự duyệt hồ sơ của mình."));
+        approval.TrangThai = req.QuyetDinh;
+        approval.NguyenNhanSoBo = req.NguyenNhanSoBo.Trim();
+        approval.LyDoQuyetDinh = req.LyDoQuyetDinh.Trim();
+        approval.NguoiDuyetId = actor;
+        approval.NgayDuyet = DateTime.UtcNow;
+        await db.SaveChangesAsync();
+        await tx.CommitAsync();
+        return Ok(ApiResponse<object>.SuccessResponse(new { approval.PhieuBaoHanhId, approval.TrangThai }));
+    }
+
+    [HttpPatch("khach/{id:long}/lien-ket-phieu-sua")]
+    [Authorize(Roles = Roles.Admin + "," + Roles.LeTan)]
+    public async Task<IActionResult> LienKetPhieuSua(long id, [FromBody] LienKetPhieuSuaBaoHanhRequest req)
+    {
+        if (req.PhieuSuaBaoHanhId <= 0)
+            return BadRequest(ApiResponse<object>.ErrorResponse("Cần phiếu sửa bảo hành hợp lệ."));
+        await using var tx = await db.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
+        var claim = await db.PhieuBaoHanhs.FirstOrDefaultAsync(x => x.Id == id);
+        if (claim == null) return NotFound();
+        if (claim.PhieuSuaBaoHanhId.HasValue || claim.TrangThai is "HOAN_THANH" or "DA_TRA" or "TU_CHOI")
+            return Conflict(ApiResponse<object>.ErrorResponse("Hồ sơ đã liên kết hoặc đã kết thúc."));
+        if (!await db.PhieuSuaChuas.AsNoTracking().AnyAsync(x =>
+            x.Id == req.PhieuSuaBaoHanhId && x.Id != claim.PhieuGocId
+            && x.ThietBiId == claim.ThietBiId && x.TrangThai != "HUY"))
+            return BadRequest(ApiResponse<object>.ErrorResponse("Phiếu sửa không cùng thiết bị hoặc đã hủy."));
+        if (await db.PhieuBaoHanhs.AnyAsync(x => x.PhieuSuaBaoHanhId == req.PhieuSuaBaoHanhId))
+            return Conflict(ApiResponse<object>.ErrorResponse("Phiếu sửa đã thuộc hồ sơ bảo hành khác."));
+        claim.PhieuSuaBaoHanhId = req.PhieuSuaBaoHanhId;
+        await db.SaveChangesAsync();
+        await tx.CommitAsync();
+        return Ok(ApiResponse<object>.SuccessResponse(new { claim.Id, claim.PhieuSuaBaoHanhId }));
     }
 
     [HttpPost("khach/{id:long}/trang-thai")]
     [Authorize(Roles = Roles.Admin + "," + Roles.LeTan + "," + Roles.KyThuatVien)]
     public async Task<IActionResult> DoiTrangThaiKhach(long id, [FromBody] DoiTrangThaiBaoHanhRequest req)
     {
+        await using var tx = await db.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
         var row = await db.PhieuBaoHanhs.FirstOrDefaultAsync(x => x.Id == id);
         if (row == null) return NotFound();
+        var approval = await db.DuyetBaoHanhLapV3s.AsNoTracking()
+            .FirstOrDefaultAsync(x => x.PhieuBaoHanhId == id);
+        if (approval?.TrangThai is "CHO_DUYET" or "TU_CHOI")
+            return Conflict(ApiResponse<object>.ErrorResponse("Bảo hành lặp lại chưa được quản lý chấp thuận."));
         if (!BuocKhach.TryGetValue(row.TrangThai, out var next) || !next.Contains(req.TrangThai))
             return Conflict(ApiResponse<object>.ErrorResponse("Bước chuyển trạng thái không hợp lệ."));
         if (req.KetLuan?.Length > 1000 || req.KetQuaXuLy?.Length > 1000)
@@ -116,12 +197,68 @@ public class BaoHanhV3Controller(AppDbContextV3 db) : ControllerBase
             return BadRequest(ApiResponse<object>.ErrorResponse("Cần kết luận khi từ chối bảo hành."));
         if (req.TrangThai == "HOAN_THANH" && string.IsNullOrWhiteSpace(req.KetQuaXuLy))
             return BadRequest(ApiResponse<object>.ErrorResponse("Cần ghi kết quả xử lý."));
+        if (req.TrangThai == "HOAN_THANH")
+        {
+            var analysis = await db.BaoHanhPhanTichV3s.AsNoTracking()
+                .FirstOrDefaultAsync(x => x.PhieuBaoHanhId == id);
+            if (analysis?.ChiPhiThucTe == null)
+                return Conflict(ApiResponse<object>.ErrorResponse(
+                    "Cần ghi nguyên nhân, bên chịu chi phí và chi phí thực tế trước khi hoàn thành bảo hành."));
+            if (row.PhieuSuaBaoHanhId.HasValue)
+            {
+                var repairStatus = await db.PhieuSuaChuas.AsNoTracking()
+                    .Where(x => x.Id == row.PhieuSuaBaoHanhId)
+                    .Select(x => x.TrangThai).SingleAsync();
+                if (repairStatus is not ("HOAN_THANH" or "DA_TRA")
+                    || !await db.CongViecSuaChuaV3s.AsNoTracking()
+                        .AnyAsync(x => x.PhieuBaoHanhId == id && x.TrangThai == "HOAN_THANH")
+                    || await db.CongViecSuaChuaV3s.AsNoTracking()
+                        .AnyAsync(x => x.PhieuBaoHanhId == id
+                            && (x.TrangThai == "CHO_LAM" || x.TrangThai == "DANG_LAM")))
+                    return Conflict(ApiResponse<object>.ErrorResponse(
+                        "Phiếu sửa bảo hành cần hoàn thành ít nhất một công việc liên kết."));
+            }
+        }
         row.TrangThai = req.TrangThai;
         if (req.KetLuan != null) row.KetLuan = req.KetLuan.Trim();
         if (req.KetQuaXuLy != null) row.KetQuaXuLy = req.KetQuaXuLy.Trim();
         if (req.TrangThai == "HOAN_THANH") row.NgayHoanThanh = DateTime.UtcNow;
         await db.SaveChangesAsync();
+        await tx.CommitAsync();
         return Ok(ApiResponse<object>.SuccessResponse(new { row.Id, row.TrangThai }));
+    }
+
+    [HttpPut("khach/{id:long}/phan-tich-chi-phi")]
+    [Authorize(Roles = Roles.Admin + "," + Roles.LeTan)]
+    public async Task<IActionResult> PhanTichChiPhi(long id, [FromBody] PhanTichBaoHanhV3Request req)
+    {
+        if (string.IsNullOrWhiteSpace(req.NguyenNhan) || req.NguyenNhan.Length > 1000
+            || req.BenChiuChiPhi is not ("CUA_HANG" or "KHACH" or "NCC" or "KTV")
+            || req.ChiPhiDuKien < 0 || req.ChiPhiDuKien > 999_999_999_999.99m
+            || req.ChiPhiThucTe < 0 || req.ChiPhiThucTe > 999_999_999_999.99m)
+            return BadRequest(ApiResponse<object>.ErrorResponse("Phân tích chi phí bảo hành không hợp lệ."));
+        var actor = await V3Auth.NhanVienIdAsync(db, User);
+        if (actor == null) return Unauthorized();
+        await using var tx = await db.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
+        var claim = await db.PhieuBaoHanhs.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+        if (claim == null) return NotFound();
+        if (claim.TrangThai is "DA_TRA" or "TU_CHOI")
+            return Conflict(ApiResponse<object>.ErrorResponse("Hồ sơ bảo hành đã kết thúc."));
+        var row = await db.BaoHanhPhanTichV3s.FirstOrDefaultAsync(x => x.PhieuBaoHanhId == id);
+        if (row == null)
+        {
+            row = new BaoHanhPhanTichV3 { PhieuBaoHanhId = id };
+            db.BaoHanhPhanTichV3s.Add(row);
+        }
+        row.NguyenNhan = req.NguyenNhan.Trim();
+        row.BenChiuChiPhi = req.BenChiuChiPhi;
+        row.ChiPhiDuKien = req.ChiPhiDuKien;
+        row.ChiPhiThucTe = req.ChiPhiThucTe;
+        row.NguoiGhiId = actor.Value;
+        row.CapNhatLuc = DateTime.UtcNow;
+        await db.SaveChangesAsync();
+        await tx.CommitAsync();
+        return Ok(ApiResponse<object>.SuccessResponse(row));
     }
 
     [HttpGet("nha-cung-cap")]
@@ -336,7 +473,12 @@ public sealed record TaoCamKetBaoHanhRequest(long PhieuGocId, string Loai,
     long? ChiTietXuatKhoId, long? DichVuId, DateOnly NgayBatDau, DateOnly NgayKetThuc, string? DieuKien);
 public sealed record TiepNhanBaoHanhRequest(long PhieuGocId, long? CamKetId,
     long? PhieuSuaBaoHanhId, string? LoiKhachBao);
+public sealed record LienKetPhieuSuaBaoHanhRequest(long PhieuSuaBaoHanhId);
 public sealed record DoiTrangThaiBaoHanhRequest(string TrangThai, string? KetLuan, string? KetQuaXuLy);
+public sealed record PhanTichBaoHanhV3Request(string? NguyenNhan, string? BenChiuChiPhi,
+    decimal ChiPhiDuKien, decimal? ChiPhiThucTe);
+public sealed record DuyetBaoHanhLapRequest(string QuyetDinh, string? NguyenNhanSoBo,
+    string? LyDoQuyetDinh);
 public sealed record TaoBaoHanhNccRequest(long? PhieuBaoHanhId, long NhaCungCapId,
     long LinhKienId, long? LinhKienSerialId, int SoLuong);
 public sealed record NhanLaiBaoHanhNccRequest(string? KetQua);
