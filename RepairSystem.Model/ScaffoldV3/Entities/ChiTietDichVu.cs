@@ -19,7 +19,7 @@ public partial class ChiTietDichVu
 
     public virtual CamKetBaoHanh? CamKetBaoHanh { get; set; }
 
-    public virtual ICollection<ChiTietHoaDonV3> ChiTietHoaDonV3s { get; set; } = new List<ChiTietHoaDonV3>();
+    public virtual ICollection<ChiTietHoaDon> ChiTietHoaDonV3s { get; set; } = new List<ChiTietHoaDon>();
 
     public virtual DichVu DichVu { get; set; } = null!;
 

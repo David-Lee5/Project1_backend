@@ -12,7 +12,7 @@ namespace RepairSystem.Controllers.V3;
 [ApiController]
 [Route("api/v3/phieu-sua-chua/{phieuId:long}/vat-tu")]
 [Authorize(Roles = Roles.NhanVien)]
-public class VatTuV3Controller(AppDbContextV3 db) : ControllerBase
+public class VatTuController(RepairDbContext db) : ControllerBase
 {
     [HttpGet("yeu-cau")]
     public async Task<IActionResult> DanhSach(long phieuId)
@@ -52,12 +52,12 @@ public class VatTuV3Controller(AppDbContextV3 db) : ControllerBase
         var ids = req.ChiTiet.Select(x => x.LinhKienId).ToList();
         if (await db.LinhKiens.CountAsync(x => ids.Contains(x.Id) && x.DeletedAt == null) != ids.Count)
             return BadRequest(ApiResponse<object>.ErrorResponse("Có linh kiện không tồn tại."));
-        var row = new YeuCauLinhKienV3 {
+        var row = new YeuCauLinhKien {
             PhieuId = phieuId, NguoiYeuCauId = actor.Value,
             TrangThai = "CHO_DUYET", GhiChu = req.GhiChu?.Trim()
         };
         foreach (var c in req.ChiTiet)
-            row.ChiTietYeuCauLinhKienV3s.Add(new ChiTietYeuCauLinhKienV3 {
+            row.ChiTietYeuCauLinhKienV3s.Add(new ChiTietYeuCauLinhKien {
                 PhieuId = phieuId, LinhKienId = c.LinhKienId,
                 SoLuongYeuCau = c.SoLuong, GhiChu = c.GhiChu?.Trim()
             });

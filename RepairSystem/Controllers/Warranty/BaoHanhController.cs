@@ -10,7 +10,7 @@ namespace RepairSystem.Controllers.V3;
 [ApiController]
 [Route("api/v3/bao-hanh")]
 [Authorize(Roles = Roles.NhanVien)]
-public class BaoHanhV3Controller(AppDbContextV3 db) : ControllerBase
+public class BaoHanhController(RepairDbContext db) : ControllerBase
 {
     private static readonly Dictionary<string, string[]> BuocKhach = new() {
         ["TIEP_NHAN"] = ["DANG_KIEM_TRA"],
@@ -456,7 +456,7 @@ public class BaoHanhV3Controller(AppDbContextV3 db) : ControllerBase
             serial.TrangThai = "THANH_LY";
             serial.UpdatedAt = DateTime.UtcNow;
         }
-        var disposition = new XuLyBaoHanhNccV3 {
+        var disposition = new XuLyBaoHanhNcc {
             PhieuBaoHanhNccId = id, Loai = req.Loai, KhoId = req.KhoId,
             PhieuNhapId = req.PhieuNhapId, SoLuong = row.SoLuong,
             NguoiThucHienId = actor.Value, ThoiGian = DateTime.UtcNow,

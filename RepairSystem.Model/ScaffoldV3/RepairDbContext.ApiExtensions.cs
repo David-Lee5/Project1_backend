@@ -3,8 +3,9 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace RepairSystem.Model.ScaffoldV3.Entities;
 
-public partial class AppDbContextV3
+public partial class RepairDbContext
 {
+<<<<<<< Updated upstream:RepairSystem.Model/ScaffoldV3/AppDbContextV3.ApiExtensions.cs
     public DbSet<LichHenV3> LichHenV3s => Set<LichHenV3>();
     public DbSet<XuLyBaoHanhNccV3> XuLyBaoHanhNccV3s => Set<XuLyBaoHanhNccV3>();
     public DbSet<QuyTacVanHanhV3> QuyTacVanHanhV3s => Set<QuyTacVanHanhV3>();
@@ -22,6 +23,10 @@ public partial class AppDbContextV3
     public DbSet<HoaDonDauVaoV3> HoaDonDauVaoV3s => Set<HoaDonDauVaoV3>();
     public DbSet<HoaDonDienTuV3> HoaDonDienTuV3s => Set<HoaDonDienTuV3>();
     public DbSet<DieuChinhHoaDonV3> DieuChinhHoaDonV3s => Set<DieuChinhHoaDonV3>();
+=======
+    public DbSet<LichHen> LichHenV3s => Set<LichHen>();
+    public DbSet<XuLyBaoHanhNcc> XuLyBaoHanhNccV3s => Set<XuLyBaoHanhNcc>();
+>>>>>>> Stashed changes:RepairSystem.Model/ScaffoldV3/RepairDbContext.ApiExtensions.cs
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder)
     {
@@ -258,9 +263,9 @@ public partial class AppDbContextV3
             e.Property(x => x.NguoiGhiId).HasColumnName("nguoi_ghi_id");
             e.Property(x => x.GhiLuc).HasColumnName("ghi_luc").HasConversion(utcDateTime);
         });
-        modelBuilder.Entity<LichHenV3>(e =>
+        modelBuilder.Entity<LichHen>(e =>
         {
-            e.ToTable("lich_hen_v3");
+            e.ToTable("lich_hen");
             e.HasKey(x => x.Id);
             e.Property(x => x.Id).HasColumnName("id");
             e.Property(x => x.KhachHangId).HasColumnName("khach_hang_id");
@@ -276,9 +281,9 @@ public partial class AppDbContextV3
             e.Property(x => x.UpdatedAt).HasColumnName("updated_at")
                 .HasConversion(utcDateTime).HasDefaultValueSql("SYSUTCDATETIME()");
         });
-        modelBuilder.Entity<XuLyBaoHanhNccV3>(e =>
+        modelBuilder.Entity<XuLyBaoHanhNcc>(e =>
         {
-            e.ToTable("xu_ly_bao_hanh_ncc_v3");
+            e.ToTable("xu_ly_bao_hanh_ncc");
             e.HasKey(x => x.Id);
             e.HasIndex(x => x.PhieuBaoHanhNccId).IsUnique();
             e.Property(x => x.Id).HasColumnName("id");

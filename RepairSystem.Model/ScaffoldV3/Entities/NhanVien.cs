@@ -49,7 +49,7 @@ public partial class NhanVien
 
     public virtual ICollection<ThuKho> ThuKhos { get; set; } = new List<ThuKho>();
 
-    public virtual ICollection<YeuCauLinhKienV3> YeuCauLinhKienV3NguoiDuyets { get; set; } = new List<YeuCauLinhKienV3>();
+    public virtual ICollection<YeuCauLinhKien> YeuCauLinhKienV3NguoiDuyets { get; set; } = new List<YeuCauLinhKien>();
 
-    public virtual ICollection<YeuCauLinhKienV3> YeuCauLinhKienV3NguoiYeuCaus { get; set; } = new List<YeuCauLinhKienV3>();
+    public virtual ICollection<YeuCauLinhKien> YeuCauLinhKienV3NguoiYeuCaus { get; set; } = new List<YeuCauLinhKien>();
 }

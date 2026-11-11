@@ -10,7 +10,7 @@ using System.Text.Json;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore.Storage;
 using RepairSystem.Model;
-using V3Context = RepairSystem.Model.ScaffoldV3.Entities.AppDbContextV3;
+using V3Context = RepairSystem.Model.ScaffoldV3.Entities.RepairDbContext;
 using RepairSystem.Service.DTOs;
 using RepairSystem.Service.Helpers;
 using RepairSystem.Service.IServices;
@@ -376,7 +376,7 @@ public class PhieuSuaChuaController : ControllerBase
             {
                 var encrypted = _passwordProtector.Protect(Encoding.UTF8.GetBytes(dto.MatKhauMay.Trim()));
                 await _context.Database.ExecuteSqlRawAsync(
-                    "INSERT dbo.bi_mat_thiet_bi_v3(phieu_id,du_lieu_ma_hoa,ma_khoa,het_han) VALUES(@id,@data,@key,@expires)",
+                    "INSERT dbo.bi_mat_thiet_bi(phieu_id,du_lieu_ma_hoa,ma_khoa,het_han) VALUES(@id,@data,@key,@expires)",
                     new Microsoft.Data.SqlClient.SqlParameter("@id", phieu.Id),
                     new Microsoft.Data.SqlClient.SqlParameter("@data", encrypted),
                     new Microsoft.Data.SqlClient.SqlParameter("@key", "aspnet-data-protection-v1"),
@@ -643,7 +643,7 @@ public class PhieuSuaChuaController : ControllerBase
                     FROM dbo.giao_dich_thanh_toan WHERE phieu_id=@id),0),
                 CASE WHEN EXISTS (SELECT 1 FROM dbo.chi_tiet_xuat_kho x WHERE x.phieu_id=@id
                     AND x.so_luong_xuat>COALESCE((SELECT SUM(t.so_luong)
-                        FROM dbo.tra_linh_kien_kho_v3 t WHERE t.chi_tiet_xuat_kho_id=x.id),0))
+                        FROM dbo.tra_linh_kien_kho t WHERE t.chi_tiet_xuat_kho_id=x.id),0))
                     THEN 1 ELSE 0 END";
             check.Parameters.Add(new SqlParameter("@id", id));
             await using var result = await check.ExecuteReaderAsync();

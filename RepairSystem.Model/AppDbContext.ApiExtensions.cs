@@ -24,7 +24,7 @@ public partial class AppDbContext
         });
         modelBuilder.Entity<MaLienKetKhachHang>(entity =>
         {
-            entity.ToTable("ma_lien_ket_khach_hang_v3");
+            entity.ToTable("ma_lien_ket_khach_hang");
             entity.HasKey(x => x.Id);
             entity.Property(x => x.Id).HasColumnName("id");
             entity.Property(x => x.KhachHangId).HasColumnName("khach_hang_id");

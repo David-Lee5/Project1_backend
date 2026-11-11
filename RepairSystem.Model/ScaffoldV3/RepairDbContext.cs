@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace RepairSystem.Model.ScaffoldV3.Entities;
 
-public partial class AppDbContextV3 : DbContext
+public partial class RepairDbContext : DbContext
 {
-    public AppDbContextV3(DbContextOptions<AppDbContextV3> options)
+    public RepairDbContext(DbContextOptions<RepairDbContext> options)
         : base(options)
     {
     }
@@ -21,7 +21,7 @@ public partial class AppDbContextV3 : DbContext
 
     public virtual DbSet<BaoGium> BaoGia { get; set; }
 
-    public virtual DbSet<BiMatThietBiV3> BiMatThietBiV3s { get; set; }
+    public virtual DbSet<BiMatThietBi> BiMatThietBiV3s { get; set; }
 
     public virtual DbSet<BienDongKho> BienDongKhos { get; set; }
 
@@ -31,13 +31,13 @@ public partial class AppDbContextV3 : DbContext
 
     public virtual DbSet<ChiTietDichVu> ChiTietDichVus { get; set; }
 
-    public virtual DbSet<ChiTietHoaDonV3> ChiTietHoaDonV3s { get; set; }
+    public virtual DbSet<ChiTietHoaDon> ChiTietHoaDonV3s { get; set; }
 
     public virtual DbSet<ChiTietNhapKho> ChiTietNhapKhos { get; set; }
 
     public virtual DbSet<ChiTietXuatKho> ChiTietXuatKhos { get; set; }
 
-    public virtual DbSet<ChiTietYeuCauLinhKienV3> ChiTietYeuCauLinhKienV3s { get; set; }
+    public virtual DbSet<ChiTietYeuCauLinhKien> ChiTietYeuCauLinhKienV3s { get; set; }
 
     public virtual DbSet<DichVu> DichVus { get; set; }
 
@@ -89,7 +89,7 @@ public partial class AppDbContextV3 : DbContext
 
     public virtual DbSet<TonKho> TonKhos { get; set; }
 
-    public virtual DbSet<TraLinhKienKhoV3> TraLinhKienKhoV3s { get; set; }
+    public virtual DbSet<TraLinhKienKho> TraLinhKienKhoV3s { get; set; }
 
     public virtual DbSet<V3SchemaMigration> V3SchemaMigrations { get; set; }
 
@@ -105,7 +105,7 @@ public partial class AppDbContextV3 : DbContext
 
     public virtual DbSet<VV3CongNoPhieu> VV3CongNoPhieus { get; set; }
 
-    public virtual DbSet<YeuCauLinhKienV3> YeuCauLinhKienV3s { get; set; }
+    public virtual DbSet<YeuCauLinhKien> YeuCauLinhKienV3s { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -305,11 +305,11 @@ public partial class AppDbContextV3 : DbContext
                 .HasConstraintName("fk_bg_phieu");
         });
 
-        modelBuilder.Entity<BiMatThietBiV3>(entity =>
+        modelBuilder.Entity<BiMatThietBi>(entity =>
         {
             entity.HasKey(e => e.PhieuId).HasName("pk_bi_mat_thiet_bi_v3");
 
-            entity.ToTable("bi_mat_thiet_bi_v3");
+            entity.ToTable("bi_mat_thiet_bi");
 
             entity.Property(e => e.PhieuId)
                 .ValueGeneratedNever()
@@ -326,8 +326,8 @@ public partial class AppDbContextV3 : DbContext
                 .HasDefaultValueSql("(sysutcdatetime())")
                 .HasColumnName("ngay_tao");
 
-            entity.HasOne(d => d.Phieu).WithOne(p => p.BiMatThietBiV3)
-                .HasForeignKey<BiMatThietBiV3>(d => d.PhieuId)
+            entity.HasOne(d => d.Phieu).WithOne(p => p.BiMatThietBi)
+                .HasForeignKey<BiMatThietBi>(d => d.PhieuId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_bi_mat_phieu");
         });
@@ -516,11 +516,11 @@ public partial class AppDbContextV3 : DbContext
                 .HasConstraintName("fk_ctdv_phieu");
         });
 
-        modelBuilder.Entity<ChiTietHoaDonV3>(entity =>
+        modelBuilder.Entity<ChiTietHoaDon>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("pk_chi_tiet_hoa_don_v3");
 
-            entity.ToTable("chi_tiet_hoa_don_v3", tb => tb.HasTrigger("trg_v3_chi_tiet_hoa_don_khong_sua"));
+            entity.ToTable("chi_tiet_hoa_don", tb => tb.HasTrigger("trg_v3_chi_tiet_hoa_don_khong_sua"));
 
             entity.HasIndex(e => new { e.HoaDonId, e.DichVuId }, "uq_cthd_dv")
                 .IsUnique()
@@ -651,17 +651,17 @@ public partial class AppDbContextV3 : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_ctxk_ton_kho");
 
-            entity.HasOne(d => d.ChiTietYeuCauLinhKienV3).WithMany(p => p.ChiTietXuatKhos)
+            entity.HasOne(d => d.ChiTietYeuCauLinhKien).WithMany(p => p.ChiTietXuatKhos)
                 .HasPrincipalKey(p => new { p.Id, p.PhieuId, p.LinhKienId })
                 .HasForeignKey(d => new { d.YeuCauChiTietId, d.PhieuId, d.LinhKienId })
                 .HasConstraintName("fk_ctxk_yeu_cau_v3");
         });
 
-        modelBuilder.Entity<ChiTietYeuCauLinhKienV3>(entity =>
+        modelBuilder.Entity<ChiTietYeuCauLinhKien>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("pk_ct_yclk_v3");
 
-            entity.ToTable("chi_tiet_yeu_cau_linh_kien_v3");
+            entity.ToTable("chi_tiet_yeu_cau_linh_kien");
 
             entity.HasIndex(e => new { e.Id, e.PhieuId, e.LinhKienId }, "uq_ct_yclk_id_phieu_lk").IsUnique();
 
@@ -682,7 +682,7 @@ public partial class AppDbContextV3 : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_ct_yclk_lk");
 
-            entity.HasOne(d => d.YeuCauLinhKienV3).WithMany(p => p.ChiTietYeuCauLinhKienV3s)
+            entity.HasOne(d => d.YeuCauLinhKien).WithMany(p => p.ChiTietYeuCauLinhKienV3s)
                 .HasPrincipalKey(p => new { p.Id, p.PhieuId })
                 .HasForeignKey(d => new { d.YeuCauId, d.PhieuId })
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -1810,11 +1810,11 @@ public partial class AppDbContextV3 : DbContext
                 .HasConstraintName("fk_ton_kho_linh_kien");
         });
 
-        modelBuilder.Entity<TraLinhKienKhoV3>(entity =>
+        modelBuilder.Entity<TraLinhKienKho>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("pk_tra_lk_v3");
 
-            entity.ToTable("tra_linh_kien_kho_v3", tb => tb.HasTrigger("trg_v3_tra_linh_kien_khong_sua"));
+            entity.ToTable("tra_linh_kien_kho", tb => tb.HasTrigger("trg_v3_tra_linh_kien_khong_sua"));
 
             entity.HasIndex(e => e.ChiTietXuatKhoId, "ix_tra_lk_ctxk");
 
@@ -2003,11 +2003,11 @@ public partial class AppDbContextV3 : DbContext
                 .HasColumnName("tong_thanh_toan");
         });
 
-        modelBuilder.Entity<YeuCauLinhKienV3>(entity =>
+        modelBuilder.Entity<YeuCauLinhKien>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("pk_yeu_cau_lk_v3");
 
-            entity.ToTable("yeu_cau_linh_kien_v3");
+            entity.ToTable("yeu_cau_linh_kien");
 
             entity.HasIndex(e => new { e.Id, e.PhieuId }, "uq_yclk_id_phieu").IsUnique();
 

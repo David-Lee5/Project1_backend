@@ -13,10 +13,10 @@ public class LinhKienSerialService : ILinhKienSerialService
         new() { "TRONG_KHO", "DA_XUAT", "BAO_HANH", "THANH_LY", "THIEU_KIEM_KE", "CACH_LY" };
 
     private readonly AppDbContext _context;
-    private readonly AppDbContextV3 _v3Context;
+    private readonly RepairDbContext _v3Context;
     private readonly bool _v3Enabled;
 
-    public LinhKienSerialService(AppDbContext context, AppDbContextV3 v3Context,
+    public LinhKienSerialService(AppDbContext context, RepairDbContext v3Context,
         Microsoft.Extensions.Configuration.IConfiguration configuration)
     {
         _context = context;

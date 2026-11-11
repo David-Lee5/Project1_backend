@@ -13,7 +13,7 @@ namespace RepairSystem.Controllers.V3;
 [ApiController]
 [Route("api/lich-hen")]
 [Authorize]
-public class LichHenV3Controller(AppDbContextV3 db, IConfiguration configuration) : ControllerBase
+public class LichHenController(RepairDbContext db, IConfiguration configuration) : ControllerBase
 {
     private static readonly TimeSpan VietnamOffset = TimeSpan.FromHours(7);
     private readonly int _startHour = configuration.GetValue("Appointments:StartHour", 9);
@@ -73,7 +73,7 @@ public class LichHenV3Controller(AppDbContextV3 db, IConfiguration configuration
             && (x.TrangThai == "CHO_XAC_NHAN" || x.TrangThai == "DA_XAC_NHAN"));
         if (booked >= _capacity)
             return Conflict(ApiResponse<object>.ErrorResponse("Khung giờ này đã hết chỗ. Vui lòng chọn giờ khác."));
-        var row = new LichHenV3 {
+        var row = new LichHen {
             KhachHangId = customerId.Value, ThoiGianMongMuon = req.ThoiGianMongMuon.UtcDateTime,
             TenThietBi = req.TenThietBi.Trim(), MoTaLoi = req.MoTaLoi.Trim(),
             TrangThai = "CHO_XAC_NHAN"

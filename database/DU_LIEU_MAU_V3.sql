@@ -226,10 +226,10 @@ BEGIN TRY
             kenh_phan_hoi = N'Điện thoại', nguoi_ghi_nhan_id = @lt,
             noi_dung_phan_hoi = N'[DEMO] Đồng ý thay quạt' WHERE id = @bg;
         UPDATE dbo.phieu_sua_chua SET trang_thai = 'DANG_SUA', updated_at = @now WHERE id = @pC;
-        INSERT dbo.yeu_cau_linh_kien_v3(phieu_id, nguoi_yeu_cau_id, ghi_chu)
+        INSERT dbo.yeu_cau_linh_kien(phieu_id, nguoi_yeu_cau_id, ghi_chu)
         VALUES (@pC, @ktv, N'[DEMO] Cần quạt thay thế');
         SET @yc = SCOPE_IDENTITY();
-        INSERT dbo.chi_tiet_yeu_cau_linh_kien_v3(yeu_cau_id, phieu_id, linh_kien_id, so_luong_yeu_cau)
+        INSERT dbo.chi_tiet_yeu_cau_linh_kien(yeu_cau_id, phieu_id, linh_kien_id, so_luong_yeu_cau)
         VALUES (@yc, @pC, @quat, 1);
 
         -- D: đã hoàn thành, có hóa đơn và một lần thu tiền; còn công nợ.
@@ -308,10 +308,10 @@ BEGIN TRY
 
         -- Lịch hẹn tính theo ngày Việt Nam tiếp theo, luôn là giờ tương lai.
         DECLARE @ngayMai date = DATEADD(DAY,1,CONVERT(date,DATEADD(HOUR,7,@now)));
-        INSERT dbo.lich_hen_v3(khach_hang_id, thoi_gian_mong_muon, ten_thiet_bi, mo_ta_loi)
+        INSERT dbo.lich_hen(khach_hang_id, thoi_gian_mong_muon, ten_thiet_bi, mo_ta_loi)
         VALUES (@kh1, DATEADD(HOUR,3,CONVERT(datetime2(3),@ngayMai)),
             N'[DEMO] Laptop mới', N'Khách muốn kiểm tra pin');
-        INSERT dbo.lich_hen_v3(khach_hang_id, thoi_gian_mong_muon, ten_thiet_bi, mo_ta_loi, trang_thai)
+        INSERT dbo.lich_hen(khach_hang_id, thoi_gian_mong_muon, ten_thiet_bi, mo_ta_loi, trang_thai)
         VALUES (@kh2, DATEADD(HOUR,4,CONVERT(datetime2(3),@ngayMai)),
             N'[DEMO] Laptop văn phòng', N'Khách muốn vệ sinh máy', 'DA_XAC_NHAN');
 

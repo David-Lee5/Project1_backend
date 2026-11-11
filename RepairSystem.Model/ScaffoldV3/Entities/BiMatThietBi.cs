@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace RepairSystem.Model.ScaffoldV3.Entities;
 
-public partial class BiMatThietBiV3
+public partial class BiMatThietBi
 {
     public long PhieuId { get; set; }
 

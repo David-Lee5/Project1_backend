@@ -24,7 +24,7 @@ if (string.IsNullOrWhiteSpace(connectionString))
 // Add services to the container.
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString));
-builder.Services.AddDbContext<AppDbContextV3>(options =>
+builder.Services.AddDbContext<RepairDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDataProtection();
 

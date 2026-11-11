@@ -35,6 +35,8 @@ SELECT version FROM dbo.v3_schema_migration WHERE version = 'V3_20261108_WORKFLO
 
 Sau khi tạo mới, `so_loai` là `3` (RAM, quạt laptop, màn hình); `so_tai_khoan` là `0` cho tới khi backend chạy lần đầu. Script **dừng nếu CSDL `QLSCTBDT_V3` đã tồn tại**, không ghi đè hay xóa dữ liệu. Không chạy file nâng cấp CSDL cũ sau file tạo mới này. Nếu CSDL đã có, dùng lại hoặc nhờ người phụ trách kiểm tra; không tự xóa CSDL để thử lại.
 
+Nếu dùng CSDL đã tạo bằng script cũ với các bảng hậu tố `_v3`, sao lưu CSDL rồi chạy [database/DOI_TEN_BANG_BO_V3_20261111.sql](database/DOI_TEN_BANG_BO_V3_20261111.sql) trên đúng CSDL sau khi áp dụng các migration còn thiếu. Script đổi tên bảng tại chỗ và cập nhật các procedure, view, trigger liên quan; không tạo lại CSDL và không xóa dữ liệu. CSDL tạo mới bằng file hiện tại đã có tên bảng mới nên không cần bước này.
+
 ## 3. Cấu hình kết nối backend
 
 File `RepairSystem/appsettings.Development.json` đã trỏ tới:
@@ -65,7 +67,7 @@ dotnet run --project RepairSystem/RepairSystem.csproj --launch-profile http
 
 Chờ dòng `Now listening on: http://localhost:5107`, rồi mở `http://localhost:5107/swagger`.
 
-**Không cần chạy `dotnet ef database update` hoặc scaffold lại**: schema đã được tạo bằng SQL script; `AppDbContextV3` và các entity đã có trong `RepairSystem.Model/ScaffoldV3`. Nếu cần scaffold lại sau khi thay schema, phối hợp với nhóm để tránh ghi đè mã sinh và dùng lệnh trong tài liệu CSDL của dự án.
+**Không cần chạy `dotnet ef database update` hoặc scaffold lại**: schema đã được tạo bằng SQL script; `RepairDbContext` và các entity đã có trong `RepairSystem.Model/ScaffoldV3`. Nếu cần scaffold lại sau khi thay schema, phối hợp với nhóm để tránh ghi đè mã sinh và dùng lệnh trong tài liệu CSDL của dự án.
 
 ## 5. Đăng nhập admin lần đầu
 

@@ -37,5 +37,5 @@ public partial class BienDongKho
 
     public virtual TonKho TonKho { get; set; } = null!;
 
-    public virtual TraLinhKienKhoV3? TraLinhKien { get; set; }
+    public virtual TraLinhKienKho? TraLinhKien { get; set; }
 }

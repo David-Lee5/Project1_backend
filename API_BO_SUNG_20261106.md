@@ -8,7 +8,7 @@
 - Bản nâng cấp từ schema cũ: `database_v3/NANG_CAP_QLSCTBDT_V3.sql` đã gồm phần bổ sung.
 - Dừng backend khi chạy migration, sao lưu CSDL trước, sau đó khởi động lại. API mới cần migration `V3_20261106_API`.
 - Kiểm tra sau khi chạy: `SELECT version FROM dbo.v3_schema_migration WHERE version = 'V3_20261106_API';`
-  và `SELECT OBJECT_ID(N'dbo.lich_hen_v3', N'U');` trên đúng CSDL mà backend kết nối.
+  và `SELECT OBJECT_ID(N'dbo.lich_hen', N'U');` trên đúng CSDL mà backend kết nối.
   Kết quả phải có phiên bản và `OBJECT_ID` khác `NULL`. Backend cũng tự kiểm tra khi khởi động.
 
 ## Endpoint

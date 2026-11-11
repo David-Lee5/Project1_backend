@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace RepairSystem.Model.ScaffoldV3.Entities;
 
-public partial class ChiTietYeuCauLinhKienV3
+public partial class ChiTietYeuCauLinhKien
 {
     public long Id { get; set; }
 
@@ -23,5 +23,5 @@ public partial class ChiTietYeuCauLinhKienV3
 
     public virtual LinhKien LinhKien { get; set; } = null!;
 
-    public virtual YeuCauLinhKienV3 YeuCauLinhKienV3 { get; set; } = null!;
+    public virtual YeuCauLinhKien YeuCauLinhKien { get; set; } = null!;
 }

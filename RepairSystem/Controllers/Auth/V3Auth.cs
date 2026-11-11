@@ -7,7 +7,7 @@ namespace RepairSystem.Controllers.V3;
 
 internal static class V3Auth
 {
-    public static async Task<long?> NhanVienIdAsync(AppDbContextV3 db, ClaimsPrincipal user)
+    public static async Task<long?> NhanVienIdAsync(RepairDbContext db, ClaimsPrincipal user)
     {
         var taiKhoanId = user.GetTaiKhoanId();
         if (taiKhoanId == null) return null;

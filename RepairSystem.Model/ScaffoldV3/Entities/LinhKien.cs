@@ -39,7 +39,7 @@ public partial class LinhKien
 
     public virtual ICollection<ChiTietNhapKho> ChiTietNhapKhos { get; set; } = new List<ChiTietNhapKho>();
 
-    public virtual ICollection<ChiTietYeuCauLinhKienV3> ChiTietYeuCauLinhKienV3s { get; set; } = new List<ChiTietYeuCauLinhKienV3>();
+    public virtual ICollection<ChiTietYeuCauLinhKien> ChiTietYeuCauLinhKienV3s { get; set; } = new List<ChiTietYeuCauLinhKien>();
 
     public virtual ICollection<LinhKienSerial> LinhKienSerials { get; set; } = new List<LinhKienSerial>();
 

@@ -49,7 +49,7 @@ public partial class PhieuSuaChua
 
     public virtual ICollection<BaoGium> BaoGia { get; set; } = new List<BaoGium>();
 
-    public virtual BiMatThietBiV3? BiMatThietBiV3 { get; set; }
+    public virtual BiMatThietBi? BiMatThietBi { get; set; }
 
     public virtual ICollection<CamKetBaoHanh> CamKetBaoHanhs { get; set; } = new List<CamKetBaoHanh>();
 
@@ -73,5 +73,5 @@ public partial class PhieuSuaChua
 
     public virtual ThietBi ThietBi { get; set; } = null!;
 
-    public virtual ICollection<YeuCauLinhKienV3> YeuCauLinhKienV3s { get; set; } = new List<YeuCauLinhKienV3>();
+    public virtual ICollection<YeuCauLinhKien> YeuCauLinhKienV3s { get; set; } = new List<YeuCauLinhKien>();
 }

@@ -11,7 +11,7 @@ namespace RepairSystem.Controllers.V3;
 [ApiController]
 [Route("api/phieu-sua-chua/{phieuId:long}/anh")]
 [Authorize(Roles = Roles.Admin + "," + Roles.LeTan + "," + Roles.KyThuatVien)]
-public class AnhPhieuSuaChuaController(AppDbContextV3 db, IWebHostEnvironment env) : ControllerBase
+public class AnhPhieuSuaChuaController(RepairDbContext db, IWebHostEnvironment env) : ControllerBase
 {
     private const long MaxBytes = 5 * 1024 * 1024;
     private string Folder => Path.Combine(env.ContentRootPath, "App_Data", "repair-photos");

@@ -12,7 +12,7 @@ namespace RepairSystem.Controllers.V3;
 [ApiController]
 [Route("api/v3/phieu-sua-chua/{phieuId:long}")]
 [Authorize(Roles = Roles.Admin + "," + Roles.LeTan)]
-public class ThanhToanV3Controller(AppDbContextV3 db) : ControllerBase
+public class ThanhToanController(RepairDbContext db) : ControllerBase
 {
     [HttpGet("tai-chinh")]
     public async Task<IActionResult> TaiChinh(long phieuId)
@@ -46,7 +46,7 @@ public class ThanhToanV3Controller(AppDbContextV3 db) : ControllerBase
     }
 
     [HttpPost("hoa-don")]
-    public async Task<IActionResult> LapHoaDon(long phieuId, [FromBody] LapHoaDonV3Request req)
+    public async Task<IActionResult> LapHoaDon(long phieuId, [FromBody] LapHoaDonRequest req)
     {
         if (req.GiamGia < 0 || req.GiamGia > 999_999_999_999.99m)
             return BadRequest(ApiResponse<object>.ErrorResponse("Giảm giá không hợp lệ."));
@@ -75,7 +75,7 @@ public class ThanhToanV3Controller(AppDbContextV3 db) : ControllerBase
     }
 
     [HttpPost("giao-dich")]
-    public async Task<IActionResult> GhiGiaoDich(long phieuId, [FromBody] GiaoDichV3Request req)
+    public async Task<IActionResult> GhiGiaoDich(long phieuId, [FromBody] GiaoDichRequest req)
     {
         if (req.Loai is not ("THU" or "HOAN") || req.SoTien <= 0
             || req.SoTien > 999_999_999_999.99m
@@ -105,7 +105,7 @@ public class ThanhToanV3Controller(AppDbContextV3 db) : ControllerBase
     }
 
     [HttpPost("ban-giao")]
-    public async Task<IActionResult> BanGiao(long phieuId, [FromBody] BanGiaoV3Request req)
+    public async Task<IActionResult> BanGiao(long phieuId, [FromBody] BanGiaoRequest req)
     {
         if (string.IsNullOrWhiteSpace(req.TenNguoiNhan) || req.TenNguoiNhan.Length > 150
             || req.TinhTrangMay?.Length > 1000 || req.PhuKienDaTra?.Length > 1000
@@ -138,8 +138,8 @@ public class ThanhToanV3Controller(AppDbContextV3 db) : ControllerBase
     }
 }
 
-public sealed record LapHoaDonV3Request(decimal GiamGia, long? LeTanId);
-public sealed record GiaoDichV3Request(long? HoaDonId, string Loai, decimal SoTien,
+public sealed record LapHoaDonRequest(decimal GiamGia, long? LeTanId);
+public sealed record GiaoDichRequest(long? HoaDonId, string Loai, decimal SoTien,
     string PhuongThuc, string? MaThamChieu, string? GhiChu);
-public sealed record BanGiaoV3Request(string? TenNguoiNhan, string? TinhTrangMay,
+public sealed record BanGiaoRequest(string? TenNguoiNhan, string? TinhTrangMay,
     string? PhuKienDaTra, string? XacNhan, string? LyDoConNo);

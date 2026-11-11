@@ -14,7 +14,7 @@ namespace RepairSystem.Controllers;
 
 [ApiController]
 [Route("api/khach-hang")]
-public class KhachHangController(AppDbContext db, AppDbContextV3 v3) : ControllerBase
+public class KhachHangController(AppDbContext db, RepairDbContext v3) : ControllerBase
 {
     [HttpGet]
     [Authorize(Roles = Roles.Admin + "," + Roles.LeTan)]

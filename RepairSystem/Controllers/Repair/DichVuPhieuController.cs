@@ -11,7 +11,7 @@ namespace RepairSystem.Controllers.V3;
 [ApiController]
 [Route("api/v3/phieu-sua-chua/{phieuId:long}/dich-vu")]
 [Authorize(Roles = Roles.Admin + "," + Roles.LeTan + "," + Roles.KyThuatVien)]
-public class DichVuPhieuV3Controller(AppDbContextV3 db) : ControllerBase
+public class DichVuPhieuController(RepairDbContext db) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> DanhSach(long phieuId)
@@ -25,7 +25,7 @@ public class DichVuPhieuV3Controller(AppDbContextV3 db) : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Them(long phieuId, [FromBody] ThemDichVuV3Request req)
+    public async Task<IActionResult> Them(long phieuId, [FromBody] ThemDichVuRequest req)
     {
         if (req.DichVuId <= 0 || req.SoLuong <= 0)
             return BadRequest(ApiResponse<object>.ErrorResponse("Dịch vụ hoặc số lượng không hợp lệ."));
@@ -64,4 +64,4 @@ public class DichVuPhieuV3Controller(AppDbContextV3 db) : ControllerBase
     }
 }
 
-public sealed record ThemDichVuV3Request(long DichVuId, int SoLuong);
+public sealed record ThemDichVuRequest(long DichVuId, int SoLuong);

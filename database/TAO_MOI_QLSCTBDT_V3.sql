@@ -1855,7 +1855,7 @@ BEGIN
 END;';
 
     -- Khối 10/30
-    EXEC sys.sp_executesql N'CREATE TABLE dbo.yeu_cau_linh_kien_v3 (
+    EXEC sys.sp_executesql N'CREATE TABLE dbo.yeu_cau_linh_kien (
     id bigint IDENTITY(1,1) NOT NULL CONSTRAINT pk_yeu_cau_lk_v3 PRIMARY KEY,
     phieu_id bigint NOT NULL,
     nguoi_yeu_cau_id bigint NOT NULL,
@@ -1871,7 +1871,7 @@ END;';
     CONSTRAINT ck_yclk_status CHECK (trang_thai IN (''CHO_DUYET'',''DA_DUYET'',''TU_CHOI'',''HUY'')),
     CONSTRAINT ck_yclk_duyet CHECK (trang_thai NOT IN (''DA_DUYET'',''TU_CHOI'') OR (nguoi_duyet_id IS NOT NULL AND ngay_duyet IS NOT NULL))
 );
-CREATE TABLE dbo.chi_tiet_yeu_cau_linh_kien_v3 (
+CREATE TABLE dbo.chi_tiet_yeu_cau_linh_kien (
     id bigint IDENTITY(1,1) NOT NULL CONSTRAINT pk_ct_yclk_v3 PRIMARY KEY,
     yeu_cau_id bigint NOT NULL,
     phieu_id bigint NOT NULL,
@@ -1879,7 +1879,7 @@ CREATE TABLE dbo.chi_tiet_yeu_cau_linh_kien_v3 (
     so_luong_yeu_cau int NOT NULL,
     so_luong_duyet int NULL,
     ghi_chu nvarchar(500) NULL,
-    CONSTRAINT fk_ct_yclk_phieu FOREIGN KEY(yeu_cau_id,phieu_id) REFERENCES dbo.yeu_cau_linh_kien_v3(id,phieu_id),
+    CONSTRAINT fk_ct_yclk_phieu FOREIGN KEY(yeu_cau_id,phieu_id) REFERENCES dbo.yeu_cau_linh_kien(id,phieu_id),
     CONSTRAINT fk_ct_yclk_lk FOREIGN KEY(linh_kien_id) REFERENCES dbo.linh_kien(id),
     CONSTRAINT uq_ct_yclk_id_phieu_lk UNIQUE(id,phieu_id,linh_kien_id),
     CONSTRAINT uq_ct_yclk_lk UNIQUE(yeu_cau_id,linh_kien_id),
@@ -1890,9 +1890,9 @@ ALTER TABLE dbo.chi_tiet_xuat_kho ADD yeu_cau_chi_tiet_id bigint NULL;';
     -- Khối 11/30
     EXEC sys.sp_executesql N'ALTER TABLE dbo.chi_tiet_xuat_kho ADD CONSTRAINT fk_ctxk_yeu_cau_v3
     FOREIGN KEY(yeu_cau_chi_tiet_id,phieu_id,linh_kien_id)
-    REFERENCES dbo.chi_tiet_yeu_cau_linh_kien_v3(id,phieu_id,linh_kien_id);
+    REFERENCES dbo.chi_tiet_yeu_cau_linh_kien(id,phieu_id,linh_kien_id);
 
-CREATE TABLE dbo.tra_linh_kien_kho_v3 (
+CREATE TABLE dbo.tra_linh_kien_kho (
     id bigint IDENTITY(1,1) NOT NULL CONSTRAINT pk_tra_lk_v3 PRIMARY KEY,
     chi_tiet_xuat_kho_id bigint NOT NULL,
     so_luong int NOT NULL,
@@ -1904,16 +1904,16 @@ CREATE TABLE dbo.tra_linh_kien_kho_v3 (
     CONSTRAINT ck_tra_lk_sl CHECK (so_luong>0),
     CONSTRAINT ck_tra_lk_ly_do CHECK (LEN(LTRIM(RTRIM(ly_do)))>0)
 );
-CREATE INDEX ix_tra_lk_ctxk ON dbo.tra_linh_kien_kho_v3(chi_tiet_xuat_kho_id);
+CREATE INDEX ix_tra_lk_ctxk ON dbo.tra_linh_kien_kho(chi_tiet_xuat_kho_id);
 ALTER TABLE dbo.bien_dong_kho ADD tra_linh_kien_id bigint NULL;';
 
     -- Khối 12/30
     EXEC sys.sp_executesql N'ALTER TABLE dbo.bien_dong_kho ADD CONSTRAINT fk_bdk_tra_lk_v3
-    FOREIGN KEY(tra_linh_kien_id) REFERENCES dbo.tra_linh_kien_kho_v3(id);
+    FOREIGN KEY(tra_linh_kien_id) REFERENCES dbo.tra_linh_kien_kho(id);
 CREATE UNIQUE INDEX uq_bdk_tra_lk_v3 ON dbo.bien_dong_kho(tra_linh_kien_id) WHERE tra_linh_kien_id IS NOT NULL;';
 
     -- Khối 13/30
-    EXEC sys.sp_executesql N'CREATE OR ALTER TRIGGER dbo.trg_v3_tra_linh_kien_khong_sua ON dbo.tra_linh_kien_kho_v3
+    EXEC sys.sp_executesql N'CREATE OR ALTER TRIGGER dbo.trg_v3_tra_linh_kien_khong_sua ON dbo.tra_linh_kien_kho
 AFTER UPDATE, DELETE AS
 BEGIN
     SET NOCOUNT ON;
@@ -1941,7 +1941,7 @@ BEGIN
             THROW 51053, N''Chỉ trả linh kiện chưa sử dụng khi phiếu đang sửa và chưa lập hóa đơn.'', 1;
         SELECT @kho=kho_id,@lk=linh_kien_id,@xuat=so_luong_xuat,@serial=linh_kien_serial_id
           FROM dbo.chi_tiet_xuat_kho WITH (UPDLOCK,HOLDLOCK) WHERE id=@chi_tiet_xuat_kho_id;
-        SELECT @tra=COALESCE(SUM(so_luong),0) FROM dbo.tra_linh_kien_kho_v3 WHERE chi_tiet_xuat_kho_id=@chi_tiet_xuat_kho_id;
+        SELECT @tra=COALESCE(SUM(so_luong),0) FROM dbo.tra_linh_kien_kho WHERE chi_tiet_xuat_kho_id=@chi_tiet_xuat_kho_id;
         IF @so_luong>@xuat-@tra THROW 51054, N''Số lượng trả vượt số đã xuất còn lại.'', 1;
         IF NOT EXISTS(SELECT 1 FROM dbo.thu_kho WHERE nhan_vien_id=@thu_kho_id)
             THROW 51055, N''Người thực hiện không phải thủ kho.'', 1;
@@ -1952,7 +1952,7 @@ BEGIN
               WHERE id=@serial AND linh_kien_id=@lk AND trang_thai=''DA_XUAT'' AND chi_tiet_xuat_kho_id=@chi_tiet_xuat_kho_id;
             IF @@ROWCOUNT<>1 THROW 51057, N''Serial không ở trạng thái đã xuất cho dòng này.'', 1;
         END;
-        INSERT dbo.tra_linh_kien_kho_v3(chi_tiet_xuat_kho_id,so_luong,nguoi_thuc_hien_id,ly_do)
+        INSERT dbo.tra_linh_kien_kho(chi_tiet_xuat_kho_id,so_luong,nguoi_thuc_hien_id,ly_do)
         VALUES(@chi_tiet_xuat_kho_id,@so_luong,@thu_kho_id,@ly_do);
         SET @tra_id=SCOPE_IDENTITY();
         UPDATE dbo.ton_kho SET @sau=so_luong_ton=so_luong_ton+@so_luong,ngay_cap_nhat=SYSUTCDATETIME()
@@ -1974,12 +1974,12 @@ SELECT p.id AS phieu_id,
        COALESCE((SELECT SUM(d.thanh_tien) FROM dbo.chi_tiet_dich_vu d WHERE d.phieu_id=p.id),0) AS tien_dich_vu,
        COALESCE((SELECT SUM(CONVERT(decimal(19,2),x.so_luong_xuat-COALESCE(t.da_tra,0))*x.don_gia_xuat)
            FROM dbo.chi_tiet_xuat_kho x OUTER APPLY
-             (SELECT SUM(r.so_luong) AS da_tra FROM dbo.tra_linh_kien_kho_v3 r WHERE r.chi_tiet_xuat_kho_id=x.id) t
+             (SELECT SUM(r.so_luong) AS da_tra FROM dbo.tra_linh_kien_kho r WHERE r.chi_tiet_xuat_kho_id=x.id) t
            WHERE x.phieu_id=p.id),0) AS tien_linh_kien,
        COALESCE((SELECT SUM(d.thanh_tien) FROM dbo.chi_tiet_dich_vu d WHERE d.phieu_id=p.id),0)+
        COALESCE((SELECT SUM(CONVERT(decimal(19,2),x.so_luong_xuat-COALESCE(t.da_tra,0))*x.don_gia_xuat)
            FROM dbo.chi_tiet_xuat_kho x OUTER APPLY
-             (SELECT SUM(r.so_luong) AS da_tra FROM dbo.tra_linh_kien_kho_v3 r WHERE r.chi_tiet_xuat_kho_id=x.id) t
+             (SELECT SUM(r.so_luong) AS da_tra FROM dbo.tra_linh_kien_kho r WHERE r.chi_tiet_xuat_kho_id=x.id) t
            WHERE x.phieu_id=p.id),0) AS tong_tam_tinh
 FROM dbo.phieu_sua_chua p;';
 
@@ -2085,7 +2085,7 @@ ALTER TABLE dbo.hoa_don DROP CONSTRAINT ck_hoa_don_da_tt;
 ALTER TABLE dbo.hoa_don ADD CONSTRAINT ck_hoa_don_da_tt CHECK
     (trang_thai<>''DA_THANH_TOAN'' OR (ngay_thanh_toan IS NOT NULL AND (phuong_thuc_tt IS NOT NULL OR tong_thanh_toan=0)));
 
-CREATE TABLE dbo.chi_tiet_hoa_don_v3 (
+CREATE TABLE dbo.chi_tiet_hoa_don (
     id bigint IDENTITY(1,1) NOT NULL CONSTRAINT pk_chi_tiet_hoa_don_v3 PRIMARY KEY,
     hoa_don_id bigint NOT NULL,
     phieu_id bigint NOT NULL,
@@ -2103,12 +2103,12 @@ CREATE TABLE dbo.chi_tiet_hoa_don_v3 (
         OR (loai=''LINH_KIEN'' AND dich_vu_id IS NULL AND chi_tiet_xuat_kho_id IS NOT NULL)),
     CONSTRAINT ck_cthd_gia CHECK (so_luong>0 AND don_gia>=0)
 );
-CREATE UNIQUE INDEX uq_cthd_dv ON dbo.chi_tiet_hoa_don_v3(hoa_don_id,dich_vu_id) WHERE dich_vu_id IS NOT NULL;
-CREATE UNIQUE INDEX uq_cthd_xuat ON dbo.chi_tiet_hoa_don_v3(hoa_don_id,chi_tiet_xuat_kho_id) WHERE chi_tiet_xuat_kho_id IS NOT NULL;
+CREATE UNIQUE INDEX uq_cthd_dv ON dbo.chi_tiet_hoa_don(hoa_don_id,dich_vu_id) WHERE dich_vu_id IS NOT NULL;
+CREATE UNIQUE INDEX uq_cthd_xuat ON dbo.chi_tiet_hoa_don(hoa_don_id,chi_tiet_xuat_kho_id) WHERE chi_tiet_xuat_kho_id IS NOT NULL;
 
 -- Cột mat_khau_may cũ vẫn tồn tại để không làm hỏng backend cũ.
 -- Bảng này chỉ chứa dữ liệu ĐÃ mã hóa ở tầng ứng dụng; không lưu khóa tại đây.
-CREATE TABLE dbo.bi_mat_thiet_bi_v3 (
+CREATE TABLE dbo.bi_mat_thiet_bi (
     phieu_id bigint NOT NULL CONSTRAINT pk_bi_mat_thiet_bi_v3 PRIMARY KEY,
     du_lieu_ma_hoa varbinary(max) NOT NULL,
     ma_khoa nvarchar(200) NOT NULL,
@@ -2158,7 +2158,7 @@ BEGIN
 END;';
 
     -- Khối 22/30
-    EXEC sys.sp_executesql N'CREATE OR ALTER TRIGGER dbo.trg_v3_chi_tiet_hoa_don_khong_sua ON dbo.chi_tiet_hoa_don_v3
+    EXEC sys.sp_executesql N'CREATE OR ALTER TRIGGER dbo.trg_v3_chi_tiet_hoa_don_khong_sua ON dbo.chi_tiet_hoa_don
 AFTER UPDATE, DELETE AS
 BEGIN
     SET NOCOUNT ON;
@@ -2214,13 +2214,13 @@ BEGIN
         SELECT @lock=COUNT_BIG(*) FROM dbo.chi_tiet_dich_vu WITH (UPDLOCK,HOLDLOCK) WHERE phieu_id=@phieu_id;
         SELECT @lock=COUNT_BIG(*) FROM dbo.chi_tiet_xuat_kho WITH (UPDLOCK,HOLDLOCK) WHERE phieu_id=@phieu_id;
         EXEC dbo.usp_lap_hoa_don @phieu_id,@le_tan_id,@giam_gia,@hoa_don_id OUTPUT;
-        INSERT dbo.chi_tiet_hoa_don_v3(hoa_don_id,phieu_id,loai,dich_vu_id,ten_hang_muc,so_luong,don_gia)
+        INSERT dbo.chi_tiet_hoa_don(hoa_don_id,phieu_id,loai,dich_vu_id,ten_hang_muc,so_luong,don_gia)
         SELECT @hoa_don_id,c.phieu_id,''DICH_VU'',c.dich_vu_id,d.ten_dich_vu,c.so_luong,c.don_gia_thuc_te
           FROM dbo.chi_tiet_dich_vu c JOIN dbo.dich_vu d ON d.id=c.dich_vu_id WHERE c.phieu_id=@phieu_id;
-        INSERT dbo.chi_tiet_hoa_don_v3(hoa_don_id,phieu_id,loai,chi_tiet_xuat_kho_id,ten_hang_muc,so_luong,don_gia)
+        INSERT dbo.chi_tiet_hoa_don(hoa_don_id,phieu_id,loai,chi_tiet_xuat_kho_id,ten_hang_muc,so_luong,don_gia)
         SELECT @hoa_don_id,c.phieu_id,''LINH_KIEN'',c.id,l.ten_linh_kien,c.so_luong_xuat-COALESCE(t.da_tra,0),c.don_gia_xuat
           FROM dbo.chi_tiet_xuat_kho c JOIN dbo.linh_kien l ON l.id=c.linh_kien_id
-          OUTER APPLY (SELECT SUM(r.so_luong) AS da_tra FROM dbo.tra_linh_kien_kho_v3 r WHERE r.chi_tiet_xuat_kho_id=c.id) t
+          OUTER APPLY (SELECT SUM(r.so_luong) AS da_tra FROM dbo.tra_linh_kien_kho r WHERE r.chi_tiet_xuat_kho_id=c.id) t
           WHERE c.phieu_id=@phieu_id AND c.so_luong_xuat>COALESCE(t.da_tra,0);
         SELECT @tong=tong_thanh_toan FROM dbo.hoa_don WHERE id=@hoa_don_id;
         SELECT @net=COALESCE(SUM(CASE WHEN loai=''THU'' THEN so_tien ELSE -so_tien END),0)
@@ -2449,7 +2449,7 @@ IF EXISTS (SELECT 1 FROM dbo.v3_schema_migration WHERE version = 'V3_20261106_AP
 BEGIN TRY
     BEGIN TRANSACTION;
 
-    CREATE TABLE dbo.ma_lien_ket_khach_hang_v3 (
+    CREATE TABLE dbo.ma_lien_ket_khach_hang (
         id bigint IDENTITY(1,1) NOT NULL PRIMARY KEY,
         khach_hang_id bigint NOT NULL REFERENCES dbo.khach_hang(id),
         ma_hash varchar(64) NOT NULL,
@@ -2458,9 +2458,9 @@ BEGIN TRY
         nguoi_cap_id bigint NOT NULL REFERENCES dbo.nhan_vien(id),
         created_at datetime2(3) NOT NULL DEFAULT SYSUTCDATETIME()
     );
-    CREATE INDEX ix_mlkkh_khach ON dbo.ma_lien_ket_khach_hang_v3(khach_hang_id, id DESC);
+    CREATE INDEX ix_mlkkh_khach ON dbo.ma_lien_ket_khach_hang(khach_hang_id, id DESC);
 
-    CREATE TABLE dbo.lich_hen_v3 (
+    CREATE TABLE dbo.lich_hen (
         id bigint IDENTITY(1,1) NOT NULL PRIMARY KEY,
         khach_hang_id bigint NOT NULL REFERENCES dbo.khach_hang(id),
         thoi_gian_mong_muon datetime2(3) NOT NULL,
@@ -2474,8 +2474,8 @@ BEGIN TRY
         CONSTRAINT ck_lich_hen_v3_status CHECK (trang_thai IN
             ('CHO_XAC_NHAN','DA_XAC_NHAN','TU_CHOI','DA_TIEP_NHAN','HUY'))
     );
-    CREATE UNIQUE INDEX uq_lich_hen_phieu ON dbo.lich_hen_v3(phieu_id) WHERE phieu_id IS NOT NULL;
-    CREATE INDEX ix_lich_hen_khach ON dbo.lich_hen_v3(khach_hang_id, created_at DESC);
+    CREATE UNIQUE INDEX uq_lich_hen_phieu ON dbo.lich_hen(phieu_id) WHERE phieu_id IS NOT NULL;
+    CREATE INDEX ix_lich_hen_khach ON dbo.lich_hen(khach_hang_id, created_at DESC);
 
     ALTER TABLE dbo.bao_gia ADD khach_hang_phan_hoi_id bigint NULL;
     ALTER TABLE dbo.bao_gia ADD CONSTRAINT fk_bg_khach_phan_hoi
@@ -2498,7 +2498,7 @@ BEGIN TRY
     ALTER TABLE dbo.phieu_bao_hanh_ncc ADD CONSTRAINT fk_pbh_ncc_kho_gui
         FOREIGN KEY(kho_gui_id) REFERENCES dbo.kho(id);
 
-    CREATE TABLE dbo.xu_ly_bao_hanh_ncc_v3 (
+    CREATE TABLE dbo.xu_ly_bao_hanh_ncc (
         id bigint IDENTITY(1,1) NOT NULL PRIMARY KEY,
         phieu_bao_hanh_ncc_id bigint NOT NULL,
         loai varchar(20) NOT NULL,
@@ -2514,7 +2514,7 @@ BEGIN TRY
         CONSTRAINT ck_xlbh_ncc_loai CHECK (loai IN ('NHAP_LAI','NHAP_THAY_THE','KHONG_NHAP')),
         CONSTRAINT ck_xlbh_ncc_sl CHECK (so_luong > 0)
     );
-    CREATE UNIQUE INDEX uq_xlbh_ncc_phieu_nhap ON dbo.xu_ly_bao_hanh_ncc_v3(phieu_nhap_id)
+    CREATE UNIQUE INDEX uq_xlbh_ncc_phieu_nhap ON dbo.xu_ly_bao_hanh_ncc(phieu_nhap_id)
         WHERE phieu_nhap_id IS NOT NULL;
 
     INSERT dbo.v3_schema_migration(version) VALUES ('V3_20261106_API');

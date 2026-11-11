@@ -11,7 +11,7 @@ namespace RepairSystem.Controllers.V3;
 [ApiController]
 [Route("api/v3/phieu-sua-chua/{phieuId:long}/bao-gia")]
 [Authorize(Roles = Roles.Admin + "," + Roles.LeTan)]
-public class BaoGiaV3Controller(AppDbContextV3 db) : ControllerBase
+public class BaoGiaController(RepairDbContext db) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> DanhSach(long phieuId)

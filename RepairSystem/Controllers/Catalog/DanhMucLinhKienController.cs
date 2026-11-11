@@ -10,7 +10,7 @@ namespace RepairSystem.Controllers.V3;
 [ApiController]
 [Route("api/v3/loai-linh-kien")]
 [Authorize(Roles = Roles.NhanVien)]
-public class LoaiLinhKienV3Controller(AppDbContextV3 db) : ControllerBase
+public class LoaiLinhKienController(RepairDbContext db) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> DanhSach()
@@ -171,7 +171,7 @@ public sealed record CapNhatLuaChonRequest(string? GiaTri, int ThuTu, bool HoatD
 [ApiController]
 [Route("api/v3/mau-linh-kien")]
 [Authorize(Roles = Roles.NhanVien)]
-public class MauLinhKienV3Controller(AppDbContextV3 db) : ControllerBase
+public class MauLinhKienController(RepairDbContext db) : ControllerBase
 {
     [HttpGet("{id:long}")]
     public async Task<IActionResult> ChiTiet(long id)

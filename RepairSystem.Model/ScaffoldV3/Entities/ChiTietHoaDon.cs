@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace RepairSystem.Model.ScaffoldV3.Entities;
 
-public partial class ChiTietHoaDonV3
+public partial class ChiTietHoaDon
 {
     public long Id { get; set; }
 

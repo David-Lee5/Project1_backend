@@ -17,14 +17,14 @@ Project1_backend/
 │     └─ Warranty/               bảo hành khách và nhà cung cấp
 ├─ RepairSystem.Service/         DTO, interface, service, helper
 ├─ RepairSystem.Model/           entity và AppDbContext hiện có
-│  └─ ScaffoldV3/               entity và AppDbContextV3 sinh từ CSDL V3
+│  └─ ScaffoldV3/               entity và RepairDbContext của CSDL V3
 ├─ RepairSystem.Data/            repository và unit of work
 ├─ database/                     script tạo mới CSDL V3 cho người clone repo
 ├─ data/                         SQL tham khảo cũ
 └─ archive/                      mã mẫu và file .bak cũ, không được build
 ```
 
-Không cần thư mục `Controllers/V3`: các controller mới đã nằm cùng nghiệp vụ với controller hiện có. Tên lớp và route `/api/v3/...` vẫn giữ để frontend không phải đổi đường dẫn; namespace hiện tại cũng được giữ để tránh thay đổi tham chiếu mã. `ScaffoldV3` trong **Model** có mục đích khác: đây là entity và context sinh tự động từ CSDL V3. Không nên sửa tay các file sinh này vì scaffold lại sẽ ghi đè.
+Không cần thư mục `Controllers/V3`: các controller mới đã nằm cùng nghiệp vụ với controller hiện có. Tên lớp đã bỏ phần `V3`; các route `/api/v3/...` vẫn giữ để frontend không phải đổi đường dẫn. Namespace hiện tại cũng được giữ để tránh thay đổi tham chiếu mã. `ScaffoldV3` trong **Model** có mục đích khác: đây là entity và context sinh từ CSDL V3. Khi scaffold lại, đối chiếu các phần mở rộng thủ công theo [hướng dẫn CSDL](../database_v3/HUONG_DAN.md) để tránh khai báo trùng.
 
 Các file `.bak` được chuyển vào `archive/legacy-auth`; `WeatherForecast` mẫu nằm trong `archive/template`. Chúng còn để đối chiếu nhưng không tham gia project. Hai khai báo thư mục rỗng `Controllers/NewFolder` và `DTOs/Common` đã bỏ khỏi `.csproj`.
 

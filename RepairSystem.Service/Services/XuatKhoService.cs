@@ -97,8 +97,8 @@ public class XuatKhoService : IXuatKhoService
                                 SELECT SUM(x.so_luong_xuat) FROM dbo.chi_tiet_xuat_kho x
                                 WHERE x.yeu_cau_chi_tiet_id=c.id),0)>=@so_luong
                         THEN 1 ELSE 0 END AS int) AS Value
-                    FROM dbo.chi_tiet_yeu_cau_linh_kien_v3 c WITH (UPDLOCK,HOLDLOCK)
-                    JOIN dbo.yeu_cau_linh_kien_v3 r ON r.id=c.yeu_cau_id
+                    FROM dbo.chi_tiet_yeu_cau_linh_kien c WITH (UPDLOCK,HOLDLOCK)
+                    JOIN dbo.yeu_cau_linh_kien r ON r.id=c.yeu_cau_id
                     WHERE c.id=@chi_tiet_id",
                     new SqlParameter("@phieu_id", phieuId),
                     new SqlParameter("@linh_kien_id", dto.LinhKienId),

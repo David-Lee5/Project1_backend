@@ -1,6 +1,6 @@
 namespace RepairSystem.Model.ScaffoldV3.Entities;
 
-public sealed class LichHenV3
+public sealed class LichHen
 {
     public long Id { get; set; }
     public long KhachHangId { get; set; }
@@ -14,7 +14,7 @@ public sealed class LichHenV3
     public DateTime UpdatedAt { get; set; }
 }
 
-public sealed class XuLyBaoHanhNccV3
+public sealed class XuLyBaoHanhNcc
 {
     public long Id { get; set; }
     public long PhieuBaoHanhNccId { get; set; }

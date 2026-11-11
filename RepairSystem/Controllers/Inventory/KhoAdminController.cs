@@ -10,10 +10,10 @@ namespace RepairSystem.Controllers.V3;
 [ApiController]
 [Route("api/v3/kho")]
 [Authorize(Roles = Roles.Admin)]
-public class KhoV3Controller(AppDbContextV3 db) : ControllerBase
+public class KhoAdminController(RepairDbContext db) : ControllerBase
 {
     [HttpPost]
-    public async Task<IActionResult> Tao([FromBody] TaoKhoV3Request req)
+    public async Task<IActionResult> Tao([FromBody] TaoKhoRequest req)
     {
         if (string.IsNullOrWhiteSpace(req.TenKho) || req.TenKho.Trim().Length > 100
             || req.DiaDiem?.Length > 255)
@@ -30,4 +30,4 @@ public class KhoV3Controller(AppDbContextV3 db) : ControllerBase
     }
 }
 
-public sealed record TaoKhoV3Request(string? TenKho, string? DiaDiem, long? ThuKhoId);
+public sealed record TaoKhoRequest(string? TenKho, string? DiaDiem, long? ThuKhoId);

@@ -35,7 +35,7 @@ public partial class HoaDon
 
     public DateTime UpdatedAt { get; set; }
 
-    public virtual ICollection<ChiTietHoaDonV3> ChiTietHoaDonV3s { get; set; } = new List<ChiTietHoaDonV3>();
+    public virtual ICollection<ChiTietHoaDon> ChiTietHoaDonV3s { get; set; } = new List<ChiTietHoaDon>();
 
     public virtual ICollection<GiaoDichThanhToan> GiaoDichThanhToans { get; set; } = new List<GiaoDichThanhToan>();
 
