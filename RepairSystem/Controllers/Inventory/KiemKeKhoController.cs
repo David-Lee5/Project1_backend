@@ -12,12 +12,12 @@ namespace RepairSystem.Controllers.V3;
 [ApiController]
 [Route("api/v3/kiem-ke-kho")]
 [Authorize(Roles = Roles.Admin + "," + Roles.ThuKho)]
-public sealed class KiemKeKhoV3Controller(AppDbContextV3 db) : ControllerBase
+public sealed class KiemKeKhoController(RepairDbContext db) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> DanhSach([FromQuery] long? khoId)
     {
-        var query = db.KiemKeKhoV3s.AsNoTracking().AsQueryable();
+        var query = db.KiemKeKhos.AsNoTracking().AsQueryable();
         if (khoId.HasValue) query = query.Where(x => x.KhoId == khoId);
         var rows = await query.OrderByDescending(x => x.TaoLuc).Select(x => new {
             x.Id, x.KhoId, x.TrangThai, x.NguoiKiemId, x.NguoiDuyetId,
@@ -29,7 +29,7 @@ public sealed class KiemKeKhoV3Controller(AppDbContextV3 db) : ControllerBase
     [HttpGet("{id:long}")]
     public async Task<IActionResult> ChiTiet(long id)
     {
-        var row = await db.KiemKeKhoV3s.AsNoTracking().Include(x => x.ChiTiet)
+        var row = await db.KiemKeKhos.AsNoTracking().Include(x => x.ChiTiet)
             .FirstOrDefaultAsync(x => x.Id == id);
         return row == null ? NotFound() : Ok(ApiResponse<object>.SuccessResponse(row));
     }
@@ -42,12 +42,12 @@ public sealed class KiemKeKhoV3Controller(AppDbContextV3 db) : ControllerBase
             || req.ChiTiet.Any(x => x.LinhKienId <= 0 || x.SoLuongThucTe < 0)
             || req.ChiTiet.Select(x => x.LinhKienId).Distinct().Count() != req.ChiTiet.Count)
             return BadRequest(ApiResponse<object>.ErrorResponse("Phiếu kiểm kê không hợp lệ."));
-        var actor = await V3Auth.NhanVienIdAsync(db, User);
+        var actor = await NhanVienAuth.NhanVienIdAsync(db, User);
         if (actor == null) return Unauthorized();
         await using var tx = await db.Database.BeginTransactionAsync(IsolationLevel.Serializable);
         if (!await db.Khos.AnyAsync(x => x.Id == req.KhoId && x.DeletedAt == null))
             return NotFound(ApiResponse<object>.ErrorResponse("Kho không tồn tại."));
-        if (await db.KiemKeKhoV3s.AnyAsync(x => x.KhoId == req.KhoId && x.TrangThai == "CHO_DUYET"))
+        if (await db.KiemKeKhos.AnyAsync(x => x.KhoId == req.KhoId && x.TrangThai == "CHO_DUYET"))
             return Conflict(ApiResponse<object>.ErrorResponse("Kho đã có phiếu kiểm kê chờ duyệt."));
         var stock = await db.TonKhos.AsNoTracking().Where(x => x.KhoId == req.KhoId)
             .ToDictionaryAsync(x => x.LinhKienId);
@@ -62,7 +62,7 @@ public sealed class KiemKeKhoV3Controller(AppDbContextV3 db) : ControllerBase
             .Where(x => x.KhoId == req.KhoId &&
                 (x.TrangThai == "TRONG_KHO" || x.TrangThai == "THIEU_KIEM_KE"))
             .Select(x => new { x.LinhKienId, x.SoSerial, x.TrangThai }).ToListAsync();
-        var count = new KiemKeKhoV3 {
+        var count = new KiemKeKho {
             KhoId = req.KhoId, TrangThai = "CHO_DUYET", NguoiKiemId = actor.Value,
             TaoLuc = DateTime.UtcNow, GhiChu = req.GhiChu?.Trim()
         };
@@ -93,7 +93,7 @@ public sealed class KiemKeKhoV3Controller(AppDbContextV3 db) : ControllerBase
             else if (requested.Count != 0 || serials.Any(x => x.LinhKienId == item.LinhKienId))
                 return Conflict(ApiResponse<object>.ErrorResponse(
                     "Linh kiện quản lý theo số lượng không được có serial trong kho/phiếu kiểm kê."));
-            count.ChiTiet.Add(new DongKiemKeKhoV3 {
+            count.ChiTiet.Add(new DongKiemKeKho {
                 LinhKienId = item.LinhKienId,
                 SoLuongSoSach = stock[item.LinhKienId].SoLuongTon,
                 SoLuongThucTe = item.SoLuongThucTe,
@@ -101,7 +101,7 @@ public sealed class KiemKeKhoV3Controller(AppDbContextV3 db) : ControllerBase
                 SerialThucTeJson = tracked.Value ? JsonSerializer.Serialize(requested) : null
             });
         }
-        db.KiemKeKhoV3s.Add(count);
+        db.KiemKeKhos.Add(count);
         await db.SaveChangesAsync();
         await tx.CommitAsync();
         return Ok(ApiResponse<object>.SuccessResponse(new { count.Id, count.TrangThai }));
@@ -114,10 +114,10 @@ public sealed class KiemKeKhoV3Controller(AppDbContextV3 db) : ControllerBase
         if (req.QuyetDinh is not ("DA_DUYET" or "TU_CHOI")
             || string.IsNullOrWhiteSpace(req.LyDo) || req.LyDo.Length > 500)
             return BadRequest(ApiResponse<object>.ErrorResponse("Cần quyết định và lý do."));
-        var actor = await V3Auth.NhanVienIdAsync(db, User);
+        var actor = await NhanVienAuth.NhanVienIdAsync(db, User);
         if (actor == null) return Unauthorized();
         await using var tx = await db.Database.BeginTransactionAsync(IsolationLevel.Serializable);
-        var count = await db.KiemKeKhoV3s.Include(x => x.ChiTiet)
+        var count = await db.KiemKeKhos.Include(x => x.ChiTiet)
             .FirstOrDefaultAsync(x => x.Id == id);
         if (count == null) return NotFound();
         if (count.TrangThai != "CHO_DUYET")
@@ -157,7 +157,7 @@ public sealed class KiemKeKhoV3Controller(AppDbContextV3 db) : ControllerBase
                     {
                         var next = physical.Contains(serial.SoSerial) ? "TRONG_KHO" : "THIEU_KIEM_KE";
                         if (serial.TrangThai == next) continue;
-                        db.BienDongSerialKiemKeV3s.Add(new BienDongSerialKiemKeV3 {
+                        db.BienDongSerialKiemKes.Add(new BienDongSerialKiemKe {
                             KiemKeId = count.Id, LinhKienSerialId = serial.Id,
                             TrangThaiCu = serial.TrangThai, TrangThaiMoi = next, ThoiGian = now
                         });

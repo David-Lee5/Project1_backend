@@ -28,7 +28,7 @@ public class LichHenController(RepairDbContext db, IConfiguration configuration)
             DateTimeStyles.None, out var date))
             return BadRequest(ApiResponse<object>.ErrorResponse("Ngày phải có định dạng yyyy-MM-dd."));
         var (startUtc, endUtc) = DayBounds(date);
-        var bookedTimes = await db.LichHenV3s.AsNoTracking()
+        var bookedTimes = await db.LichHens.AsNoTracking()
             .Where(x => x.ThoiGianMongMuon >= startUtc && x.ThoiGianMongMuon < endUtc
                 && (x.TrangThai == "CHO_XAC_NHAN" || x.TrangThai == "DA_XAC_NHAN"))
             .Select(x => x.ThoiGianMongMuon).ToListAsync();
@@ -68,7 +68,7 @@ public class LichHenController(RepairDbContext db, IConfiguration configuration)
         if ((int)lockResult.Value < 0)
             return Conflict(ApiResponse<object>.ErrorResponse("Khung giờ đang được cập nhật. Vui lòng thử lại."));
         var slotUtc = req.ThoiGianMongMuon.UtcDateTime;
-        var booked = await db.LichHenV3s.CountAsync(x => x.ThoiGianMongMuon >= slotUtc
+        var booked = await db.LichHens.CountAsync(x => x.ThoiGianMongMuon >= slotUtc
             && x.ThoiGianMongMuon < slotUtc.AddHours(1)
             && (x.TrangThai == "CHO_XAC_NHAN" || x.TrangThai == "DA_XAC_NHAN"));
         if (booked >= _capacity)
@@ -78,7 +78,7 @@ public class LichHenController(RepairDbContext db, IConfiguration configuration)
             TenThietBi = req.TenThietBi.Trim(), MoTaLoi = req.MoTaLoi.Trim(),
             TrangThai = "CHO_XAC_NHAN"
         };
-        db.LichHenV3s.Add(row);
+        db.LichHens.Add(row);
         await db.SaveChangesAsync();
         await tx.CommitAsync();
         return Ok(ApiResponse<object>.SuccessResponse(new { row.Id, row.TrangThai }));
@@ -90,7 +90,7 @@ public class LichHenController(RepairDbContext db, IConfiguration configuration)
     {
         var customerId = await KhachHangId();
         if (customerId == null) return Forbid();
-        var rows = await db.LichHenV3s.AsNoTracking().Where(x => x.KhachHangId == customerId)
+        var rows = await db.LichHens.AsNoTracking().Where(x => x.KhachHangId == customerId)
             .OrderByDescending(x => x.CreatedAt).ToListAsync();
         return Ok(ApiResponse<object>.SuccessResponse(rows));
     }
@@ -101,7 +101,7 @@ public class LichHenController(RepairDbContext db, IConfiguration configuration)
     {
         var customerId = await KhachHangId();
         if (customerId == null) return Forbid();
-        var row = await db.LichHenV3s.FirstOrDefaultAsync(x => x.Id == id && x.KhachHangId == customerId);
+        var row = await db.LichHens.FirstOrDefaultAsync(x => x.Id == id && x.KhachHangId == customerId);
         if (row == null) return NotFound();
         if (row.TrangThai is not ("CHO_XAC_NHAN" or "DA_XAC_NHAN") || row.ThoiGianMongMuon <= DateTime.UtcNow)
             return Conflict(ApiResponse<object>.ErrorResponse("Lịch hẹn không thể hủy trực tuyến."));
@@ -115,7 +115,7 @@ public class LichHenController(RepairDbContext db, IConfiguration configuration)
     [Authorize(Roles = Roles.Admin + "," + Roles.LeTan)]
     public async Task<IActionResult> DanhSach([FromQuery] string? trangThai)
     {
-        var query = db.LichHenV3s.AsNoTracking().AsQueryable();
+        var query = db.LichHens.AsNoTracking().AsQueryable();
         if (!string.IsNullOrWhiteSpace(trangThai)) query = query.Where(x => x.TrangThai == trangThai);
         var rows = await query.OrderByDescending(x => x.CreatedAt)
             .Select(x => new { x.Id, x.KhachHangId, x.ThoiGianMongMuon, x.TenThietBi,
@@ -134,7 +134,7 @@ public class LichHenController(RepairDbContext db, IConfiguration configuration)
             || req.GhiChu?.Length > 500)
             return BadRequest(ApiResponse<object>.ErrorResponse("Trạng thái hoặc ghi chú không hợp lệ."));
         await using var tx = await db.Database.BeginTransactionAsync(IsolationLevel.Serializable);
-        var row = await db.LichHenV3s.FirstOrDefaultAsync(x => x.Id == id);
+        var row = await db.LichHens.FirstOrDefaultAsync(x => x.Id == id);
         if (row == null) return NotFound();
         if (!((row.TrangThai == "CHO_XAC_NHAN" && req.TrangThai is "DA_XAC_NHAN" or "TU_CHOI")
             || (row.TrangThai == "DA_XAC_NHAN" && req.TrangThai == "DA_TIEP_NHAN")))

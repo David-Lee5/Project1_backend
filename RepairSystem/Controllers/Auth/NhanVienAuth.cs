@@ -5,7 +5,7 @@ using RepairSystem.Service.Helpers;
 
 namespace RepairSystem.Controllers.V3;
 
-internal static class V3Auth
+internal static class NhanVienAuth
 {
     public static async Task<long?> NhanVienIdAsync(RepairDbContext db, ClaimsPrincipal user)
     {

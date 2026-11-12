@@ -59,7 +59,7 @@ public class DichVuPhieuController(RepairDbContext db) : ControllerBase
     private async Task<bool> DuocXem(long phieuId)
     {
         if (!User.IsInRole(Roles.KyThuatVien)) return true;
-        var actor = await V3Auth.NhanVienIdAsync(db, User);
+        var actor = await NhanVienAuth.NhanVienIdAsync(db, User);
         return await db.PhieuSuaChuas.AnyAsync(x => x.Id == phieuId && x.KyThuatVienId == actor);
     }
 }

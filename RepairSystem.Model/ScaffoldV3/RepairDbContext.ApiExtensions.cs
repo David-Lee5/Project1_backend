@@ -5,28 +5,23 @@ namespace RepairSystem.Model.ScaffoldV3.Entities;
 
 public partial class RepairDbContext
 {
-<<<<<<< Updated upstream:RepairSystem.Model/ScaffoldV3/AppDbContextV3.ApiExtensions.cs
-    public DbSet<LichHenV3> LichHenV3s => Set<LichHenV3>();
-    public DbSet<XuLyBaoHanhNccV3> XuLyBaoHanhNccV3s => Set<XuLyBaoHanhNccV3>();
-    public DbSet<QuyTacVanHanhV3> QuyTacVanHanhV3s => Set<QuyTacVanHanhV3>();
-    public DbSet<XacNhanTiepNhanV3> XacNhanTiepNhanV3s => Set<XacNhanTiepNhanV3>();
-    public DbSet<DuyetBaoHanhLapV3> DuyetBaoHanhLapV3s => Set<DuyetBaoHanhLapV3>();
-    public DbSet<KiemKeKhoV3> KiemKeKhoV3s => Set<KiemKeKhoV3>();
-    public DbSet<DongKiemKeKhoV3> DongKiemKeKhoV3s => Set<DongKiemKeKhoV3>();
-    public DbSet<BienDongSerialKiemKeV3> BienDongSerialKiemKeV3s => Set<BienDongSerialKiemKeV3>();
-    public DbSet<CachLyVatTuV3> CachLyVatTuV3s => Set<CachLyVatTuV3>();
-    public DbSet<CongViecSuaChuaV3> CongViecSuaChuaV3s => Set<CongViecSuaChuaV3>();
-    public DbSet<CongViecVatTuV3> CongViecVatTuV3s => Set<CongViecVatTuV3>();
-    public DbSet<BaoHanhPhanTichV3> BaoHanhPhanTichV3s => Set<BaoHanhPhanTichV3>();
-    public DbSet<HoSoThanhLyV3> HoSoThanhLyV3s => Set<HoSoThanhLyV3>();
-    public DbSet<TaiLieuThanhLyV3> TaiLieuThanhLyV3s => Set<TaiLieuThanhLyV3>();
-    public DbSet<HoaDonDauVaoV3> HoaDonDauVaoV3s => Set<HoaDonDauVaoV3>();
-    public DbSet<HoaDonDienTuV3> HoaDonDienTuV3s => Set<HoaDonDienTuV3>();
-    public DbSet<DieuChinhHoaDonV3> DieuChinhHoaDonV3s => Set<DieuChinhHoaDonV3>();
-=======
-    public DbSet<LichHen> LichHenV3s => Set<LichHen>();
-    public DbSet<XuLyBaoHanhNcc> XuLyBaoHanhNccV3s => Set<XuLyBaoHanhNcc>();
->>>>>>> Stashed changes:RepairSystem.Model/ScaffoldV3/RepairDbContext.ApiExtensions.cs
+    public DbSet<LichHen> LichHens => Set<LichHen>();
+    public DbSet<XuLyBaoHanhNcc> XuLyBaoHanhNccs => Set<XuLyBaoHanhNcc>();
+    public DbSet<QuyTacVanHanh> QuyTacVanHanhs => Set<QuyTacVanHanh>();
+    public DbSet<XacNhanTiepNhan> XacNhanTiepNhans => Set<XacNhanTiepNhan>();
+    public DbSet<DuyetBaoHanhLap> DuyetBaoHanhLaps => Set<DuyetBaoHanhLap>();
+    public DbSet<KiemKeKho> KiemKeKhos => Set<KiemKeKho>();
+    public DbSet<DongKiemKeKho> DongKiemKeKhos => Set<DongKiemKeKho>();
+    public DbSet<BienDongSerialKiemKe> BienDongSerialKiemKes => Set<BienDongSerialKiemKe>();
+    public DbSet<CachLyVatTu> CachLyVatTus => Set<CachLyVatTu>();
+    public DbSet<CongViecSuaChua> CongViecSuaChuas => Set<CongViecSuaChua>();
+    public DbSet<CongViecVatTu> CongViecVatTus => Set<CongViecVatTu>();
+    public DbSet<BaoHanhPhanTich> BaoHanhPhanTichs => Set<BaoHanhPhanTich>();
+    public DbSet<HoSoThanhLy> HoSoThanhLys => Set<HoSoThanhLy>();
+    public DbSet<TaiLieuThanhLy> TaiLieuThanhLys => Set<TaiLieuThanhLy>();
+    public DbSet<HoaDonDauVao> HoaDonDauVaos => Set<HoaDonDauVao>();
+    public DbSet<HoaDonDienTu> HoaDonDienTus => Set<HoaDonDienTu>();
+    public DbSet<DieuChinhHoaDon> DieuChinhHoaDons => Set<DieuChinhHoaDon>();
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder)
     {
@@ -50,9 +45,9 @@ public partial class RepairDbContext
             e.Property(x => x.NguoiTaiLenId).HasColumnName("nguoi_tai_len_id");
             e.Property(x => x.Sha256).HasColumnName("sha256").HasMaxLength(64).IsUnicode(false).IsFixedLength();
         });
-        modelBuilder.Entity<QuyTacVanHanhV3>(e =>
+        modelBuilder.Entity<QuyTacVanHanh>(e =>
         {
-            e.ToTable("quy_tac_van_hanh_v3");
+            e.ToTable("quy_tac_van_hanh");
             e.HasKey(x => x.Id);
             e.Property(x => x.Id).HasColumnName("id").ValueGeneratedNever();
             e.Property(x => x.BaoHanhLapDuyetTuLan).HasColumnName("bao_hanh_lap_duyet_tu_lan");
@@ -65,9 +60,9 @@ public partial class RepairDbContext
             e.Property(x => x.NguoiCapNhatId).HasColumnName("nguoi_cap_nhat_id");
             e.Property(x => x.CapNhatLuc).HasColumnName("cap_nhat_luc").HasConversion(utcDateTime);
         });
-        modelBuilder.Entity<XacNhanTiepNhanV3>(e =>
+        modelBuilder.Entity<XacNhanTiepNhan>(e =>
         {
-            e.ToTable("xac_nhan_tiep_nhan_v3");
+            e.ToTable("xac_nhan_tiep_nhan");
             e.HasKey(x => x.PhieuId);
             e.Property(x => x.PhieuId).HasColumnName("phieu_id").ValueGeneratedNever();
             e.Property(x => x.NguoiXacNhan).HasColumnName("nguoi_xac_nhan").HasMaxLength(150);
@@ -75,9 +70,9 @@ public partial class RepairDbContext
             e.Property(x => x.NhanVienGhiNhanId).HasColumnName("nhan_vien_ghi_nhan_id");
             e.Property(x => x.XacNhanLuc).HasColumnName("xac_nhan_luc").HasConversion(utcDateTime);
         });
-        modelBuilder.Entity<DuyetBaoHanhLapV3>(e =>
+        modelBuilder.Entity<DuyetBaoHanhLap>(e =>
         {
-            e.ToTable("duyet_bao_hanh_lap_v3");
+            e.ToTable("duyet_bao_hanh_lap");
             e.HasKey(x => x.PhieuBaoHanhId);
             e.Property(x => x.PhieuBaoHanhId).HasColumnName("phieu_bao_hanh_id").ValueGeneratedNever();
             e.Property(x => x.LanThu).HasColumnName("lan_thu");
@@ -88,9 +83,9 @@ public partial class RepairDbContext
             e.Property(x => x.LyDoQuyetDinh).HasColumnName("ly_do_quyet_dinh").HasMaxLength(1000);
             e.Property(x => x.NgayDuyet).HasColumnName("ngay_duyet").HasConversion(utcDateTime);
         });
-        modelBuilder.Entity<KiemKeKhoV3>(e =>
+        modelBuilder.Entity<KiemKeKho>(e =>
         {
-            e.ToTable("kiem_ke_kho_v3");
+            e.ToTable("kiem_ke_kho");
             e.HasKey(x => x.Id);
             e.Property(x => x.Id).HasColumnName("id");
             e.Property(x => x.KhoId).HasColumnName("kho_id");
@@ -103,9 +98,9 @@ public partial class RepairDbContext
             e.Property(x => x.LyDoQuyetDinh).HasColumnName("ly_do_quyet_dinh").HasMaxLength(500);
             e.HasMany(x => x.ChiTiet).WithOne().HasForeignKey(x => x.KiemKeId);
         });
-        modelBuilder.Entity<DongKiemKeKhoV3>(e =>
+        modelBuilder.Entity<DongKiemKeKho>(e =>
         {
-            e.ToTable("dong_kiem_ke_kho_v3");
+            e.ToTable("dong_kiem_ke_kho");
             e.HasKey(x => new { x.KiemKeId, x.LinhKienId });
             e.Property(x => x.KiemKeId).HasColumnName("kiem_ke_id");
             e.Property(x => x.LinhKienId).HasColumnName("linh_kien_id");
@@ -114,9 +109,9 @@ public partial class RepairDbContext
             e.Property(x => x.SerialSoSachJson).HasColumnName("serial_so_sach_json");
             e.Property(x => x.SerialThucTeJson).HasColumnName("serial_thuc_te_json");
         });
-        modelBuilder.Entity<BienDongSerialKiemKeV3>(e =>
+        modelBuilder.Entity<BienDongSerialKiemKe>(e =>
         {
-            e.ToTable("bien_dong_serial_kiem_ke_v3");
+            e.ToTable("bien_dong_serial_kiem_ke");
             e.HasKey(x => x.Id);
             e.Property(x => x.Id).HasColumnName("id");
             e.Property(x => x.KiemKeId).HasColumnName("kiem_ke_id");
@@ -125,9 +120,9 @@ public partial class RepairDbContext
             e.Property(x => x.TrangThaiMoi).HasColumnName("trang_thai_moi").HasMaxLength(30);
             e.Property(x => x.ThoiGian).HasColumnName("thoi_gian").HasConversion(utcDateTime);
         });
-        modelBuilder.Entity<CachLyVatTuV3>(e =>
+        modelBuilder.Entity<CachLyVatTu>(e =>
         {
-            e.ToTable("cach_ly_vat_tu_v3");
+            e.ToTable("cach_ly_vat_tu");
             e.HasKey(x => x.Id);
             e.Property(x => x.Id).HasColumnName("id");
             e.Property(x => x.KhoId).HasColumnName("kho_id");
@@ -142,9 +137,9 @@ public partial class RepairDbContext
             e.Property(x => x.XuLyLuc).HasColumnName("xu_ly_luc").HasConversion(utcDateTime);
             e.Property(x => x.LyDoXuLy).HasColumnName("ly_do_xu_ly").HasMaxLength(500);
         });
-        modelBuilder.Entity<CongViecSuaChuaV3>(e =>
+        modelBuilder.Entity<CongViecSuaChua>(e =>
         {
-            e.ToTable("cong_viec_sua_chua_v3"); e.HasKey(x => x.Id);
+            e.ToTable("cong_viec_sua_chua"); e.HasKey(x => x.Id);
             e.Property(x => x.Id).HasColumnName("id");
             e.Property(x => x.PhieuId).HasColumnName("phieu_id");
             e.Property(x => x.PhieuBaoHanhId).HasColumnName("phieu_bao_hanh_id");
@@ -168,17 +163,17 @@ public partial class RepairDbContext
             e.Property(x => x.PhuongThucChiTra).HasColumnName("phuong_thuc_chi_tra").HasMaxLength(20).IsUnicode(false);
             e.HasMany(x => x.VatTu).WithOne().HasForeignKey(x => x.CongViecId);
         });
-        modelBuilder.Entity<CongViecVatTuV3>(e =>
+        modelBuilder.Entity<CongViecVatTu>(e =>
         {
-            e.ToTable("cong_viec_vat_tu_v3");
+            e.ToTable("cong_viec_vat_tu");
             e.HasKey(x => new { x.CongViecId, x.ChiTietXuatKhoId });
             e.HasIndex(x => x.ChiTietXuatKhoId).IsUnique();
             e.Property(x => x.CongViecId).HasColumnName("cong_viec_id");
             e.Property(x => x.ChiTietXuatKhoId).HasColumnName("chi_tiet_xuat_kho_id");
         });
-        modelBuilder.Entity<BaoHanhPhanTichV3>(e =>
+        modelBuilder.Entity<BaoHanhPhanTich>(e =>
         {
-            e.ToTable("bao_hanh_phan_tich_v3"); e.HasKey(x => x.PhieuBaoHanhId);
+            e.ToTable("bao_hanh_phan_tich"); e.HasKey(x => x.PhieuBaoHanhId);
             e.Property(x => x.PhieuBaoHanhId).HasColumnName("phieu_bao_hanh_id").ValueGeneratedNever();
             e.Property(x => x.NguyenNhan).HasColumnName("nguyen_nhan").HasMaxLength(1000);
             e.Property(x => x.BenChiuChiPhi).HasColumnName("ben_chiu_chi_phi").HasMaxLength(15).IsUnicode(false);
@@ -187,9 +182,9 @@ public partial class RepairDbContext
             e.Property(x => x.NguoiGhiId).HasColumnName("nguoi_ghi_id");
             e.Property(x => x.CapNhatLuc).HasColumnName("cap_nhat_luc").HasConversion(utcDateTime);
         });
-        modelBuilder.Entity<HoSoThanhLyV3>(e =>
+        modelBuilder.Entity<HoSoThanhLy>(e =>
         {
-            e.ToTable("ho_so_thanh_ly_v3"); e.HasKey(x => x.Id);
+            e.ToTable("ho_so_thanh_ly"); e.HasKey(x => x.Id);
             e.HasIndex(x => x.CachLyId);
             e.Property(x => x.Id).HasColumnName("id");
             e.Property(x => x.CachLyId).HasColumnName("cach_ly_id");
@@ -205,9 +200,9 @@ public partial class RepairDbContext
             e.Property(x => x.GiaTriDuyet).HasColumnName("gia_tri_duyet").HasPrecision(14, 2);
             e.Property(x => x.GiaTriThuVe).HasColumnName("gia_tri_thu_ve").HasPrecision(14, 2);
         });
-        modelBuilder.Entity<TaiLieuThanhLyV3>(e =>
+        modelBuilder.Entity<TaiLieuThanhLy>(e =>
         {
-            e.ToTable("tai_lieu_thanh_ly_v3"); e.HasKey(x => x.Id);
+            e.ToTable("tai_lieu_thanh_ly"); e.HasKey(x => x.Id);
             e.Property(x => x.Id).HasColumnName("id");
             e.Property(x => x.HoSoId).HasColumnName("ho_so_id");
             e.Property(x => x.Loai).HasColumnName("loai").HasMaxLength(15).IsUnicode(false);
@@ -217,9 +212,9 @@ public partial class RepairDbContext
             e.Property(x => x.NguoiTaiId).HasColumnName("nguoi_tai_id");
             e.Property(x => x.TaiLuc).HasColumnName("tai_luc").HasConversion(utcDateTime);
         });
-        modelBuilder.Entity<HoaDonDauVaoV3>(e =>
+        modelBuilder.Entity<HoaDonDauVao>(e =>
         {
-            e.ToTable("hoa_don_dau_vao_v3"); e.HasKey(x => x.Id);
+            e.ToTable("hoa_don_dau_vao"); e.HasKey(x => x.Id);
             e.HasIndex(x => x.PhieuNhapId).IsUnique();
             e.Property(x => x.Id).HasColumnName("id");
             e.Property(x => x.PhieuNhapId).HasColumnName("phieu_nhap_id");
@@ -235,9 +230,9 @@ public partial class RepairDbContext
             e.Property(x => x.NguoiGhiId).HasColumnName("nguoi_ghi_id");
             e.Property(x => x.GhiLuc).HasColumnName("ghi_luc").HasConversion(utcDateTime);
         });
-        modelBuilder.Entity<HoaDonDienTuV3>(e =>
+        modelBuilder.Entity<HoaDonDienTu>(e =>
         {
-            e.ToTable("hoa_don_dien_tu_v3"); e.HasKey(x => x.Id);
+            e.ToTable("hoa_don_dien_tu"); e.HasKey(x => x.Id);
             e.HasIndex(x => x.HoaDonId).IsUnique();
             e.Property(x => x.Id).HasColumnName("id");
             e.Property(x => x.HoaDonId).HasColumnName("hoa_don_id");
@@ -250,9 +245,9 @@ public partial class RepairDbContext
             e.Property(x => x.NguoiGhiId).HasColumnName("nguoi_ghi_id");
             e.Property(x => x.GhiLuc).HasColumnName("ghi_luc").HasConversion(utcDateTime);
         });
-        modelBuilder.Entity<DieuChinhHoaDonV3>(e =>
+        modelBuilder.Entity<DieuChinhHoaDon>(e =>
         {
-            e.ToTable("dieu_chinh_hoa_don_v3"); e.HasKey(x => x.Id);
+            e.ToTable("dieu_chinh_hoa_don"); e.HasKey(x => x.Id);
             e.Property(x => x.Id).HasColumnName("id");
             e.Property(x => x.HoaDonDienTuId).HasColumnName("hoa_don_dien_tu_id");
             e.Property(x => x.SoChungTu).HasColumnName("so_chung_tu").HasMaxLength(100);

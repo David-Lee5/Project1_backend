@@ -17,5 +17,5 @@ public partial class ThuKho
 
     public virtual ICollection<PhieuNhap> PhieuNhaps { get; set; } = new List<PhieuNhap>();
 
-    public virtual ICollection<TraLinhKienKho> TraLinhKienKhoV3s { get; set; } = new List<TraLinhKienKho>();
+    public virtual ICollection<TraLinhKienKho> TraLinhKienKhos { get; set; } = new List<TraLinhKienKho>();
 }

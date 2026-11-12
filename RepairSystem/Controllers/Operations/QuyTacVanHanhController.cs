@@ -11,12 +11,12 @@ namespace RepairSystem.Controllers.V3;
 [ApiController]
 [Route("api/v3/quy-tac-van-hanh")]
 [Authorize(Roles = Roles.NhanVien)]
-public sealed class QuyTacVanHanhV3Controller(AppDbContextV3 db) : ControllerBase
+public sealed class QuyTacVanHanhController(RepairDbContext db) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        var row = await db.QuyTacVanHanhV3s.AsNoTracking().SingleAsync(x => x.Id == 1);
+        var row = await db.QuyTacVanHanhs.AsNoTracking().SingleAsync(x => x.Id == 1);
         return Ok(ApiResponse<object>.SuccessResponse(row));
     }
 
@@ -30,9 +30,9 @@ public sealed class QuyTacVanHanhV3Controller(AppDbContextV3 db) : ControllerBas
             || req.LoaiHinhKinhDoanh?.Length > 100 || req.PhuongPhapThue?.Length > 100
             || req.DonViHoaDonDienTu?.Length > 150)
             return BadRequest(ApiResponse<object>.ErrorResponse("Quy tắc không hợp lệ."));
-        var actor = await V3Auth.NhanVienIdAsync(db, User);
+        var actor = await NhanVienAuth.NhanVienIdAsync(db, User);
         if (actor == null) return Unauthorized();
-        var row = await db.QuyTacVanHanhV3s.SingleAsync(x => x.Id == 1);
+        var row = await db.QuyTacVanHanhs.SingleAsync(x => x.Id == 1);
         var before = JsonSerializer.Serialize(row);
         row.BaoHanhLapDuyetTuLan = req.BaoHanhLapDuyetTuLan;
         row.AnhTiepNhanToiThieu = req.AnhTiepNhanToiThieu;
@@ -44,7 +44,7 @@ public sealed class QuyTacVanHanhV3Controller(AppDbContextV3 db) : ControllerBas
         row.NguoiCapNhatId = actor;
         row.CapNhatLuc = DateTime.UtcNow;
         db.AuditLogs.Add(new AuditLog {
-            Bang = "quy_tac_van_hanh_v3", BanGhiId = 1, HanhDong = "UPDATE",
+            Bang = "quy_tac_van_hanh", BanGhiId = 1, HanhDong = "UPDATE",
             DuLieuCu = before, DuLieuMoi = JsonSerializer.Serialize(row),
             NguoiThucHienId = User.GetTaiKhoanId()
         });

@@ -73,5 +73,5 @@ public partial class PhieuSuaChua
 
     public virtual ThietBi ThietBi { get; set; } = null!;
 
-    public virtual ICollection<YeuCauLinhKien> YeuCauLinhKienV3s { get; set; } = new List<YeuCauLinhKien>();
+    public virtual ICollection<YeuCauLinhKien> YeuCauLinhKiens { get; set; } = new List<YeuCauLinhKien>();
 }

@@ -1,6 +1,6 @@
 namespace RepairSystem.Model.ScaffoldV3.Entities;
 
-public sealed class QuyTacVanHanhV3
+public sealed class QuyTacVanHanh
 {
     public byte Id { get; set; }
     public byte BaoHanhLapDuyetTuLan { get; set; }
@@ -14,7 +14,7 @@ public sealed class QuyTacVanHanhV3
     public DateTime CapNhatLuc { get; set; }
 }
 
-public sealed class XacNhanTiepNhanV3
+public sealed class XacNhanTiepNhan
 {
     public long PhieuId { get; set; }
     public string NguoiXacNhan { get; set; } = null!;
@@ -23,7 +23,7 @@ public sealed class XacNhanTiepNhanV3
     public DateTime XacNhanLuc { get; set; }
 }
 
-public sealed class DuyetBaoHanhLapV3
+public sealed class DuyetBaoHanhLap
 {
     public long PhieuBaoHanhId { get; set; }
     public int LanThu { get; set; }
@@ -35,7 +35,7 @@ public sealed class DuyetBaoHanhLapV3
     public DateTime? NgayDuyet { get; set; }
 }
 
-public sealed class KiemKeKhoV3
+public sealed class KiemKeKho
 {
     public long Id { get; set; }
     public long KhoId { get; set; }
@@ -46,10 +46,10 @@ public sealed class KiemKeKhoV3
     public DateTime? DuyetLuc { get; set; }
     public string? GhiChu { get; set; }
     public string? LyDoQuyetDinh { get; set; }
-    public List<DongKiemKeKhoV3> ChiTiet { get; set; } = [];
+    public List<DongKiemKeKho> ChiTiet { get; set; } = [];
 }
 
-public sealed class DongKiemKeKhoV3
+public sealed class DongKiemKeKho
 {
     public long KiemKeId { get; set; }
     public long LinhKienId { get; set; }
@@ -59,7 +59,7 @@ public sealed class DongKiemKeKhoV3
     public string? SerialThucTeJson { get; set; }
 }
 
-public sealed class BienDongSerialKiemKeV3
+public sealed class BienDongSerialKiemKe
 {
     public long Id { get; set; }
     public long KiemKeId { get; set; }
@@ -69,7 +69,7 @@ public sealed class BienDongSerialKiemKeV3
     public DateTime ThoiGian { get; set; }
 }
 
-public sealed class CachLyVatTuV3
+public sealed class CachLyVatTu
 {
     public long Id { get; set; }
     public long KhoId { get; set; }

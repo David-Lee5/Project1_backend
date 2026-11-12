@@ -18,13 +18,13 @@ public class VatTuController(RepairDbContext db) : ControllerBase
     public async Task<IActionResult> DanhSach(long phieuId)
     {
         if (!await DuocXemPhieu(phieuId)) return Forbid();
-        var rows = await db.YeuCauLinhKienV3s.AsNoTracking()
-            .Where(x => x.PhieuId == phieuId).Include(x => x.ChiTietYeuCauLinhKienV3s)
+        var rows = await db.YeuCauLinhKiens.AsNoTracking()
+            .Where(x => x.PhieuId == phieuId).Include(x => x.ChiTietYeuCauLinhKiens)
             .OrderByDescending(x => x.NgayYeuCau).ToListAsync();
         return Ok(ApiResponse<object>.SuccessResponse(rows.Select(x => new {
             x.Id, x.PhieuId, x.NguoiYeuCauId, x.NgayYeuCau, x.TrangThai,
             x.NguoiDuyetId, x.NgayDuyet, x.GhiChu,
-            ChiTiet = x.ChiTietYeuCauLinhKienV3s.Select(c => new {
+            ChiTiet = x.ChiTietYeuCauLinhKiens.Select(c => new {
                 c.Id, c.LinhKienId, c.SoLuongYeuCau, c.SoLuongDuyet, c.GhiChu
             })
         }).ToList()));
@@ -39,12 +39,12 @@ public class VatTuController(RepairDbContext db) : ControllerBase
             || req.ChiTiet.Select(x => x.LinhKienId).Distinct().Count() != req.ChiTiet.Count
             || req.GhiChu?.Length > 500)
             return BadRequest(ApiResponse<object>.ErrorResponse("Chi tiết yêu cầu vật tư không hợp lệ."));
-        var actor = await V3Auth.NhanVienIdAsync(db, User);
+        var actor = await NhanVienAuth.NhanVienIdAsync(db, User);
         if (actor == null) return Unauthorized();
         var phieu = await db.PhieuSuaChuas.AsNoTracking().FirstOrDefaultAsync(x => x.Id == phieuId);
         if (phieu == null) return NotFound();
         if (!User.IsInRole(Roles.Admin) && phieu.KyThuatVienId != actor
-            && !await db.CongViecSuaChuaV3s.AsNoTracking().AnyAsync(x =>
+            && !await db.CongViecSuaChuas.AsNoTracking().AnyAsync(x =>
                 x.PhieuId == phieuId && x.KyThuatVienId == actor && x.TrangThai != "HUY"))
             return Forbid();
         if (phieu.TrangThai is not ("DANG_SUA" or "CHO_LINH_KIEN"))
@@ -57,11 +57,11 @@ public class VatTuController(RepairDbContext db) : ControllerBase
             TrangThai = "CHO_DUYET", GhiChu = req.GhiChu?.Trim()
         };
         foreach (var c in req.ChiTiet)
-            row.ChiTietYeuCauLinhKienV3s.Add(new ChiTietYeuCauLinhKien {
+            row.ChiTietYeuCauLinhKiens.Add(new ChiTietYeuCauLinhKien {
                 PhieuId = phieuId, LinhKienId = c.LinhKienId,
                 SoLuongYeuCau = c.SoLuong, GhiChu = c.GhiChu?.Trim()
             });
-        db.YeuCauLinhKienV3s.Add(row);
+        db.YeuCauLinhKiens.Add(row);
         await db.SaveChangesAsync();
         return Ok(ApiResponse<object>.SuccessResponse(new { row.Id, row.TrangThai }));
     }
@@ -72,10 +72,10 @@ public class VatTuController(RepairDbContext db) : ControllerBase
     {
         if (req.QuyetDinh is not ("DA_DUYET" or "TU_CHOI"))
             return BadRequest(ApiResponse<object>.ErrorResponse("Quyết định không hợp lệ."));
-        var actor = await V3Auth.NhanVienIdAsync(db, User);
+        var actor = await NhanVienAuth.NhanVienIdAsync(db, User);
         if (actor == null) return Unauthorized();
         await using var tx = await db.Database.BeginTransactionAsync(IsolationLevel.Serializable);
-        var row = await db.YeuCauLinhKienV3s.Include(x => x.ChiTietYeuCauLinhKienV3s)
+        var row = await db.YeuCauLinhKiens.Include(x => x.ChiTietYeuCauLinhKiens)
             .FirstOrDefaultAsync(x => x.Id == id && x.PhieuId == phieuId);
         if (row == null) return NotFound();
         if (row.TrangThai != "CHO_DUYET")
@@ -84,10 +84,10 @@ public class VatTuController(RepairDbContext db) : ControllerBase
             return Conflict(ApiResponse<object>.ErrorResponse("Người yêu cầu không được tự duyệt vật tư."));
         if (req.QuyetDinh == "DA_DUYET")
         {
-            if (req.SoLuongDuyet == null || req.SoLuongDuyet.Count != row.ChiTietYeuCauLinhKienV3s.Count
+            if (req.SoLuongDuyet == null || req.SoLuongDuyet.Count != row.ChiTietYeuCauLinhKiens.Count
                 || req.SoLuongDuyet.Select(x => x.ChiTietId).Distinct().Count() != req.SoLuongDuyet.Count)
                 return BadRequest(ApiResponse<object>.ErrorResponse("Cần duyệt số lượng từng dòng."));
-            foreach (var detail in row.ChiTietYeuCauLinhKienV3s)
+            foreach (var detail in row.ChiTietYeuCauLinhKiens)
             {
                 var selected = req.SoLuongDuyet.FirstOrDefault(x => x.ChiTietId == detail.Id);
                 if (selected == null || selected.SoLuong < 0 || selected.SoLuong > detail.SoLuongYeuCau)
@@ -114,7 +114,7 @@ public class VatTuController(RepairDbContext db) : ControllerBase
         var row = await db.ChiTietXuatKhos.AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == req.ChiTietXuatKhoId && x.PhieuId == phieuId);
         if (row == null) return NotFound();
-        var actor = await V3Auth.NhanVienIdAsync(db, User);
+        var actor = await NhanVienAuth.NhanVienIdAsync(db, User);
         if (actor == null || !await db.ThuKhos.AnyAsync(x => x.NhanVienId == actor)) return Forbid();
         var outId = new SqlParameter("@tra_id", SqlDbType.BigInt) { Direction = ParameterDirection.Output };
         try
@@ -138,8 +138,8 @@ public class VatTuController(RepairDbContext db) : ControllerBase
         var phieu = await db.PhieuSuaChuas.AsNoTracking().FirstOrDefaultAsync(x => x.Id == phieuId);
         if (phieu == null) return false;
         if (!User.IsInRole(Roles.KyThuatVien)) return true;
-        var actor = await V3Auth.NhanVienIdAsync(db, User);
-        return phieu.KyThuatVienId == actor || await db.CongViecSuaChuaV3s.AsNoTracking()
+        var actor = await NhanVienAuth.NhanVienIdAsync(db, User);
+        return phieu.KyThuatVienId == actor || await db.CongViecSuaChuas.AsNoTracking()
             .AnyAsync(x => x.PhieuId == phieuId && x.KyThuatVienId == actor && x.TrangThai != "HUY");
     }
 }

@@ -107,7 +107,7 @@ builder.Services.AddSwaggerGen(c =>
 var app = builder.Build();
 
 // Không phục vụ API trên schema cũ: lỗi sẽ được báo ngay lúc khởi động, kèm CSDL và migration cần chạy.
-await V3SchemaValidator.ValidateAsync(connectionString);
+await DatabaseSchemaValidator.ValidateAsync(connectionString);
 
 // Initialize database with seed data (wrapped in try-catch)
 try

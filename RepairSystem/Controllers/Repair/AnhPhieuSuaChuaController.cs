@@ -53,7 +53,7 @@ public class AnhPhieuSuaChuaController(RepairDbContext db, IWebHostEnvironment e
     {
         if (!await DuocXem(phieuId)) return Forbid();
         if (loai == "LUC_TIEP_NHAN"
-            && await db.XacNhanTiepNhanV3s.AnyAsync(x => x.PhieuId == phieuId))
+            && await db.XacNhanTiepNhans.AnyAsync(x => x.PhieuId == phieuId))
             return Conflict(ApiResponse<object>.ErrorResponse("Đã xác nhận tiếp nhận; không thể thêm ảnh đầu vào."));
         if (loai is not ("KHAC" or "LUC_TIEP_NHAN" or "SAU_SUA") || moTa?.Length > 255
             || file == null || file.Length == 0 || file.Length > MaxBytes)
@@ -62,7 +62,7 @@ public class AnhPhieuSuaChuaController(RepairDbContext db, IWebHostEnvironment e
             return Conflict(ApiResponse<object>.ErrorResponse("Phiếu đã có tối đa 20 ảnh."));
         if (User.IsInRole(Roles.KyThuatVien) && loai == "LUC_TIEP_NHAN")
             return Forbid();
-        var actor = await V3Auth.NhanVienIdAsync(db, User);
+        var actor = await NhanVienAuth.NhanVienIdAsync(db, User);
         if (actor == null) return Unauthorized();
 
         await using var input = file.OpenReadStream();
@@ -103,7 +103,7 @@ public class AnhPhieuSuaChuaController(RepairDbContext db, IWebHostEnvironment e
     {
         var row = await db.AnhPhieuSuaChuas.FirstOrDefaultAsync(x => x.Id == id && x.PhieuId == phieuId);
         if (row == null) return NotFound();
-        if (await db.XacNhanTiepNhanV3s.AnyAsync(x => x.PhieuId == phieuId))
+        if (await db.XacNhanTiepNhans.AnyAsync(x => x.PhieuId == phieuId))
             return Conflict(ApiResponse<object>.ErrorResponse("Ảnh của phiếu đã xác nhận tiếp nhận không được xóa."));
         if (await db.PhieuSuaChuas.AnyAsync(x => x.Id == phieuId && x.TrangThai == "DA_TRA"))
             return Conflict(ApiResponse<object>.ErrorResponse("Không xóa ảnh sau khi bàn giao."));
@@ -119,8 +119,8 @@ public class AnhPhieuSuaChuaController(RepairDbContext db, IWebHostEnvironment e
         var ticket = await db.PhieuSuaChuas.AsNoTracking().FirstOrDefaultAsync(x => x.Id == phieuId);
         if (ticket == null) return false;
         if (!User.IsInRole(Roles.KyThuatVien)) return true;
-        var actor = await V3Auth.NhanVienIdAsync(db, User);
-        return ticket.KyThuatVienId == actor || await db.CongViecSuaChuaV3s.AsNoTracking()
+        var actor = await NhanVienAuth.NhanVienIdAsync(db, User);
+        return ticket.KyThuatVienId == actor || await db.CongViecSuaChuas.AsNoTracking()
             .AnyAsync(x => x.PhieuId == phieuId && x.KyThuatVienId == actor && x.TrangThai != "HUY");
     }
 

@@ -2,20 +2,17 @@ using Microsoft.Data.SqlClient;
 
 namespace RepairSystem.Infrastructure;
 
-internal static class V3SchemaValidator
+internal static class DatabaseSchemaValidator
 {
     private const string Migration = "V3_20261106_API";
     private const string MigrationFile = "database_v3/BO_SUNG_API_20261106.sql";
     private const string KtvMigration = "V3_20261107_KTV";
     private const string KtvMigrationFile = "database_v3/BO_SUNG_QUY_TRINH_KTV_20261107.sql";
-<<<<<<< Updated upstream
     private const string RulesMigration = "V3_20261108_RULES";
     private const string RulesMigrationFile = "database/BO_SUNG_QUY_TAC_KIEM_KE_20261108.sql";
     private const string WorkflowMigration = "V3_20261108_WORKFLOW";
     private const string WorkflowMigrationFile = "database/BO_SUNG_CONG_VIEC_THANH_LY_TAI_CHINH_20261108.sql";
-=======
     private const string TableRenameFile = "database/DOI_TEN_BANG_BO_V3_20261111.sql";
->>>>>>> Stashed changes
 
     public static async Task ValidateAsync(string connectionString)
     {
@@ -98,7 +95,6 @@ internal static class V3SchemaValidator
                 $"nhưng thiếu: {string.Join(", ", missingKtv)}. Kiểm tra schema và khôi phục từ bản sao lưu.");
 
         command.Parameters.Clear();
-<<<<<<< Updated upstream
         command.Parameters.AddWithValue("@version", RulesMigration);
         var rulesApplied = (long)(await command.ExecuteScalarAsync() ?? 0L) > 0;
         if (!rulesApplied)
@@ -113,13 +109,13 @@ internal static class V3SchemaValidator
                 AND COL_LENGTH(N'dbo.phieu_sua_chua', N'checklist_tiep_nhan_json') IS NOT NULL
                 AND COL_LENGTH(N'dbo.anh_phieu_sua_chua', N'sha256') IS NOT NULL
                 AND COL_LENGTH(N'dbo.anh_phieu_sua_chua', N'nguoi_tai_len_id') IS NOT NULL
-                AND OBJECT_ID(N'dbo.quy_tac_van_hanh_v3', N'U') IS NOT NULL
-                AND OBJECT_ID(N'dbo.xac_nhan_tiep_nhan_v3', N'U') IS NOT NULL
-                AND OBJECT_ID(N'dbo.duyet_bao_hanh_lap_v3', N'U') IS NOT NULL
-                AND OBJECT_ID(N'dbo.kiem_ke_kho_v3', N'U') IS NOT NULL
-                AND OBJECT_ID(N'dbo.dong_kiem_ke_kho_v3', N'U') IS NOT NULL
-                AND OBJECT_ID(N'dbo.bien_dong_serial_kiem_ke_v3', N'U') IS NOT NULL
-                AND OBJECT_ID(N'dbo.cach_ly_vat_tu_v3', N'U') IS NOT NULL
+                AND OBJECT_ID(N'dbo.quy_tac_van_hanh', N'U') IS NOT NULL
+                AND OBJECT_ID(N'dbo.xac_nhan_tiep_nhan', N'U') IS NOT NULL
+                AND OBJECT_ID(N'dbo.duyet_bao_hanh_lap', N'U') IS NOT NULL
+                AND OBJECT_ID(N'dbo.kiem_ke_kho', N'U') IS NOT NULL
+                AND OBJECT_ID(N'dbo.dong_kiem_ke_kho', N'U') IS NOT NULL
+                AND OBJECT_ID(N'dbo.bien_dong_serial_kiem_ke', N'U') IS NOT NULL
+                AND OBJECT_ID(N'dbo.cach_ly_vat_tu', N'U') IS NOT NULL
                 THEN 1 ELSE 0 END
             """;
         if ((int)(await command.ExecuteScalarAsync() ?? 0) != 1)
@@ -134,22 +130,22 @@ internal static class V3SchemaValidator
             throw new InvalidOperationException(
                 $"CSDL '{databaseName}' trên '{settings.DataSource}' thiếu migration {WorkflowMigration}. " +
                 $"Dừng backend, sao lưu CSDL, chạy {WorkflowMigrationFile} trên đúng CSDL rồi khởi động lại.");
+        command.Parameters.Clear();
         command.CommandText = """
-            SELECT CASE WHEN OBJECT_ID(N'dbo.cong_viec_sua_chua_v3', N'U') IS NOT NULL
-                AND OBJECT_ID(N'dbo.cong_viec_vat_tu_v3', N'U') IS NOT NULL
-                AND OBJECT_ID(N'dbo.bao_hanh_phan_tich_v3', N'U') IS NOT NULL
-                AND OBJECT_ID(N'dbo.ho_so_thanh_ly_v3', N'U') IS NOT NULL
-                AND OBJECT_ID(N'dbo.tai_lieu_thanh_ly_v3', N'U') IS NOT NULL
-                AND OBJECT_ID(N'dbo.hoa_don_dau_vao_v3', N'U') IS NOT NULL
-                AND OBJECT_ID(N'dbo.hoa_don_dien_tu_v3', N'U') IS NOT NULL
-                AND OBJECT_ID(N'dbo.dieu_chinh_hoa_don_v3', N'U') IS NOT NULL
+            SELECT CASE WHEN OBJECT_ID(N'dbo.cong_viec_sua_chua', N'U') IS NOT NULL
+                AND OBJECT_ID(N'dbo.cong_viec_vat_tu', N'U') IS NOT NULL
+                AND OBJECT_ID(N'dbo.bao_hanh_phan_tich', N'U') IS NOT NULL
+                AND OBJECT_ID(N'dbo.ho_so_thanh_ly', N'U') IS NOT NULL
+                AND OBJECT_ID(N'dbo.tai_lieu_thanh_ly', N'U') IS NOT NULL
+                AND OBJECT_ID(N'dbo.hoa_don_dau_vao', N'U') IS NOT NULL
+                AND OBJECT_ID(N'dbo.hoa_don_dien_tu', N'U') IS NOT NULL
+                AND OBJECT_ID(N'dbo.dieu_chinh_hoa_don', N'U') IS NOT NULL
                 THEN 1 ELSE 0 END
             """;
         if ((int)(await command.ExecuteScalarAsync() ?? 0) != 1)
             throw new InvalidOperationException(
                 $"CSDL '{databaseName}' trên '{settings.DataSource}' đã ghi migration {WorkflowMigration} " +
                 "nhưng thiếu thành phần schema. Kiểm tra và khôi phục từ bản sao lưu.");
-=======
         command.CommandText = """
             SELECT COUNT_BIG(*)
             FROM sys.tables
@@ -191,6 +187,5 @@ internal static class V3SchemaValidator
             throw new InvalidOperationException(
                 $"CSDL '{databaseName}' trên '{settings.DataSource}' thiếu bảng nghiệp vụ bắt buộc. " +
                 "Kiểm tra schema và khôi phục từ bản sao lưu.");
->>>>>>> Stashed changes
     }
 }

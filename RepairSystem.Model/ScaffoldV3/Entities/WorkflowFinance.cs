@@ -1,6 +1,6 @@
 namespace RepairSystem.Model.ScaffoldV3.Entities;
 
-public sealed class CongViecSuaChuaV3
+public sealed class CongViecSuaChua
 {
     public long Id { get; set; }
     public long PhieuId { get; set; }
@@ -23,16 +23,16 @@ public sealed class CongViecSuaChuaV3
     public long? ChiTraBoiId { get; set; }
     public string? MaThamChieuChiTra { get; set; }
     public string? PhuongThucChiTra { get; set; }
-    public List<CongViecVatTuV3> VatTu { get; set; } = [];
+    public List<CongViecVatTu> VatTu { get; set; } = [];
 }
 
-public sealed class CongViecVatTuV3
+public sealed class CongViecVatTu
 {
     public long CongViecId { get; set; }
     public long ChiTietXuatKhoId { get; set; }
 }
 
-public sealed class BaoHanhPhanTichV3
+public sealed class BaoHanhPhanTich
 {
     public long PhieuBaoHanhId { get; set; }
     public string NguyenNhan { get; set; } = null!;
@@ -43,7 +43,7 @@ public sealed class BaoHanhPhanTichV3
     public DateTime CapNhatLuc { get; set; }
 }
 
-public sealed class HoSoThanhLyV3
+public sealed class HoSoThanhLy
 {
     public long Id { get; set; }
     public long CachLyId { get; set; }
@@ -60,7 +60,7 @@ public sealed class HoSoThanhLyV3
     public decimal? GiaTriThuVe { get; set; }
 }
 
-public sealed class TaiLieuThanhLyV3
+public sealed class TaiLieuThanhLy
 {
     public long Id { get; set; }
     public long HoSoId { get; set; }
@@ -72,7 +72,7 @@ public sealed class TaiLieuThanhLyV3
     public DateTime TaiLuc { get; set; }
 }
 
-public sealed class HoaDonDauVaoV3
+public sealed class HoaDonDauVao
 {
     public long Id { get; set; }
     public long PhieuNhapId { get; set; }
@@ -89,7 +89,7 @@ public sealed class HoaDonDauVaoV3
     public DateTime GhiLuc { get; set; }
 }
 
-public sealed class HoaDonDienTuV3
+public sealed class HoaDonDienTu
 {
     public long Id { get; set; }
     public long HoaDonId { get; set; }
@@ -103,7 +103,7 @@ public sealed class HoaDonDienTuV3
     public DateTime GhiLuc { get; set; }
 }
 
-public sealed class DieuChinhHoaDonV3
+public sealed class DieuChinhHoaDon
 {
     public long Id { get; set; }
     public long HoaDonDienTuId { get; set; }

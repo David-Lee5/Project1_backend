@@ -46,7 +46,7 @@ public class BaoGiaController(RepairDbContext db) : ControllerBase
         try { tong = req.ChiTiet.Sum(c => checked(c.SoLuong * c.DonGia)); }
         catch (OverflowException) { return BadRequest(ApiResponse<object>.ErrorResponse("Tổng báo giá quá lớn.")); }
         if (req.GiamGia > tong) return BadRequest(ApiResponse<object>.ErrorResponse("Giảm giá vượt tổng báo giá."));
-        var actor = await V3Auth.NhanVienIdAsync(db, User);
+        var actor = await NhanVienAuth.NhanVienIdAsync(db, User);
         if (actor == null) return Unauthorized();
         await using var tx = await db.Database.BeginTransactionAsync(IsolationLevel.Serializable);
         var phieu = await db.PhieuSuaChuas.FirstOrDefaultAsync(x => x.Id == phieuId);
@@ -95,7 +95,7 @@ public class BaoGiaController(RepairDbContext db) : ControllerBase
             || string.IsNullOrWhiteSpace(req.KenhPhanHoi) || req.KenhPhanHoi.Length > 100
             || req.NoiDungPhanHoi?.Length > 1000)
             return BadRequest(ApiResponse<object>.ErrorResponse("Phản hồi không hợp lệ."));
-        var actor = await V3Auth.NhanVienIdAsync(db, User);
+        var actor = await NhanVienAuth.NhanVienIdAsync(db, User);
         if (actor == null) return Unauthorized();
         var row = await db.BaoGia.FirstOrDefaultAsync(x => x.Id == baoGiaId && x.PhieuId == phieuId);
         if (row == null) return NotFound();

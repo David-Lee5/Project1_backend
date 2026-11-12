@@ -21,7 +21,7 @@ public partial class RepairDbContext : DbContext
 
     public virtual DbSet<BaoGium> BaoGia { get; set; }
 
-    public virtual DbSet<BiMatThietBi> BiMatThietBiV3s { get; set; }
+    public virtual DbSet<BiMatThietBi> BiMatThietBis { get; set; }
 
     public virtual DbSet<BienDongKho> BienDongKhos { get; set; }
 
@@ -31,13 +31,13 @@ public partial class RepairDbContext : DbContext
 
     public virtual DbSet<ChiTietDichVu> ChiTietDichVus { get; set; }
 
-    public virtual DbSet<ChiTietHoaDon> ChiTietHoaDonV3s { get; set; }
+    public virtual DbSet<ChiTietHoaDon> ChiTietHoaDons { get; set; }
 
     public virtual DbSet<ChiTietNhapKho> ChiTietNhapKhos { get; set; }
 
     public virtual DbSet<ChiTietXuatKho> ChiTietXuatKhos { get; set; }
 
-    public virtual DbSet<ChiTietYeuCauLinhKien> ChiTietYeuCauLinhKienV3s { get; set; }
+    public virtual DbSet<ChiTietYeuCauLinhKien> ChiTietYeuCauLinhKiens { get; set; }
 
     public virtual DbSet<DichVu> DichVus { get; set; }
 
@@ -89,9 +89,9 @@ public partial class RepairDbContext : DbContext
 
     public virtual DbSet<TonKho> TonKhos { get; set; }
 
-    public virtual DbSet<TraLinhKienKho> TraLinhKienKhoV3s { get; set; }
+    public virtual DbSet<TraLinhKienKho> TraLinhKienKhos { get; set; }
 
-    public virtual DbSet<V3SchemaMigration> V3SchemaMigrations { get; set; }
+    public virtual DbSet<SchemaMigration> SchemaMigrations { get; set; }
 
     public virtual DbSet<VLinhKienHienThi> VLinhKienHienThis { get; set; }
 
@@ -101,11 +101,11 @@ public partial class RepairDbContext : DbContext
 
     public virtual DbSet<VTonKhoSapHet> VTonKhoSapHets { get; set; }
 
-    public virtual DbSet<VV3BaoGium> VV3BaoGia { get; set; }
+    public virtual DbSet<BaoGiaView> BaoGiaViews { get; set; }
 
-    public virtual DbSet<VV3CongNoPhieu> VV3CongNoPhieus { get; set; }
+    public virtual DbSet<CongNoPhieuView> CongNoPhieuViews { get; set; }
 
-    public virtual DbSet<YeuCauLinhKien> YeuCauLinhKienV3s { get; set; }
+    public virtual DbSet<YeuCauLinhKien> YeuCauLinhKiens { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -551,18 +551,18 @@ public partial class RepairDbContext : DbContext
                 .HasColumnType("decimal(19, 2)")
                 .HasColumnName("thanh_tien");
 
-            entity.HasOne(d => d.ChiTietXuatKho).WithMany(p => p.ChiTietHoaDonV3s)
+            entity.HasOne(d => d.ChiTietXuatKho).WithMany(p => p.ChiTietHoaDons)
                 .HasPrincipalKey(p => new { p.Id, p.PhieuId })
                 .HasForeignKey(d => new { d.ChiTietXuatKhoId, d.PhieuId })
                 .HasConstraintName("fk_cthd_xuat_phieu");
 
-            entity.HasOne(d => d.HoaDon).WithMany(p => p.ChiTietHoaDonV3s)
+            entity.HasOne(d => d.HoaDon).WithMany(p => p.ChiTietHoaDons)
                 .HasPrincipalKey(p => new { p.Id, p.PhieuId })
                 .HasForeignKey(d => new { d.HoaDonId, d.PhieuId })
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_cthd_hd_phieu");
 
-            entity.HasOne(d => d.ChiTietDichVu).WithMany(p => p.ChiTietHoaDonV3s)
+            entity.HasOne(d => d.ChiTietDichVu).WithMany(p => p.ChiTietHoaDons)
                 .HasForeignKey(d => new { d.PhieuId, d.DichVuId })
                 .HasConstraintName("fk_cthd_dv_phieu");
         });
@@ -677,12 +677,12 @@ public partial class RepairDbContext : DbContext
             entity.Property(e => e.SoLuongYeuCau).HasColumnName("so_luong_yeu_cau");
             entity.Property(e => e.YeuCauId).HasColumnName("yeu_cau_id");
 
-            entity.HasOne(d => d.LinhKien).WithMany(p => p.ChiTietYeuCauLinhKienV3s)
+            entity.HasOne(d => d.LinhKien).WithMany(p => p.ChiTietYeuCauLinhKiens)
                 .HasForeignKey(d => d.LinhKienId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_ct_yclk_lk");
 
-            entity.HasOne(d => d.YeuCauLinhKien).WithMany(p => p.ChiTietYeuCauLinhKienV3s)
+            entity.HasOne(d => d.YeuCauLinhKien).WithMany(p => p.ChiTietYeuCauLinhKiens)
                 .HasPrincipalKey(p => new { p.Id, p.PhieuId })
                 .HasForeignKey(d => new { d.YeuCauId, d.PhieuId })
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -1830,18 +1830,18 @@ public partial class RepairDbContext : DbContext
                 .HasDefaultValueSql("(sysutcdatetime())")
                 .HasColumnName("thoi_gian");
 
-            entity.HasOne(d => d.ChiTietXuatKho).WithMany(p => p.TraLinhKienKhoV3s)
+            entity.HasOne(d => d.ChiTietXuatKho).WithMany(p => p.TraLinhKienKhos)
                 .HasForeignKey(d => d.ChiTietXuatKhoId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_tra_lk_ctxk");
 
-            entity.HasOne(d => d.NguoiThucHien).WithMany(p => p.TraLinhKienKhoV3s)
+            entity.HasOne(d => d.NguoiThucHien).WithMany(p => p.TraLinhKienKhos)
                 .HasForeignKey(d => d.NguoiThucHienId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_tra_lk_nguoi");
         });
 
-        modelBuilder.Entity<V3SchemaMigration>(entity =>
+        modelBuilder.Entity<SchemaMigration>(entity =>
         {
             entity.HasKey(e => e.Version).HasName("pk_v3_schema_migration");
 
@@ -1941,7 +1941,7 @@ public partial class RepairDbContext : DbContext
                 .HasColumnName("ten_linh_kien");
         });
 
-        modelBuilder.Entity<VV3BaoGium>(entity =>
+        modelBuilder.Entity<BaoGiaView>(entity =>
         {
             entity
                 .HasNoKey()
@@ -1978,7 +1978,7 @@ public partial class RepairDbContext : DbContext
                 .HasColumnName("trang_thai");
         });
 
-        modelBuilder.Entity<VV3CongNoPhieu>(entity =>
+        modelBuilder.Entity<CongNoPhieuView>(entity =>
         {
             entity
                 .HasNoKey()
@@ -2040,7 +2040,7 @@ public partial class RepairDbContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_yclk_nguoi");
 
-            entity.HasOne(d => d.Phieu).WithMany(p => p.YeuCauLinhKienV3s)
+            entity.HasOne(d => d.Phieu).WithMany(p => p.YeuCauLinhKiens)
                 .HasForeignKey(d => d.PhieuId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_yclk_phieu");

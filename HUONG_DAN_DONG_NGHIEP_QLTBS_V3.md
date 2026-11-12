@@ -15,7 +15,7 @@ BTL/
 
 `Project1_backend` và `RepairFrontend` là **hai Git repository riêng**; `BTL` không phải repository. Các thay đổi ngày 08/11 hiện còn ở working tree của cả hai repo (gồm file mới chưa commit), nên chỉ `git pull` từ remote có thể **chưa lấy được bản đang mô tả ở đây**. Người chia sẻ mã cần commit/push đủ hai repo và gửi kèm thư mục `database_v3`, hoặc bàn giao một bản sao đầy đủ của cả ba thư mục. Đối chiếu các file sau trước khi làm tiếp:
 
-- [`RepairSystem/Infrastructure/V3SchemaValidator.cs`](RepairSystem/Infrastructure/V3SchemaValidator.cs) phải kiểm tra `V3_20261108_RULES` và `V3_20261108_WORKFLOW`.
+- [`RepairSystem/Infrastructure/DatabaseSchemaValidator.cs`](RepairSystem/Infrastructure/DatabaseSchemaValidator.cs) phải kiểm tra `V3_20261108_RULES` và `V3_20261108_WORKFLOW`.
 - [`database/BO_SUNG_QUY_TAC_KIEM_KE_20261108.sql`](database/BO_SUNG_QUY_TAC_KIEM_KE_20261108.sql) và [`database/BO_SUNG_CONG_VIEC_THANH_LY_TAI_CHINH_20261108.sql`](database/BO_SUNG_CONG_VIEC_THANH_LY_TAI_CHINH_20261108.sql) phải có trong backend.
 - [`../RepairFrontend/src/App.jsx`](../RepairFrontend/src/App.jsx) phải có route `/finance`; [`../RepairFrontend/src/features/inventory/StockControlTab.jsx`](../RepairFrontend/src/features/inventory/StockControlTab.jsx) phải có trong frontend.
 

@@ -33,7 +33,7 @@ public partial class ChiTietXuatKho
 
     public virtual ICollection<CamKetBaoHanh> CamKetBaoHanhs { get; set; } = new List<CamKetBaoHanh>();
 
-    public virtual ICollection<ChiTietHoaDon> ChiTietHoaDonV3s { get; set; } = new List<ChiTietHoaDon>();
+    public virtual ICollection<ChiTietHoaDon> ChiTietHoaDons { get; set; } = new List<ChiTietHoaDon>();
 
     public virtual ChiTietYeuCauLinhKien? ChiTietYeuCauLinhKien { get; set; }
 
@@ -47,5 +47,5 @@ public partial class ChiTietXuatKho
 
     public virtual TonKho TonKho { get; set; } = null!;
 
-    public virtual ICollection<TraLinhKienKho> TraLinhKienKhoV3s { get; set; } = new List<TraLinhKienKho>();
+    public virtual ICollection<TraLinhKienKho> TraLinhKienKhos { get; set; } = new List<TraLinhKienKho>();
 }

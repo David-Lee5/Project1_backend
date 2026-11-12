@@ -65,10 +65,10 @@ public class BaoHanhController(RepairDbContext db) : ControllerBase
             .Select(x => new { x.Id, x.PhieuGocId, x.ThietBiId, x.CamKetId,
                 x.PhieuSuaBaoHanhId, x.NgayTiepNhan, x.LoiKhachBao,
                 x.TrangThai, x.KetLuan, x.KetQuaXuLy, x.NgayHoanThanh,
-                PheDuyetLap = db.DuyetBaoHanhLapV3s.Where(a => a.PhieuBaoHanhId == x.Id)
+                PheDuyetLap = db.DuyetBaoHanhLaps.Where(a => a.PhieuBaoHanhId == x.Id)
                     .Select(a => new { a.LanThu, a.TrangThai, a.NguyenNhanSoBo,
                         a.LyDoQuyetDinh, a.NguoiDuyetId, a.NgayDuyet }).FirstOrDefault(),
-                PhanTich = db.BaoHanhPhanTichV3s.Where(a => a.PhieuBaoHanhId == x.Id)
+                PhanTich = db.BaoHanhPhanTichs.Where(a => a.PhieuBaoHanhId == x.Id)
                     .Select(a => new { a.NguyenNhan, a.BenChiuChiPhi,
                         a.ChiPhiDuKien, a.ChiPhiThucTe, a.NguoiGhiId, a.CapNhatLuc }).FirstOrDefault()
             }).ToListAsync();
@@ -82,7 +82,7 @@ public class BaoHanhController(RepairDbContext db) : ControllerBase
         if (req.PhieuGocId <= 0 || string.IsNullOrWhiteSpace(req.LoiKhachBao)
             || req.LoiKhachBao.Length > 1000)
             return BadRequest(ApiResponse<object>.ErrorResponse("Thông tin tiếp nhận bảo hành không hợp lệ."));
-        var actor = await V3Auth.NhanVienIdAsync(db, User);
+        var actor = await NhanVienAuth.NhanVienIdAsync(db, User);
         if (actor == null) return Unauthorized();
         await using var tx = await db.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
         var phieu = await db.PhieuSuaChuas.AsNoTracking()
@@ -114,14 +114,14 @@ public class BaoHanhController(RepairDbContext db) : ControllerBase
         db.PhieuBaoHanhs.Add(row);
         await db.SaveChangesAsync();
         var lanThu = checked(await db.PhieuBaoHanhs.CountAsync(x => x.PhieuGocId == phieu.Id));
-        var threshold = await db.QuyTacVanHanhV3s.AsNoTracking()
+        var threshold = await db.QuyTacVanHanhs.AsNoTracking()
             .Where(x => x.Id == 1).Select(x => x.BaoHanhLapDuyetTuLan).SingleAsync();
-        var approval = new DuyetBaoHanhLapV3 {
+        var approval = new DuyetBaoHanhLap {
             PhieuBaoHanhId = row.Id, LanThu = lanThu,
             TrangThai = lanThu >= threshold ? "CHO_DUYET" : "KHONG_CAN_DUYET",
             NguoiDeXuatId = actor.Value
         };
-        db.DuyetBaoHanhLapV3s.Add(approval);
+        db.DuyetBaoHanhLaps.Add(approval);
         await db.SaveChangesAsync();
         await tx.CommitAsync();
         return Ok(ApiResponse<object>.SuccessResponse(new {
@@ -136,10 +136,10 @@ public class BaoHanhController(RepairDbContext db) : ControllerBase
             || string.IsNullOrWhiteSpace(req.NguyenNhanSoBo) || req.NguyenNhanSoBo.Length > 1000
             || string.IsNullOrWhiteSpace(req.LyDoQuyetDinh) || req.LyDoQuyetDinh.Length > 1000)
             return BadRequest(ApiResponse<object>.ErrorResponse("Cần kết luận nguyên nhân và lý do quyết định."));
-        var actor = await V3Auth.NhanVienIdAsync(db, User);
+        var actor = await NhanVienAuth.NhanVienIdAsync(db, User);
         if (actor == null) return Unauthorized();
         await using var tx = await db.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
-        var approval = await db.DuyetBaoHanhLapV3s.FirstOrDefaultAsync(x => x.PhieuBaoHanhId == id);
+        var approval = await db.DuyetBaoHanhLaps.FirstOrDefaultAsync(x => x.PhieuBaoHanhId == id);
         if (approval == null) return NotFound();
         if (approval.TrangThai != "CHO_DUYET")
             return Conflict(ApiResponse<object>.ErrorResponse("Hồ sơ không chờ duyệt bảo hành lặp lại."));
@@ -185,7 +185,7 @@ public class BaoHanhController(RepairDbContext db) : ControllerBase
         await using var tx = await db.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
         var row = await db.PhieuBaoHanhs.FirstOrDefaultAsync(x => x.Id == id);
         if (row == null) return NotFound();
-        var approval = await db.DuyetBaoHanhLapV3s.AsNoTracking()
+        var approval = await db.DuyetBaoHanhLaps.AsNoTracking()
             .FirstOrDefaultAsync(x => x.PhieuBaoHanhId == id);
         if (approval?.TrangThai is "CHO_DUYET" or "TU_CHOI")
             return Conflict(ApiResponse<object>.ErrorResponse("Bảo hành lặp lại chưa được quản lý chấp thuận."));
@@ -199,7 +199,7 @@ public class BaoHanhController(RepairDbContext db) : ControllerBase
             return BadRequest(ApiResponse<object>.ErrorResponse("Cần ghi kết quả xử lý."));
         if (req.TrangThai == "HOAN_THANH")
         {
-            var analysis = await db.BaoHanhPhanTichV3s.AsNoTracking()
+            var analysis = await db.BaoHanhPhanTichs.AsNoTracking()
                 .FirstOrDefaultAsync(x => x.PhieuBaoHanhId == id);
             if (analysis?.ChiPhiThucTe == null)
                 return Conflict(ApiResponse<object>.ErrorResponse(
@@ -210,9 +210,9 @@ public class BaoHanhController(RepairDbContext db) : ControllerBase
                     .Where(x => x.Id == row.PhieuSuaBaoHanhId)
                     .Select(x => x.TrangThai).SingleAsync();
                 if (repairStatus is not ("HOAN_THANH" or "DA_TRA")
-                    || !await db.CongViecSuaChuaV3s.AsNoTracking()
+                    || !await db.CongViecSuaChuas.AsNoTracking()
                         .AnyAsync(x => x.PhieuBaoHanhId == id && x.TrangThai == "HOAN_THANH")
-                    || await db.CongViecSuaChuaV3s.AsNoTracking()
+                    || await db.CongViecSuaChuas.AsNoTracking()
                         .AnyAsync(x => x.PhieuBaoHanhId == id
                             && (x.TrangThai == "CHO_LAM" || x.TrangThai == "DANG_LAM")))
                     return Conflict(ApiResponse<object>.ErrorResponse(
@@ -230,25 +230,25 @@ public class BaoHanhController(RepairDbContext db) : ControllerBase
 
     [HttpPut("khach/{id:long}/phan-tich-chi-phi")]
     [Authorize(Roles = Roles.Admin + "," + Roles.LeTan)]
-    public async Task<IActionResult> PhanTichChiPhi(long id, [FromBody] PhanTichBaoHanhV3Request req)
+    public async Task<IActionResult> PhanTichChiPhi(long id, [FromBody] PhanTichBaoHanhRequest req)
     {
         if (string.IsNullOrWhiteSpace(req.NguyenNhan) || req.NguyenNhan.Length > 1000
             || req.BenChiuChiPhi is not ("CUA_HANG" or "KHACH" or "NCC" or "KTV")
             || req.ChiPhiDuKien < 0 || req.ChiPhiDuKien > 999_999_999_999.99m
             || req.ChiPhiThucTe < 0 || req.ChiPhiThucTe > 999_999_999_999.99m)
             return BadRequest(ApiResponse<object>.ErrorResponse("Phân tích chi phí bảo hành không hợp lệ."));
-        var actor = await V3Auth.NhanVienIdAsync(db, User);
+        var actor = await NhanVienAuth.NhanVienIdAsync(db, User);
         if (actor == null) return Unauthorized();
         await using var tx = await db.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
         var claim = await db.PhieuBaoHanhs.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
         if (claim == null) return NotFound();
         if (claim.TrangThai is "DA_TRA" or "TU_CHOI")
             return Conflict(ApiResponse<object>.ErrorResponse("Hồ sơ bảo hành đã kết thúc."));
-        var row = await db.BaoHanhPhanTichV3s.FirstOrDefaultAsync(x => x.PhieuBaoHanhId == id);
+        var row = await db.BaoHanhPhanTichs.FirstOrDefaultAsync(x => x.PhieuBaoHanhId == id);
         if (row == null)
         {
-            row = new BaoHanhPhanTichV3 { PhieuBaoHanhId = id };
-            db.BaoHanhPhanTichV3s.Add(row);
+            row = new BaoHanhPhanTich { PhieuBaoHanhId = id };
+            db.BaoHanhPhanTichs.Add(row);
         }
         row.NguyenNhan = req.NguyenNhan.Trim();
         row.BenChiuChiPhi = req.BenChiuChiPhi;
@@ -271,7 +271,7 @@ public class BaoHanhController(RepairDbContext db) : ControllerBase
             x.Id, x.PhieuBaoHanhId, x.NhaCungCapId, x.LinhKienId, x.LinhKienSerialId,
             x.SoLuong, x.TrangThai, x.NgayGui, x.NgayNhanLai, x.KetQua,
             x.KhoGuiId, x.DaTruTon, x.NguonHang,
-            XuLyKho = db.XuLyBaoHanhNccV3s.Where(y => y.PhieuBaoHanhNccId == x.Id)
+            XuLyKho = db.XuLyBaoHanhNccs.Where(y => y.PhieuBaoHanhNccId == x.Id)
                 .Select(y => new { y.Id, y.Loai, y.KhoId, y.PhieuNhapId,
                     y.SoLuong, y.ThoiGian, y.GhiChu }).FirstOrDefault()
         }).ToListAsync();
@@ -307,7 +307,7 @@ public class BaoHanhController(RepairDbContext db) : ControllerBase
     public async Task<IActionResult> GuiNcc(long id,
         [FromBody(EmptyBodyBehavior = Microsoft.AspNetCore.Mvc.ModelBinding.EmptyBodyBehavior.Allow)] GuiBaoHanhNccRequest? req)
     {
-        var actor = await V3Auth.NhanVienIdAsync(db, User);
+        var actor = await NhanVienAuth.NhanVienIdAsync(db, User);
         if (actor == null) return Unauthorized();
         await using var tx = await db.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
         var row = await db.PhieuBaoHanhNccs.FirstOrDefaultAsync(x => x.Id == id);
@@ -393,13 +393,13 @@ public class BaoHanhController(RepairDbContext db) : ControllerBase
         if (req.Loai is not ("NHAP_LAI" or "NHAP_THAY_THE" or "KHONG_NHAP")
             || req.GhiChu?.Length > 500)
             return BadRequest(ApiResponse<object>.ErrorResponse("Kết quả xử lý kho không hợp lệ."));
-        var actor = await V3Auth.NhanVienIdAsync(db, User);
+        var actor = await NhanVienAuth.NhanVienIdAsync(db, User);
         if (actor == null) return Unauthorized();
         await using var tx = await db.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
         var row = await db.PhieuBaoHanhNccs.FirstOrDefaultAsync(x => x.Id == id);
         if (row == null) return NotFound();
         if (row.TrangThai != "DA_NHAN_LAI"
-            || await db.XuLyBaoHanhNccV3s.AnyAsync(x => x.PhieuBaoHanhNccId == id))
+            || await db.XuLyBaoHanhNccs.AnyAsync(x => x.PhieuBaoHanhNccId == id))
             return Conflict(ApiResponse<object>.ErrorResponse("Hồ sơ chưa nhận lại hoặc đã xử lý kho."));
         if (row.NguonHang == "CU")
             return Conflict(ApiResponse<object>.ErrorResponse(
@@ -462,7 +462,7 @@ public class BaoHanhController(RepairDbContext db) : ControllerBase
             NguoiThucHienId = actor.Value, ThoiGian = DateTime.UtcNow,
             GhiChu = req.GhiChu?.Trim()
         };
-        db.XuLyBaoHanhNccV3s.Add(disposition);
+        db.XuLyBaoHanhNccs.Add(disposition);
         await db.SaveChangesAsync();
         await tx.CommitAsync();
         return Ok(ApiResponse<object>.SuccessResponse(new { disposition.Id, disposition.Loai }));
@@ -475,7 +475,7 @@ public sealed record TiepNhanBaoHanhRequest(long PhieuGocId, long? CamKetId,
     long? PhieuSuaBaoHanhId, string? LoiKhachBao);
 public sealed record LienKetPhieuSuaBaoHanhRequest(long PhieuSuaBaoHanhId);
 public sealed record DoiTrangThaiBaoHanhRequest(string TrangThai, string? KetLuan, string? KetQuaXuLy);
-public sealed record PhanTichBaoHanhV3Request(string? NguyenNhan, string? BenChiuChiPhi,
+public sealed record PhanTichBaoHanhRequest(string? NguyenNhan, string? BenChiuChiPhi,
     decimal ChiPhiDuKien, decimal? ChiPhiThucTe);
 public sealed record DuyetBaoHanhLapRequest(string QuyetDinh, string? NguyenNhanSoBo,
     string? LyDoQuyetDinh);

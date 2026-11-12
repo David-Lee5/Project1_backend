@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace RepairSystem.Model.ScaffoldV3.Entities;
 
-public partial class VV3CongNoPhieu
+public partial class CongNoPhieuView
 {
     public long PhieuId { get; set; }
 

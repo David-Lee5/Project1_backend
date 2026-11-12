@@ -12,12 +12,12 @@ namespace RepairSystem.Controllers.V3;
 [ApiController]
 [Route("api/v3/cach-ly-vat-tu")]
 [Authorize(Roles = Roles.Admin + "," + Roles.ThuKho)]
-public sealed class CachLyVatTuV3Controller(AppDbContextV3 db, IWebHostEnvironment env) : ControllerBase
+public sealed class CachLyVatTuController(RepairDbContext db, IWebHostEnvironment env) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> DanhSach([FromQuery] long? khoId, [FromQuery] string? trangThai)
     {
-        var query = db.CachLyVatTuV3s.AsNoTracking().AsQueryable();
+        var query = db.CachLyVatTus.AsNoTracking().AsQueryable();
         if (khoId.HasValue) query = query.Where(x => x.KhoId == khoId);
         if (!string.IsNullOrWhiteSpace(trangThai)) query = query.Where(x => x.TrangThai == trangThai);
         var rows = await query.OrderByDescending(x => x.TaoLuc).Take(300)
@@ -25,7 +25,7 @@ public sealed class CachLyVatTuV3Controller(AppDbContextV3 db, IWebHostEnvironme
                 x.Id, x.KhoId, x.LinhKienId, x.LinhKienSerialId,
                 x.SoLuong, x.TrangThai, x.LyDo, x.NguoiTaoId, x.TaoLuc,
                 x.NguoiXuLyId, x.XuLyLuc, x.LyDoXuLy,
-                HoSo = db.HoSoThanhLyV3s.Where(h => h.CachLyId == x.Id)
+                HoSo = db.HoSoThanhLys.Where(h => h.CachLyId == x.Id)
                     .OrderByDescending(h => h.Id).Select(h => new {
                         h.Id, h.KetQuaKiemTra, h.HuongXuLy, h.GiaTriUocTinh,
                         h.GiaTriDuyet, h.GiaTriThuVe, h.TrangThai,
@@ -43,21 +43,21 @@ public sealed class CachLyVatTuV3Controller(AppDbContextV3 db, IWebHostEnvironme
             || string.IsNullOrWhiteSpace(req.KetQuaKiemTra) || req.KetQuaKiemTra.Length > 1000
             || req.GiaTriUocTinh < 0 || req.GiaTriUocTinh > 999_999_999_999.99m)
             return BadRequest(ApiResponse<object>.ErrorResponse("Cần kết quả kiểm tra, hướng xử lý và giá trị ước tính."));
-        var actor = await V3Auth.NhanVienIdAsync(db, User);
+        var actor = await NhanVienAuth.NhanVienIdAsync(db, User);
         if (actor == null) return Unauthorized();
         await using var tx = await db.Database.BeginTransactionAsync(IsolationLevel.Serializable);
-        var row = await db.CachLyVatTuV3s.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+        var row = await db.CachLyVatTus.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
         if (row == null) return NotFound();
-        if (row.TrangThai != "CACH_LY" || await db.HoSoThanhLyV3s.AnyAsync(x =>
+        if (row.TrangThai != "CACH_LY" || await db.HoSoThanhLys.AnyAsync(x =>
                 x.CachLyId == id && x.TrangThai != "TU_CHOI"))
             return Conflict(ApiResponse<object>.ErrorResponse("Vật tư đã xử lý hoặc đang có đề xuất chưa kết thúc."));
-        var caseFile = new HoSoThanhLyV3 {
+        var caseFile = new HoSoThanhLy {
             CachLyId = id, KetQuaKiemTra = req.KetQuaKiemTra.Trim(),
             HuongXuLy = req.HuongXuLy, GiaTriUocTinh = req.GiaTriUocTinh,
             TrangThai = "CHO_DUYET", NguoiDeXuatId = actor.Value,
             DeXuatLuc = DateTime.UtcNow
         };
-        db.HoSoThanhLyV3s.Add(caseFile);
+        db.HoSoThanhLys.Add(caseFile);
         await db.SaveChangesAsync();
         await tx.CommitAsync();
         return Ok(ApiResponse<object>.SuccessResponse(new { caseFile.Id, caseFile.TrangThai }));
@@ -66,7 +66,7 @@ public sealed class CachLyVatTuV3Controller(AppDbContextV3 db, IWebHostEnvironme
     [HttpGet("{id:long}/tai-lieu")]
     public async Task<IActionResult> DanhSachTaiLieu(long id)
     {
-        var rows = await db.TaiLieuThanhLyV3s.AsNoTracking().Where(x => x.HoSoId == id)
+        var rows = await db.TaiLieuThanhLys.AsNoTracking().Where(x => x.HoSoId == id)
             .OrderBy(x => x.TaiLuc).Select(x => new {
                 x.Id, x.HoSoId, x.Loai, x.TenGoc, x.Sha256, x.NguoiTaiId, x.TaiLuc
             }).ToListAsync();
@@ -80,9 +80,9 @@ public sealed class CachLyVatTuV3Controller(AppDbContextV3 db, IWebHostEnvironme
     {
         if (loai is not ("ANH" or "BIEN_BAN") || file == null || file.Length is <= 0 or > 10_000_000)
             return BadRequest(ApiResponse<object>.ErrorResponse("Tài liệu không hợp lệ hoặc vượt 10 MB."));
-        var actor = await V3Auth.NhanVienIdAsync(db, User);
+        var actor = await NhanVienAuth.NhanVienIdAsync(db, User);
         if (actor == null) return Unauthorized();
-        var caseFile = await db.HoSoThanhLyV3s.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+        var caseFile = await db.HoSoThanhLys.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
         if (caseFile == null) return NotFound();
         if (caseFile.TrangThai != "CHO_DUYET")
             return Conflict(ApiResponse<object>.ErrorResponse("Chỉ bổ sung chứng cứ trước khi duyệt."));
@@ -105,12 +105,12 @@ public sealed class CachLyVatTuV3Controller(AppDbContextV3 db, IWebHostEnvironme
         await System.IO.File.WriteAllBytesAsync(path, bytes);
         var originalName = Path.GetFileName(file.FileName);
         if (string.IsNullOrWhiteSpace(originalName)) originalName = filename;
-        var doc = new TaiLieuThanhLyV3 {
+        var doc = new TaiLieuThanhLy {
             HoSoId = id, Loai = loai, TenGoc = originalName[..Math.Min(originalName.Length, 200)],
             DuongDan = filename, Sha256 = Convert.ToHexString(SHA256.HashData(bytes)),
             NguoiTaiId = actor.Value, TaiLuc = DateTime.UtcNow
         };
-        db.TaiLieuThanhLyV3s.Add(doc);
+        db.TaiLieuThanhLys.Add(doc);
         try { await db.SaveChangesAsync(); }
         catch { System.IO.File.Delete(path); throw; }
         return Ok(ApiResponse<object>.SuccessResponse(new { doc.Id, doc.Loai, doc.Sha256 }));
@@ -119,7 +119,7 @@ public sealed class CachLyVatTuV3Controller(AppDbContextV3 db, IWebHostEnvironme
     [HttpGet("{id:long}/tai-lieu/{taiLieuId:long}")]
     public async Task<IActionResult> XemTaiLieu(long id, long taiLieuId)
     {
-        var doc = await db.TaiLieuThanhLyV3s.AsNoTracking().FirstOrDefaultAsync(x =>
+        var doc = await db.TaiLieuThanhLys.AsNoTracking().FirstOrDefaultAsync(x =>
             x.Id == taiLieuId && x.HoSoId == id);
         if (doc == null) return NotFound();
         var path = Path.Combine(env.ContentRootPath, "App_Data", "thanh-ly", doc.DuongDan);
@@ -141,21 +141,21 @@ public sealed class CachLyVatTuV3Controller(AppDbContextV3 db, IWebHostEnvironme
             || string.IsNullOrWhiteSpace(req.LyDo) || req.LyDo.Length > 500
             || req.GiaTriDuyet < 0 || req.GiaTriDuyet > 999_999_999_999.99m)
             return BadRequest(ApiResponse<object>.ErrorResponse("Quyết định, lý do hoặc giá trị duyệt không hợp lệ."));
-        var actor = await V3Auth.NhanVienIdAsync(db, User);
+        var actor = await NhanVienAuth.NhanVienIdAsync(db, User);
         if (actor == null) return Unauthorized();
         await using var tx = await db.Database.BeginTransactionAsync(IsolationLevel.Serializable);
-        var caseFile = await db.HoSoThanhLyV3s.FirstOrDefaultAsync(x => x.Id == id);
+        var caseFile = await db.HoSoThanhLys.FirstOrDefaultAsync(x => x.Id == id);
         if (caseFile == null) return NotFound();
         if (caseFile.TrangThai != "CHO_DUYET")
             return Conflict(ApiResponse<object>.ErrorResponse("Hồ sơ không chờ duyệt."));
-        var quarantine = await db.CachLyVatTuV3s.AsNoTracking().FirstAsync(x => x.Id == caseFile.CachLyId);
+        var quarantine = await db.CachLyVatTus.AsNoTracking().FirstAsync(x => x.Id == caseFile.CachLyId);
         if (quarantine.TrangThai != "CACH_LY")
             return Conflict(ApiResponse<object>.ErrorResponse("Vật tư không còn cách ly."));
         if (caseFile.NguoiDeXuatId == actor || quarantine.NguoiTaoId == actor)
             return Conflict(ApiResponse<object>.ErrorResponse("Người cách ly/đề xuất không được tự duyệt."));
         if (req.QuyetDinh == "DA_DUYET")
         {
-            var docs = await db.TaiLieuThanhLyV3s.AsNoTracking()
+            var docs = await db.TaiLieuThanhLys.AsNoTracking()
                 .Where(x => x.HoSoId == id).ToListAsync();
             var types = docs.Select(x => x.Loai).Distinct().ToList();
             if (!types.Contains("ANH") || !types.Contains("BIEN_BAN"))
@@ -185,7 +185,7 @@ public sealed class CachLyVatTuV3Controller(AppDbContextV3 db, IWebHostEnvironme
         if (req.KhoId <= 0 || req.LinhKienId <= 0 || req.SoLuong <= 0
             || string.IsNullOrWhiteSpace(req.LyDo) || req.LyDo.Length > 500)
             return BadRequest(ApiResponse<object>.ErrorResponse("Cần kho, linh kiện, số lượng và lý do cách ly."));
-        var actor = await V3Auth.NhanVienIdAsync(db, User);
+        var actor = await NhanVienAuth.NhanVienIdAsync(db, User);
         if (actor == null) return Unauthorized();
         await using var tx = await db.Database.BeginTransactionAsync(IsolationLevel.Serializable);
         var tracked = await db.LinhKiens.AsNoTracking().Where(x => x.Id == req.LinhKienId
@@ -221,13 +221,13 @@ public sealed class CachLyVatTuV3Controller(AppDbContextV3 db, IWebHostEnvironme
             serial.TrangThai = "CACH_LY";
             serial.UpdatedAt = now;
         }
-        var row = new CachLyVatTuV3 {
+        var row = new CachLyVatTu {
             KhoId = req.KhoId, LinhKienId = req.LinhKienId,
             LinhKienSerialId = req.LinhKienSerialId, SoLuong = req.SoLuong,
             TrangThai = "CACH_LY", LyDo = req.LyDo.Trim(),
             NguoiTaoId = actor.Value, TaoLuc = now
         };
-        db.CachLyVatTuV3s.Add(row);
+        db.CachLyVatTus.Add(row);
         db.BienDongKhos.Add(new BienDongKho {
             KhoId = req.KhoId, LinhKienId = req.LinhKienId,
             Loai = "DIEU_CHINH", SoLuongThayDoi = -req.SoLuong,
@@ -246,14 +246,14 @@ public sealed class CachLyVatTuV3Controller(AppDbContextV3 db, IWebHostEnvironme
         if (req.QuyetDinh is not ("NHAP_LAI" or "THANH_LY" or "TIEU_HUY")
             || string.IsNullOrWhiteSpace(req.LyDo) || req.LyDo.Length > 500)
             return BadRequest(ApiResponse<object>.ErrorResponse("Cần quyết định và lý do xử lý."));
-        var actor = await V3Auth.NhanVienIdAsync(db, User);
+        var actor = await NhanVienAuth.NhanVienIdAsync(db, User);
         if (actor == null) return Unauthorized();
         await using var tx = await db.Database.BeginTransactionAsync(IsolationLevel.Serializable);
-        var row = await db.CachLyVatTuV3s.FirstOrDefaultAsync(x => x.Id == id);
+        var row = await db.CachLyVatTus.FirstOrDefaultAsync(x => x.Id == id);
         if (row == null) return NotFound();
         if (row.TrangThai != "CACH_LY")
             return Conflict(ApiResponse<object>.ErrorResponse("Hồ sơ cách ly đã được xử lý."));
-        var caseFile = await db.HoSoThanhLyV3s.FirstOrDefaultAsync(x =>
+        var caseFile = await db.HoSoThanhLys.FirstOrDefaultAsync(x =>
             x.CachLyId == id && x.TrangThai == "DA_DUYET");
         if (caseFile == null || caseFile.HuongXuLy != req.QuyetDinh)
             return Conflict(ApiResponse<object>.ErrorResponse(

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace RepairSystem.Model.ScaffoldV3.Entities;
 
-public partial class VV3BaoGium
+public partial class BaoGiaView
 {
     public long Id { get; set; }
 

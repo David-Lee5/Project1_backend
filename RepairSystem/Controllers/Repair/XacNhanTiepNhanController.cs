@@ -10,12 +10,12 @@ namespace RepairSystem.Controllers.V3;
 [ApiController]
 [Route("api/phieu-sua-chua/{phieuId:long}/xac-nhan-tiep-nhan")]
 [Authorize(Roles = Roles.Admin + "," + Roles.LeTan)]
-public sealed class XacNhanTiepNhanV3Controller(AppDbContextV3 db) : ControllerBase
+public sealed class XacNhanTiepNhanController(RepairDbContext db) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> Get(long phieuId)
     {
-        var row = await db.XacNhanTiepNhanV3s.AsNoTracking()
+        var row = await db.XacNhanTiepNhans.AsNoTracking()
             .FirstOrDefaultAsync(x => x.PhieuId == phieuId);
         return row == null ? NotFound() : Ok(ApiResponse<object>.SuccessResponse(row));
     }
@@ -28,7 +28,7 @@ public sealed class XacNhanTiepNhanV3Controller(AppDbContextV3 db) : ControllerB
         if (string.IsNullOrWhiteSpace(req.NguoiXacNhan) || req.NguoiXacNhan.Length > 150
             || req.AnhBienNhanId <= 0)
             return BadRequest(ApiResponse<object>.ErrorResponse("Cần người xác nhận và ảnh biên nhận đã ký."));
-        var actor = await V3Auth.NhanVienIdAsync(db, User);
+        var actor = await NhanVienAuth.NhanVienIdAsync(db, User);
         if (actor == null) return Unauthorized();
         await using var tx = await db.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
         var ticket = await db.PhieuSuaChuas.Include(x => x.ThietBi)
@@ -37,7 +37,7 @@ public sealed class XacNhanTiepNhanV3Controller(AppDbContextV3 db) : ControllerB
         if (!ticket.ApDungKiemSoatTiepNhan || ticket.TrangThai != "TIEP_NHAN"
             || ticket.KtvNhanLuc != null)
             return Conflict(ApiResponse<object>.ErrorResponse("Phiếu không còn ở giai đoạn xác nhận tiếp nhận."));
-        if (await db.XacNhanTiepNhanV3s.AnyAsync(x => x.PhieuId == phieuId))
+        if (await db.XacNhanTiepNhans.AnyAsync(x => x.PhieuId == phieuId))
             return Conflict(ApiResponse<object>.ErrorResponse("Phiếu đã được xác nhận tiếp nhận."));
         if (string.IsNullOrWhiteSpace(ticket.TinhTrangNgoaiQuan)
             || string.IsNullOrWhiteSpace(ticket.PhuKienKemTheo)
@@ -45,7 +45,7 @@ public sealed class XacNhanTiepNhanV3Controller(AppDbContextV3 db) : ControllerB
             || (string.IsNullOrWhiteSpace(ticket.ThietBi.SoSerial)
                 && string.IsNullOrWhiteSpace(ticket.LyDoKhongSerial)))
             return Conflict(ApiResponse<object>.ErrorResponse("Phiếu thiếu thông tin tình trạng, phụ kiện hoặc định danh thiết bị."));
-        var minPhotos = await db.QuyTacVanHanhV3s.AsNoTracking()
+        var minPhotos = await db.QuyTacVanHanhs.AsNoTracking()
             .Where(x => x.Id == 1).Select(x => x.AnhTiepNhanToiThieu).SingleAsync();
         if (await db.AnhPhieuSuaChuas.CountAsync(x => x.PhieuId == phieuId && x.Loai == "LUC_TIEP_NHAN") < minPhotos)
             return Conflict(ApiResponse<object>.ErrorResponse($"Cần ít nhất {minPhotos} ảnh lúc tiếp nhận."));
@@ -54,12 +54,12 @@ public sealed class XacNhanTiepNhanV3Controller(AppDbContextV3 db) : ControllerB
             && x.NguoiTaiLenId == actor.Value && x.Sha256 != null))
             return BadRequest(ApiResponse<object>.ErrorResponse(
                 "Ảnh biên nhận phải thuộc phiếu này, do người ghi nhận tải lên và có loại KHAC."));
-        var row = new XacNhanTiepNhanV3 {
+        var row = new XacNhanTiepNhan {
             PhieuId = phieuId, NguoiXacNhan = req.NguoiXacNhan.Trim(),
             AnhBienNhanId = req.AnhBienNhanId, NhanVienGhiNhanId = actor.Value,
             XacNhanLuc = DateTime.UtcNow
         };
-        db.XacNhanTiepNhanV3s.Add(row);
+        db.XacNhanTiepNhans.Add(row);
         await db.SaveChangesAsync();
         await tx.CommitAsync();
         return Ok(ApiResponse<object>.SuccessResponse(row));

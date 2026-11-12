@@ -19,7 +19,7 @@ public class ThanhToanController(RepairDbContext db) : ControllerBase
     {
         if (!await db.PhieuSuaChuas.AnyAsync(x => x.Id == phieuId)) return NotFound();
         var invoice = await db.HoaDons.AsNoTracking()
-            .Include(x => x.ChiTietHoaDonV3s)
+            .Include(x => x.ChiTietHoaDons)
             .FirstOrDefaultAsync(x => x.PhieuId == phieuId && x.TrangThai != "HUY");
         var payments = await db.GiaoDichThanhToans.AsNoTracking()
             .Where(x => x.PhieuId == phieuId).OrderBy(x => x.ThoiGian).ToListAsync();
@@ -29,7 +29,7 @@ public class ThanhToanController(RepairDbContext db) : ControllerBase
             HoaDon = invoice == null ? null : new {
                 invoice.Id, invoice.MaHd, invoice.TienDichVu, invoice.TienLinhKien,
                 invoice.GiamGia, invoice.TongThanhToan, invoice.TrangThai,
-                ChiTiet = invoice.ChiTietHoaDonV3s.Select(c => new {
+                ChiTiet = invoice.ChiTietHoaDons.Select(c => new {
                     c.Id, c.Loai, c.TenHangMuc, c.SoLuong, c.DonGia, c.ThanhTien
                 })
             },
@@ -50,7 +50,7 @@ public class ThanhToanController(RepairDbContext db) : ControllerBase
     {
         if (req.GiamGia < 0 || req.GiamGia > 999_999_999_999.99m)
             return BadRequest(ApiResponse<object>.ErrorResponse("Giảm giá không hợp lệ."));
-        var actor = await V3Auth.NhanVienIdAsync(db, User);
+        var actor = await NhanVienAuth.NhanVienIdAsync(db, User);
         if (actor == null) return Unauthorized();
         var leTanId = User.IsInRole(Roles.LeTan) ? actor.Value : req.LeTanId ?? 0;
         if (!await db.LeTans.AnyAsync(x => x.NhanVienId == leTanId))
@@ -82,7 +82,7 @@ public class ThanhToanController(RepairDbContext db) : ControllerBase
             || req.PhuongThuc is not ("TIEN_MAT" or "CHUYEN_KHOAN" or "THE" or "VI_DIEN_TU")
             || req.MaThamChieu?.Length > 100 || req.GhiChu?.Length > 500)
             return BadRequest(ApiResponse<object>.ErrorResponse("Giao dịch không hợp lệ."));
-        var actor = await V3Auth.NhanVienIdAsync(db, User);
+        var actor = await NhanVienAuth.NhanVienIdAsync(db, User);
         if (actor == null) return Unauthorized();
         var outId = new SqlParameter("@giao_dich_id", SqlDbType.BigInt) { Direction = ParameterDirection.Output };
         try
@@ -111,7 +111,7 @@ public class ThanhToanController(RepairDbContext db) : ControllerBase
             || req.TinhTrangMay?.Length > 1000 || req.PhuKienDaTra?.Length > 1000
             || req.XacNhan?.Length > 1000 || req.LyDoConNo?.Length > 500)
             return BadRequest(ApiResponse<object>.ErrorResponse("Thông tin bàn giao không hợp lệ."));
-        var actor = await V3Auth.NhanVienIdAsync(db, User);
+        var actor = await NhanVienAuth.NhanVienIdAsync(db, User);
         if (actor == null) return Unauthorized();
         long? approver = User.IsInRole(Roles.Admin) && !string.IsNullOrWhiteSpace(req.LyDoConNo)
             ? actor : null;
@@ -127,7 +127,7 @@ public class ThanhToanController(RepairDbContext db) : ControllerBase
                 new SqlParameter("@xac_nhan", (object?)req.XacNhan?.Trim() ?? DBNull.Value),
                 new SqlParameter("@nguoi_duyet_con_no_id", (object?)approver ?? DBNull.Value),
                 new SqlParameter("@ly_do_con_no", (object?)req.LyDoConNo?.Trim() ?? DBNull.Value));
-            await db.BiMatThietBiV3s.Where(x => x.PhieuId == phieuId).ExecuteDeleteAsync();
+            await db.BiMatThietBis.Where(x => x.PhieuId == phieuId).ExecuteDeleteAsync();
             await tx.CommitAsync();
         }
         catch (SqlException ex) when (ex.Number is >= 50000 and < 52000)

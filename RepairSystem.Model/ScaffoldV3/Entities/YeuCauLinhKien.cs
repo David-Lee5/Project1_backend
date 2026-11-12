@@ -21,7 +21,7 @@ public partial class YeuCauLinhKien
 
     public string? GhiChu { get; set; }
 
-    public virtual ICollection<ChiTietYeuCauLinhKien> ChiTietYeuCauLinhKienV3s { get; set; } = new List<ChiTietYeuCauLinhKien>();
+    public virtual ICollection<ChiTietYeuCauLinhKien> ChiTietYeuCauLinhKiens { get; set; } = new List<ChiTietYeuCauLinhKien>();
 
     public virtual NhanVien? NguoiDuyet { get; set; }
 

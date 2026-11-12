@@ -10,7 +10,7 @@ using System.Text.Json;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore.Storage;
 using RepairSystem.Model;
-using V3Context = RepairSystem.Model.ScaffoldV3.Entities.RepairDbContext;
+using RepairContext = RepairSystem.Model.ScaffoldV3.Entities.RepairDbContext;
 using RepairSystem.Service.DTOs;
 using RepairSystem.Service.Helpers;
 using RepairSystem.Service.IServices;
@@ -51,11 +51,11 @@ public class PhieuSuaChuaController : ControllerBase
     private readonly AppDbContext _context;
     private readonly IXuatKhoService _xuatKhoService;
     private readonly bool _v3RequireHandover;
-    private readonly V3Context _v3Context;
+    private readonly RepairContext _v3Context;
     private readonly IDataProtector _passwordProtector;
 
     public PhieuSuaChuaController(AppDbContext context, IXuatKhoService xuatKhoService,
-        IConfiguration configuration, V3Context v3Context, IDataProtectionProvider protectionProvider)
+        IConfiguration configuration, RepairContext v3Context, IDataProtectionProvider protectionProvider)
     {
         _context = context;
         _xuatKhoService = xuatKhoService;
@@ -84,7 +84,7 @@ public class PhieuSuaChuaController : ControllerBase
             if (nvId == null)
                 return Unauthorized(ApiResponse<IEnumerable<PhieuSuaChuaViewDto>>.ErrorResponse(
                     "Tài khoản chưa gắn với hồ sơ nhân viên."));
-            var assignedIds = await _v3Context.CongViecSuaChuaV3s.AsNoTracking()
+            var assignedIds = await _v3Context.CongViecSuaChuas.AsNoTracking()
                 .Where(x => x.KyThuatVienId == nvId && x.TrangThai != "HUY")
                 .Select(x => x.PhieuId).Distinct().ToListAsync();
             query = query.Where(p => p.KyThuatVienId == nvId || assignedIds.Contains(p.Id));
@@ -140,7 +140,7 @@ public class PhieuSuaChuaController : ControllerBase
 
         if (_v3RequireHandover && XemMatKhau())
         {
-            var secret = await _v3Context.BiMatThietBiV3s.AsNoTracking()
+            var secret = await _v3Context.BiMatThietBis.AsNoTracking()
                 .FirstOrDefaultAsync(x => x.PhieuId == id && x.HetHan > DateTime.UtcNow);
             if (secret != null)
             {
@@ -492,7 +492,7 @@ public class PhieuSuaChuaController : ControllerBase
         var phieu = await _context.PhieuSuaChuas.FirstOrDefaultAsync(x => x.Id == id);
         if (phieu == null) return NotFound(ApiResponse<object>.ErrorResponse("Không tìm thấy phiếu sửa chữa."));
         if (phieu.ApDungKiemSoatTiepNhan
-            && !await _v3Context.XacNhanTiepNhanV3s.AnyAsync(x => x.PhieuId == id))
+            && !await _v3Context.XacNhanTiepNhans.AnyAsync(x => x.PhieuId == id))
             return Conflict(ApiResponse<object>.ErrorResponse(
                 "Cần tải ảnh tiếp nhận và ghi xác nhận của khách trước khi KTV nhận máy."));
         if (phieu.KyThuatVienId != actor)
@@ -624,7 +624,7 @@ public class PhieuSuaChuaController : ControllerBase
         {
             await using var workCheck = _context.Database.GetDbConnection().CreateCommand();
             workCheck.Transaction = tx.GetDbTransaction();
-            workCheck.CommandText = "SELECT COUNT_BIG(*) FROM dbo.cong_viec_sua_chua_v3 WHERE phieu_id=@id AND trang_thai IN ('CHO_LAM','DANG_LAM')";
+            workCheck.CommandText = "SELECT COUNT_BIG(*) FROM dbo.cong_viec_sua_chua WHERE phieu_id=@id AND trang_thai IN ('CHO_LAM','DANG_LAM')";
             workCheck.Parameters.Add(new SqlParameter("@id", id));
             if ((long)(await workCheck.ExecuteScalarAsync() ?? 0L) > 0)
                 return Conflict(ApiResponse<object>.ErrorResponse(
@@ -761,7 +761,7 @@ public class PhieuSuaChuaController : ControllerBase
         if (!User.IsInRole(Roles.KyThuatVien)) return true;
         var nvId = await GetNhanVienIdAsync();
         return nvId != null && (kyThuatVienId == nvId
-            || await _v3Context.CongViecSuaChuaV3s.AsNoTracking().AnyAsync(x =>
+            || await _v3Context.CongViecSuaChuas.AsNoTracking().AnyAsync(x =>
                 x.PhieuId == phieuId && x.KyThuatVienId == nvId && x.TrangThai != "HUY"));
     }
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace RepairSystem.Model.ScaffoldV3.Entities;
 
-public partial class V3SchemaMigration
+public partial class SchemaMigration
 {
     public string Version { get; set; } = null!;
 
