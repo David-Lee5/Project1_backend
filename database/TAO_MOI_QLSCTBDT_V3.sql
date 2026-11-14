@@ -295,7 +295,7 @@ SELECT t.kho_id, k.ten_kho, t.linh_kien_id, lk.ten_linh_kien, t.so_luong_ton, t.
 FROM ton_kho t
 JOIN kho k        ON k.id  = t.kho_id
 JOIN linh_kien lk ON lk.id = t.linh_kien_id
-WHERE t.so_luong_ton <= t.muc_ton_toi_thieu;
+WHERE t.so_luong_ton = 0 OR t.so_luong_ton < t.muc_ton_toi_thieu;
 
 GO
 /****** Object:  Table [dbo].[anh_phieu_sua_chua]    Script Date: 11/4/2026 10:41:46 AM ******/

@@ -86,16 +86,16 @@ SELECT OBJECT_ID(N'dbo.kiem_ke_kho_v3', N'U') AS bang_kiem_ke,
 
 Kỳ vọng có đủ **4 phiên bản**, và cả ba `OBJECT_ID` khác `NULL`. Backend cũng kiểm tra schema này khi khởi động.
 
-Muốn có dữ liệu để thử giao diện, Execute [`database/DU_LIEU_MAU_V3.sql`](database/DU_LIEU_MAU_V3.sql) **sau khi đủ migration**. Script dùng cố định tên `QLSCTBDT_V3`, chỉ dành cho máy phát triển; nó in bốn tài khoản demo, mã phiếu và tồn kho. Nếu phát hiện bộ demo bị nạp dở hoặc trùng dữ liệu, script dừng để kiểm tra thủ công. Bộ demo không tạo sẵn dữ liệu cho mọi luồng ngày 08/11; các ca kiểm thử bên dưới chỉ rõ khi nào phải tạo bản ghi mới.
+Muốn có dữ liệu để thử giao diện, Execute [`database/DU_LIEU_MAU_V3.sql`](database/DU_LIEU_MAU_V3.sql) **sau khi đủ migration**. Script dùng cố định tên `QLSCTBDT_V3`, chỉ dành cho máy phát triển; nó in bốn tài khoản thử nghiệm, mã phiếu và tồn kho. Nếu phát hiện bộ dữ liệu bị nạp dở hoặc trùng dữ liệu, script dừng để kiểm tra thủ công. Bộ dữ liệu này không tạo sẵn dữ liệu cho mọi luồng ngày 08/11; các ca kiểm thử bên dưới chỉ rõ khi nào phải tạo bản ghi mới.
 
-| Tài khoản demo | Vai trò | Mật khẩu trên CSDL demo mới |
+| Tài khoản thử nghiệm | Vai trò | Mật khẩu trên CSDL phát triển mới |
 |---|---|---|
-| `demo_letan` | Lễ tân | `Demo@123456` |
-| `demo_kho` | Thủ kho | `Demo@123456` |
-| `demo_ktv` | Kỹ thuật viên | `Demo@123456` |
-| `demo_khach` | Khách hàng | `Demo@123456` |
+| `nguyenthimai` | Lễ tân | `Demo@123456` |
+| `tranvanbinh` | Thủ kho | `Demo@123456` |
+| `phamquocan` | Kỹ thuật viên | `Demo@123456` |
+| `nguyenminhanh` | Khách hàng | `Demo@123456` |
 
-Demo có 5 phiếu: A mới tiếp nhận; B chờ khách duyệt báo giá; C đang sửa, có yêu cầu vật tư chờ duyệt; D hoàn thành, hóa đơn 150.000đ đã thu 50.000đ; E đã bàn giao, có bảo hành. Dựa vào **ghi chú `[DEMO]` và mã phiếu do script in ra**, không đoán ID cố định. Các phiếu demo cũ không bật quy tắc xác nhận tiếp nhận mới; phải tạo **phiếu mới trên giao diện** để thử quy tắc đó.
+Bộ dữ liệu giả định có 5 phiếu: A mới tiếp nhận; B chờ khách duyệt báo giá; C đang sửa, có yêu cầu vật tư chờ duyệt; D hoàn thành, hóa đơn 150.000đ đã thu 50.000đ; E đã bàn giao, có bảo hành. Dựa vào **mã phiếu và tên khách do script in ra**, không đoán ID cố định. Các phiếu này không bật quy tắc xác nhận tiếp nhận mới; phải tạo **phiếu mới trên giao diện** để thử quy tắc đó. Nếu đã nạp bộ `[DEMO]` trước đây, sao lưu rồi chạy [script chuẩn hóa](database/CHUAN_HOA_DU_LIEU_V3_20261114.sql).
 
 ## 4. Cấu hình và chạy backend
 
@@ -190,7 +190,7 @@ Thứ tự chạy thử nhanh: (1) Swagger mở được; (2) `admin` đăng nh�
 
 | ID | Vai trò / trang | Thao tác | Kết quả mong đợi |
 |---|---|---|---|
-| D01 | Kho → Lịch sử Nhập hàng | Mở phiếu nháp demo `DEMO-NHAP-NHAP`, xác nhận; tạo một phiếu mới rồi hủy nháp | Xác nhận cộng tồn một lần; phiếu hủy không cộng tồn. |
+| D01 | Kho → Lịch sử Nhập hàng | Mở phiếu nháp `MP-2026-0419`, xác nhận; tạo một phiếu mới rồi hủy nháp | Xác nhận cộng tồn một lần; phiếu hủy không cộng tồn. |
 | D02 | Kho → phiếu nhập | Nhập mẫu có theo dõi serial với danh sách đủ, duy nhất; thử thiếu/trùng serial | Chỉ bản hợp lệ được xác nhận; serial mới thấy trong Tra cứu & Quản lý Serial. |
 | D03 | Kho → Danh mục & Tồn kho | Tìm/lọc kho, đặt ngưỡng tồn tối thiểu cao hơn tồn hiện tại | Cảnh báo thiếu hàng và chỉ số tổng quan cập nhật sau làm mới. |
 | D04 | Kho → Tra cứu & Quản lý Serial | Tra serial còn kho, đã xuất và serial không tồn tại | Nguồn nhập, NCC, kho và trạng thái khớp chứng từ; serial lạ không lộ dữ liệu sai. |

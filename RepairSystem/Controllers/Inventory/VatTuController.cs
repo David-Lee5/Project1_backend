@@ -14,6 +14,27 @@ namespace RepairSystem.Controllers.V3;
 [Authorize(Roles = Roles.NhanVien)]
 public class VatTuController(RepairDbContext db) : ControllerBase
 {
+    /// <summary>Phiếu có yêu cầu chờ duyệt hoặc số lượng đã duyệt chưa được xuất đủ.</summary>
+    [HttpGet("/api/v3/vat-tu/phieu-can-xu-ly")]
+    [Authorize(Roles = Roles.Admin + "," + Roles.ThuKho)]
+    public async Task<IActionResult> PhieuCanXuLy()
+    {
+        var lines = await db.ChiTietYeuCauLinhKiens.AsNoTracking()
+            .Where(c => (c.YeuCauLinhKien.Phieu.TrangThai == "DANG_SUA"
+                    || c.YeuCauLinhKien.Phieu.TrangThai == "CHO_LINH_KIEN")
+                && (c.YeuCauLinhKien.TrangThai == "CHO_DUYET"
+                    || c.YeuCauLinhKien.TrangThai == "DA_DUYET"))
+            .Select(c => new { c.Id, c.PhieuId, c.SoLuongDuyet,
+                TrangThai = c.YeuCauLinhKien.TrangThai })
+            .ToListAsync();
+        var issued = await SoLuongDaXuatAsync(lines.Where(c => c.TrangThai == "DA_DUYET")
+            .Select(c => c.Id).ToList());
+        var pendingIds = lines.Where(c => c.TrangThai == "CHO_DUYET"
+                || c.SoLuongDuyet.GetValueOrDefault() > issued.GetValueOrDefault(c.Id))
+            .Select(c => c.PhieuId).Distinct().ToList();
+        return Ok(ApiResponse<List<long>>.SuccessResponse(pendingIds));
+    }
+
     [HttpGet("yeu-cau")]
     public async Task<IActionResult> DanhSach(long phieuId)
     {
@@ -21,13 +42,28 @@ public class VatTuController(RepairDbContext db) : ControllerBase
         var rows = await db.YeuCauLinhKiens.AsNoTracking()
             .Where(x => x.PhieuId == phieuId).Include(x => x.ChiTietYeuCauLinhKiens)
             .OrderByDescending(x => x.NgayYeuCau).ToListAsync();
+        var issued = await SoLuongDaXuatAsync(rows.SelectMany(x => x.ChiTietYeuCauLinhKiens)
+            .Select(c => c.Id).ToList());
         return Ok(ApiResponse<object>.SuccessResponse(rows.Select(x => new {
             x.Id, x.PhieuId, x.NguoiYeuCauId, x.NgayYeuCau, x.TrangThai,
             x.NguoiDuyetId, x.NgayDuyet, x.GhiChu,
             ChiTiet = x.ChiTietYeuCauLinhKiens.Select(c => new {
-                c.Id, c.LinhKienId, c.SoLuongYeuCau, c.SoLuongDuyet, c.GhiChu
+                c.Id, c.LinhKienId, c.SoLuongYeuCau, c.SoLuongDuyet, c.GhiChu,
+                SoLuongDaXuat = issued.GetValueOrDefault(c.Id)
             })
         }).ToList()));
+    }
+
+    private async Task<Dictionary<long, int>> SoLuongDaXuatAsync(List<long> detailIds)
+    {
+        if (detailIds.Count == 0) return new Dictionary<long, int>();
+        var rows = await db.ChiTietXuatKhos.AsNoTracking()
+            .Where(x => x.YeuCauChiTietId.HasValue
+                && detailIds.Contains(x.YeuCauChiTietId.Value))
+            .Select(x => new { DetailId = x.YeuCauChiTietId!.Value, x.SoLuongXuat })
+            .ToListAsync();
+        return rows.GroupBy(x => x.DetailId)
+            .ToDictionary(group => group.Key, group => group.Sum(x => x.SoLuongXuat));
     }
 
     [HttpPost("yeu-cau")]

@@ -43,7 +43,7 @@ public class KhoController : ControllerBase
         return Ok(ApiResponse<IEnumerable<TonKhoDto>>.SuccessResponse(result));
     }
 
-    /// <summary>Cảnh báo các linh kiện có tồn dưới hoặc bằng mức tối thiểu. Yêu cầu role Admin hoặc Thủ kho.</summary>
+    /// <summary>Cảnh báo các linh kiện hết hàng hoặc có tồn dưới mức tối thiểu. Yêu cầu role Admin hoặc Thủ kho.</summary>
     [HttpGet("canh-bao-het-hang")]
     [Authorize(Roles = QuanLyKhoRoles)]
     public async Task<ActionResult<ApiResponse<IEnumerable<CanhBaoTonKhoDto>>>> GetCanhBao([FromQuery] long? khoId = null)
