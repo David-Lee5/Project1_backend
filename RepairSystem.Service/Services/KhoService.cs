@@ -45,7 +45,7 @@ public class KhoService : IKhoService
         }
 
         if (chiSapHet)
-            query = query.Where(t => t.SoLuongTon <= t.MucTonToiThieu);
+            query = query.Where(t => t.SoLuongTon == 0 || t.SoLuongTon < t.MucTonToiThieu);
 
         return await query
             .OrderBy(t => t.Kho.TenKho)
@@ -56,7 +56,7 @@ public class KhoService : IKhoService
 
     public async Task<IEnumerable<CanhBaoTonKhoDto>> GetCanhBaoAsync(long? khoId = null)
     {
-        var query = BaseTonKhoQuery().Where(t => t.SoLuongTon <= t.MucTonToiThieu);
+        var query = BaseTonKhoQuery().Where(t => t.SoLuongTon == 0 || t.SoLuongTon < t.MucTonToiThieu);
 
         if (khoId.HasValue)
             query = query.Where(t => t.KhoId == khoId.Value);
